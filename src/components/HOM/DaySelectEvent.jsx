@@ -24,6 +24,12 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
       category = "공모전";
       categoryColor = CATEGORY_COLORS.CONTEST;
       break;
+    case "ACTIVITY":
+      category = "대외활동";
+      categoryColor = CATEGORY_COLORS.ACTIVITY;
+    case "SCHOLARSHIP":
+      category = "장학";
+      categoryColor = CATEGORY_COLORS.SCHOLARSHIP;
     default:
       category = "기타";
       categoryColor = CATEGORY_COLORS.DEFAULT;
