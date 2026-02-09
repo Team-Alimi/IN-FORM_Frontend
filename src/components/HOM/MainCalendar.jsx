@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import WeekRow from "./WeekRow";
-import { generateWeeks } from "../../utils/CalendarUtil";
+import { generateWeeks } from "../../utils/calendarUtil";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -21,7 +21,7 @@ const MainCalendar = ({
   // 3. 오늘 날짜 (고정) -- 필수는 아닌것 같기도
   const today = useMemo(() => new Date(), []);
 
-  // 3. weeks 계산 - CalendarUtil 사용
+  // 3. weeks 계산 - calendarUtil 사용
   const weeks = useMemo(() => generateWeeks(year, month), [year, month]);
 
   // 4. 이전/다음 달 이동 - 부모에게 알림만
