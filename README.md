@@ -111,7 +111,7 @@ npm run preview
 
 ## 🎯 개발 가이드
 
-### 컴포넌트 네이밍 규칙
+### 네이밍 규칙
 
 - 페이지 폴더명은 3글자 약어 사용 (HOM, EVL, EVD, CBL, CBD, NOT)
 - 컴포넌트: PascalCase 사용
