@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { getStatus } from "../../utils/statusUtil";
 import Header from "../../components/common/Header";
 import TabBar from "../../components/common/TabBar";
 import Footer from "../../components/common/Footer";
@@ -106,19 +107,7 @@ const EVLPage = () => {
   const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
 
-  const getStatus = (startDate, dueDate) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    const end = new Date(dueDate);
 
-    today.setHours(0, 0, 0, 0);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    if (today < start) return "예정";
-    if (today > end) return "마감";
-    return "진행중";
-  };
 
   const sortedEvents = useMemo(() => {
     if (!events) return [];
