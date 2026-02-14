@@ -100,10 +100,6 @@ const CBLPage = () => {
   });
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, searchText]);
-
-  useEffect(() => {
     const fetchImminentEvents = async () => {
       try {
         setImminentLoading(true);
