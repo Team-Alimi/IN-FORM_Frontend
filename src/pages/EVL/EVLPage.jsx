@@ -1,13 +1,14 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { getStatus } from "../../utils/statusUtil";
 import Header from "../../components/common/Header";
 import TabBar from "../../components/common/TabBar";
 import Footer from "../../components/common/Footer";
 import MiniCalendarSet from "../../components/common/MiniCalendarSet";
 import EventRow from "../../components/EVL/EventRow";
 import SearchBar from "../../components/common/SearchBar";
-import Imminent from "../../components/common/Imminent";
+import ImminentSidebar from "../../components/common/ImminentSidebar";
 import api from "../../api/axios";
 
 const EVLPage = () => {
@@ -106,19 +107,7 @@ const EVLPage = () => {
   const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
 
-  const getStatus = (startDate, dueDate) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    const end = new Date(dueDate);
 
-    today.setHours(0, 0, 0, 0);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    if (today < start) return "예정";
-    if (today > end) return "마감";
-    return "진행중";
-  };
 
   const sortedEvents = useMemo(() => {
     if (!events) return [];
@@ -154,40 +143,12 @@ const EVLPage = () => {
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
             <MiniCalendarSet />
-            <div className="p-4 max-w-100 rounded-3xl bg-white shadow-md flex flex-col items-center">
-              <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                🔥 마감 임박
-              </h3>
-              <div className="space-y-1 w-full">
-                {imminentLoading && (
-                  <p className="text-sm text-gray-400 text-center">
-                    불러오는 중...
-                  </p>
-                )}
-                {imminentError && (
-                  <p className="text-sm text-red-400 text-center">
-                    {imminentError}
-                  </p>
-                )}
-                {!imminentLoading &&
-                  !imminentError &&
-                  imminentEvents.map((imminentEvent) => (
-                    <Imminent
-                      key={imminentEvent.article_id}
-                      title={imminentEvent.title}
-                      date={imminentEvent.due_date}
-                      onClick={() => handleRowClick(imminentEvent.article_id)}
-                    />
-                  ))}
-                {!imminentLoading &&
-                  !imminentError &&
-                  imminentEvents.length === 0 && (
-                    <p className="text-sm text-gray-400 text-center">
-                      표시할 마감 임박 행사가 없습니다.
-                    </p>
-                  )}
-              </div>
-            </div>
+            <ImminentSidebar
+              imminentLoading={imminentLoading}
+              imminentError={imminentError}
+              imminentEvents={imminentEvents}
+              onEventClick={handleRowClick}
+            />
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
