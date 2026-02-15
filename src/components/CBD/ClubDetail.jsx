@@ -1,20 +1,8 @@
 import React from "react";
+import { getStatus } from "../../utils/statusUtil";
 
 const ClubDetail = ({ title, vendor, startDate, dueDate, created_at, content, linkUrl, attachmentUrls }) => {
-  const getStatus = () => {
-    const today = new Date(); 
-    const start = new Date(startDate);
-    const end = new Date(dueDate);
-
-    today.setHours(0,0,0,0); 
-    start.setHours(0,0,0,0); 
-    end.setHours(23,59,59,999);
-
-    if (today < start) return { text: "예정", color: "text-Upcoming bg-red-50 border-Upcoming" };
-    if (today > end) return { text: "마감", color: "text-Ended bg-gray-100 border-Ended" };
-    return { text: "진행중", color: "text-Ongoing bg-blue-50 border-Ongoing" };
-  };
-  const status = getStatus();
+  const status = getStatus(startDate, dueDate);
 
   return (
     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
