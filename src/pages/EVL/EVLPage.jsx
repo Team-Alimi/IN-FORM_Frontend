@@ -188,15 +188,18 @@ const EVLPage = () => {
               {/* 리스트 출력 */}
               <div className="space-y-1">
                 {sortedEvents.length > 0 ? (
-                  sortedEvents.map((event) => (
-                    <EventRow
-                      key={event.article_id}
-                      title={event.title}
-                      date={event.created_at}
-                      status={getStatus(event.start_date, event.due_date)}
-                      onClick={() => handleRowClick(event.article_id)}
-                    />
-                  ))
+                  sortedEvents.map((event) => {
+                    const statusObj = getStatus(event.start_date, event.due_date);
+                    return (
+                      <EventRow
+                        key={event.article_id}
+                        title={event.title}
+                        date={event.created_at}
+                        status={statusObj.text}
+                        onClick={() => handleRowClick(event.article_id)}
+                      />
+                    );
+                  })
                 ) : (
                   <div className="text-center py-20 text-gray-400 flex flex-col items-center">
                     <p>조건에 맞는 행사가 없습니다.</p>
