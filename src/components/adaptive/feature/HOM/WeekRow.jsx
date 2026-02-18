@@ -7,8 +7,8 @@ import {
   buildBars,
   assignRows,
   filterByColumnLimit,
-} from "../../utils/calendarUtil";
-import { isSameDate, parseDate } from "../../utils/dateUtil";
+} from "../../../../utils/calendarUtil";
+import { isSameDate, parseDate } from "../../../../utils/dateUtil";
 
 const WeekRow = ({
   week,

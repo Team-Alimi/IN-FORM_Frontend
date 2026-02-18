@@ -2,13 +2,12 @@ import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStatus } from "../../utils/statusUtil";
-import Header from "../../components/common/Header";
-import TabBar from "../../components/common/TabBar";
-import Footer from "../../components/common/Footer";
-import MiniCalendarSet from "../../components/common/MiniCalendarSet";
-import EventRow from "../../components/EVL/EventRow";
-import SearchBar from "../../components/common/SearchBar";
-import ImminentSidebar from "../../components/common/ImminentSidebar";
+import TabBar from "../../components/desktop/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
+import EventRow from "../../components/adaptive/feature/EVL/EventRow";
+import SearchBar from "../../components/adaptive/common/SearchBar";
+import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import api from "../../api/axios";
 
 const EVLPage = () => {

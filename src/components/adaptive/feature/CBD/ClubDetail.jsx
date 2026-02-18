@@ -1,5 +1,5 @@
 import React from "react";
-import { getStatus } from "../../utils/statusUtil";
+import { getStatus } from "../../../../utils/statusUtil";
 
 const ClubDetail = ({ title, vendor, startDate, dueDate, created_at, content, linkUrl, attachmentUrls }) => {
   const status = getStatus(startDate, dueDate);

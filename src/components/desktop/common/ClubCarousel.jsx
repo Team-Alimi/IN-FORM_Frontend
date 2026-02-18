@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import api from "../../api/axios";
+import api from "../../../api/axios";
 
 const ClubCarousel = () => {
   const [images, setImages] = useState([]); // 포스터 URL 목록

@@ -1,4 +1,4 @@
-import { CATEGORY_COLORS } from "../../constants/tagColors";
+import { CATEGORY_COLORS } from "../../../../constants/tagColors";
 // 이벤트 카테고리에 따른 색상 반환
 const getEventColor = (event) => {
   const categoryName = event?.category_name;

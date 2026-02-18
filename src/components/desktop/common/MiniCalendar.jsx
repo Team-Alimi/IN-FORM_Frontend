@@ -1,4 +1,4 @@
-import { generateWeeks } from "../../utils/calendarUtil";
+import { generateWeeks } from "../../../utils/calendarUtil";
 import { useMemo } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import MiniCalendarWeekRow from "./MiniCalendarWeekRow";

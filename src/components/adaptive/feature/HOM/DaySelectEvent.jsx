@@ -1,4 +1,4 @@
-import { CATEGORY_COLORS } from "../../constants/tagColors";
+import { CATEGORY_COLORS } from "../../../../constants/tagColors";
 
 const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
   let category;

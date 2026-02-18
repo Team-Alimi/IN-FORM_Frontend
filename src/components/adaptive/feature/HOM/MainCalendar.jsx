@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import WeekRow from "./WeekRow";
-import { generateWeeks } from "../../utils/calendarUtil";
+import { generateWeeks } from "../../../../utils/calendarUtil";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

@@ -1,12 +1,12 @@
 import ServiceLink from "./ServiceLink";
 
-import chatGPT from "../../assets/SSO/chatGPT.png";
-import DBpia from "../../assets/SSO/DBpia.png";
-import everytime from "../../assets/SSO/everytime.png";
-import iclass from "../../assets/SSO/iclass.png";
-import Inha from "../../assets/SSO/Inha.png";
-import Lib from "../../assets/SSO/Lib.png";
-import portal from "../../assets/SSO/portal.png";
+import chatGPT from "../../../assets/SSO/chatGPT.png";
+import DBpia from "../../../assets/SSO/DBpia.png";
+import everytime from "../../../assets/SSO/everytime.png";
+import iclass from "../../../assets/SSO/iclass.png";
+import Inha from "../../../assets/SSO/Inha.png";
+import Lib from "../../../assets/SSO/Lib.png";
+import portal from "../../../assets/SSO/portal.png";
 
 const ServiceLinkList = () => {
   const Links = [

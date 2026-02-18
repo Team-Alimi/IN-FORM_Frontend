@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/common/Header";
-import TabBar from "../../components/common/TabBar";
-import Footer from "../../components/common/Footer";
-import MiniCalendarSet from "../../components/common/MiniCalendarSet";
-import SearchBar from "../../components/common/SearchBar";
-import ClubCarousel from "../../components/common/ClubCarousel";
-import ClubRow from "../../components/CBL/ClubRow";
-import ImminentSidebar from "../../components/common/ImminentSidebar";
+import TabBar from "../../components/desktop/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
+import SearchBar from "../../components/adaptive/common/SearchBar";
+import ClubCarousel from "../../components/desktop/common/ClubCarousel";
+import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
+import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import api from "../../api/axios";
 
 const CBLPage = () => {

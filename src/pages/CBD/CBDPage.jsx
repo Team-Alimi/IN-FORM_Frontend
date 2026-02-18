@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../../components/common/Header";
-import TabBar from "../../components/common/TabBar";
-import Footer from "../../components/common/Footer";
-import ClubDetail from "../../components/CBD/ClubDetail";
+import TabBar from "../../components/desktop/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import ClubDetail from "../../components/adaptive/feature/CBD/ClubDetail";
 //import CBLMockData from "../../mocks/CBL/ClubRowMock.json"
 //import CBDMockData from "../../mocks/CBD/ClubDetailMock.json";
 import api from "../../api/axios";

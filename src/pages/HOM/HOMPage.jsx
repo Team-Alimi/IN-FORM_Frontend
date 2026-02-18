@@ -1,14 +1,13 @@
 import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import Header from "../../components/common/Header";
-import Footer from "../../components/common/Footer";
-import MainCalendar from "../../components/HOM/MainCalendar";
-import TabBar from "../../components/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import MainCalendar from "../../components/adaptive/feature/HOM/MainCalendar";
+import TabBar from "../../components/desktop/common/TabBar";
 import { parseDate, formatDateKey, formatMonthKey } from "../../utils/dateUtil";
-import DaySelectEventList from "../../components/HOM/DaySelectEventList";
-import ServiceLinkList from "../../components/common/ServiceLinkList";
-import ClubCarousel from "../../components/common/ClubCarousel";
+import DaySelectEventList from "../../components/adaptive/feature/HOM/DaySelectEventList";
+import ServiceLinkList from "../../components/desktop/common/ServiceLinkList";
+import ClubCarousel from "../../components/desktop/common/ClubCarousel";
 import { getMonthlyAll } from "../../api/getMonthlyAll";
 import ErrorPage from "../NOT/ErrorPage";
 

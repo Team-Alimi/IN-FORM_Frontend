@@ -1,9 +1,9 @@
-import MockData from "../../mocks/HOM/maincalendarMock.json";
+import MockData from "../../../mocks/HOM/maincalendarMock.json";
 import MiniCalendar from "./MiniCalendar";
-import { parseDate, formatDateKey, formatMonthKey } from "../../utils/dateUtil";
+import { parseDate, formatDateKey, formatMonthKey } from "../../../utils/dateUtil";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMonthlyAll } from "../../api/getMonthlyAll";
+import { getMonthlyAll } from "../../../api/getMonthlyAll";
 import MiniCalendarEventList from "./MiniCalendarEventList";
 import { useNavigate } from "react-router-dom";
 
