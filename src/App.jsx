@@ -11,6 +11,7 @@ import ErrorPage from "./pages/NOT/ErrorPage";
 import { initDeviceListener } from "./stores/deviceStore";
 import DeviceTestPage from "./pages/TEST/DeviceTestPage";
 import LGNPage from "./pages/LGN/LGNPage";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -22,14 +23,43 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
+        <Route path="/login" element={<LGNPage />} />
         <Route path="/" element={<HOMPage />} />
         <Route path="clubs">
-          <Route index element={<CBLPage />} />
-          <Route path="detail/:id" element={<CBDPage />} />
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <CBLPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="detail/:id"
+            element={
+              <ProtectedRoute>
+                <CBDPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
         <Route path="events">
-          <Route index element={<EVLPage />} />
-          <Route path="detail/:id" element={<EVDPage />} />
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <EVLPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="detail/:id"
+            element={
+              <ProtectedRoute>
+                <EVDPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
         <Route path="/test" element={<DeviceTestPage />} />
         <Route path="/error" element={<ErrorPage />} />

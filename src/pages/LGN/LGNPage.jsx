@@ -1,15 +1,20 @@
 import useAuthStore from "../../stores/useAuthStore";
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const LGNPage = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const login = useAuthStore((state) => state.login);
   const isDisabled = !userId.trim() || !password.trim();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLoginClick = () => {
     if (userId === "user001" && password === "001229") {
       login();
+      const from = location.state?.from?.pathname ?? "/";
+      navigate(from, { replace: true });
     } else {
       console.log("아이디 비밀번호가 틀렸습니다.");
     }
