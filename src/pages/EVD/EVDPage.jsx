@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
+import BackHeader from "../../components/adaptive/common/BackHeader";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
+import MobileEventDetail from "../../components/mobile/feature/EVD/MobileEventDetail";
+import { useDeviceStore } from "../../stores/deviceStore";
 import { fetchEventDetail } from "../../api/getEventDetail";
 
 const EVDPage = () => {
@@ -10,6 +13,8 @@ const EVDPage = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const isMobile = useDeviceStore((state) => state.isMobile);
 
   useEffect(() => {
     const fetchEventDetailAsync = async () => {
@@ -56,18 +61,33 @@ const EVDPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
-        <EventDetail
-          title={event.title}
-          vendors={event.vendors}
-          startDate={event.start_date}
-          dueDate={event.due_date}
-          created_at={event.created_at}
-          content={event.content}
-        />
+      {isMobile ? (
+        <BackHeader title={event.title} />
+      ) : (
+        <TabBar />
+      )}
+      <div className={isMobile ? "flex-1 w-full pt-12 px-0 pb-4" : "flex-1 w-full max-w-6xl mx-auto px-4 py-6"}>
+        {isMobile ? (
+          <MobileEventDetail
+            title={event.title}
+            vendors={event.vendors}
+            startDate={event.start_date}
+            dueDate={event.due_date}
+            created_at={event.created_at}
+            content={event.content}
+          />
+        ) : (
+          <EventDetail
+            title={event.title}
+            vendors={event.vendors}
+            startDate={event.start_date}
+            dueDate={event.due_date}
+            created_at={event.created_at}
+            content={event.content}
+          />
+        )}
       </div>
-      <Footer />
+      {!isMobile && <Footer />}
     </div>
   );
 };
