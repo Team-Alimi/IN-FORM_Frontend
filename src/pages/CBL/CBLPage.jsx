@@ -7,7 +7,7 @@ import SearchBar from "../../components/adaptive/common/SearchBar";
 import ClubCarousel from "../../components/desktop/common/ClubCarousel";
 import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
-import api from "../../api/axios";
+import { fetchClubs /*, fetchImminentClubs */ } from "../../api/getClubList";
 
 const CBLPage = () => {
   const navigate = useNavigate();
@@ -32,18 +32,27 @@ const CBLPage = () => {
   const [imminentError, setImminentError] = useState(null);
 
   useEffect(() => {
-    const fetchClubs = async () => {
+    const loadClubs = async () => {
       try {
         setClubsLoading(true);
         setClubsError(null);
 
-        const res = await api.get("/api/v1/club_articles", {
-          params: {
-            page: currentPage,
-            size: itemsPerPage,
-            search: searchText.trim() !== "" ? searchText.trim() : undefined,
-          },
-        });
+        const params = {
+          page: currentPage,
+          size: itemsPerPage,
+          keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
+        };
+        // 카테고리(동아리) 필터 적용
+        if (selectedCategory !== "ALL") {
+          // vendor_id는 vendor_name이 아닌 vendor_id로 전달해야 하므로 clubs에서 매칭
+          const vendor = clubs.find(
+            (club) => club.vendors && club.vendors[0]?.vendor_name === selectedCategory
+          );
+          if (vendor && vendor.vendors && vendor.vendors[0]?.vendor_id) {
+            params.vendor_id = vendor.vendors[0].vendor_id;
+          }
+        }
+        const res = await fetchClubs(params);
 
         console.log("club list:", res.data);
 
@@ -67,7 +76,7 @@ const CBLPage = () => {
       }
     };
 
-    fetchClubs();
+    loadClubs();
   }, [currentPage, searchText]);
 
   // 카테고리/검색 바꾸면 1페이지로
@@ -98,25 +107,25 @@ const CBLPage = () => {
     return isCategoryMatch;
   });
 
-  useEffect(() => {
-    const fetchImminentEvents = async () => {
-      try {
-        setImminentLoading(true);
-        setImminentError(null);
-
-        const res = await api.get("/api/v1/deadline/club_articles");
-
-        setImminentEvents(res.data.club_articles || []);
-      } catch (error) {
-        console.error("마감 임박 행사 불러오기 실패:", error);
-        setImminentError("마감 임박 행사를 불러오지 못했습니다.");
-      } finally {
-        setImminentLoading(false);
-      }
-    };
-
-    fetchImminentEvents();
-  }, []);
+  // 마감임박 동아리 행사 API 미사용 (필요시 주석 해제)
+  // useEffect(() => {
+  //   const loadImminentClubs = async () => {
+  //     try {
+  //       setImminentLoading(true);
+  //       setImminentError(null);
+  //
+  //       const res = await fetchImminentClubs();
+  //       setImminentEvents(res.data.club_articles || []);
+  //     } catch (error) {
+  //       console.error("마감 임박 행사 불러오기 실패:", error);
+  //       setImminentError("마감 임박 행사를 불러오지 못했습니다.");
+  //     } finally {
+  //       setImminentLoading(false);
+  //     }
+  //   };
+  //
+  //   loadImminentClubs();
+  // }, []);
 
   const currentClubs = filteredClubs;
   const totalPages = pageInfo.total_pages || 1;
@@ -146,7 +155,7 @@ const CBLPage = () => {
               imminentEvents={imminentEvents}
               onEventClick={handleClubClick}
             />
-            <ClubCarousel />
+            { /* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */ }  
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
