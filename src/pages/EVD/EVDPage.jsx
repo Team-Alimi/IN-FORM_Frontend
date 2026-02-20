@@ -76,7 +76,6 @@ const EVDPage = () => {
           content={event.content}
         />
       </div>
-      <OriginalUrlBtn vendor_name="AI융합학부" original_url="https://example.com" />
       {!isMobile && <Footer />}
     </div>
   );
