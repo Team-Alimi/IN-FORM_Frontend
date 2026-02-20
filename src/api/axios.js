@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://34.64.39.13:8080/",
+  baseURL: "https://inha-inform.today/",
   headers: {
     "ngrok-skip-browser-warning": "true",
   },
