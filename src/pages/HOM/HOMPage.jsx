@@ -131,7 +131,7 @@ const HOMPage = () => {
         <div className="flex flex-col md:flex-row gap-6 items-start">
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
             <ServiceLinkList />
-            <ClubCarousel />
+            { /* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */ }
           </aside>
           <main className="flex-1 w-full space-y-6">
             <div className="flex-1 min-w-0">

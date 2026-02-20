@@ -1,35 +1,28 @@
 import instance from "./axios";
-//[5] 캘린더 아티클 전체 조회
-export async function getMonthlyAll({ calendarMonth }) {
-  console.log("🔵 [API] getMonthlyAll 호출 시작");
-  /** request param
-   * date : string (YYYY-MM)
-   * page : 리스트 페이지 개수 integer
-   * size : 한 페이지에서 보여줄 게시글
-   */
+
+/**
+ * 특정 연/월의 학교 공지사항 일정 요약 조회 (개편된 API 명세 반영)
+ * @param {Object} params - year, month, category_id, is_my_only 등
+ * @returns {Promise}
+ */
+export async function getMonthlyAll({ calendarMonth, category_id, is_my_only }) {
+  // calendarMonth: 'YYYY-MM' 형식
+  const [yearStr, monthStr] = calendarMonth.split("-");
+  const year = parseInt(yearStr);
+  const month = parseInt(monthStr);
   try {
-    const res = await instance.get("api/v1/monthly", {
+    const res = await instance.get("/api/v1/calendar/notices", {
       params: {
-        date: `${calendarMonth}`,
-        page: 1,
-        size: 100,
+        year,
+        month,
+        category_id: category_id ? category_id.join(",") : undefined,
+        is_my_only: is_my_only || undefined,
       },
     });
-    console.log("✅ [API] 응답 성공:", res.status);
-    console.log("📦 [API] 응답 데이터:", res.data);
-    console.log("📊 [API] 응답 데이터 타입:", typeof res.data);
-    console.log(
-      "📋 [API] articles 존재?:",
-      res.data?.articles ? "✅ 있음" : "❌ 없음"
-    );
-
-    const data = res.data;
-    return data;
+    // 응답 데이터는 res.data.data (일정 리스트)
+    return { articles: res.data.data };
   } catch (error) {
-    console.error("❌ [API] 에러 발생:");
-    console.error("  - 에러 메시지:", error.message);
-    console.error("  - 에러 코드:", error.code);
-    console.error("  - 응답 상태:", error.response?.status);
+    console.error("[API] 에러 발생:", error);
     throw error;
   }
 }
