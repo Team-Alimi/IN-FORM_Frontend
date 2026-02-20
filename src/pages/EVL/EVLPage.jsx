@@ -8,7 +8,7 @@ import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import EventRow from "../../components/adaptive/feature/EVL/EventRow";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
-import api from "../../api/axios";
+import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
 
 const EVLPage = () => {
   const navigate = useNavigate();
@@ -22,9 +22,10 @@ const EVLPage = () => {
     total_articles: 0,
   });
 
-  const [imminentEvents, setImminentEvents] = useState([]);
-  const [imminentLoading, setImminentLoading] = useState(false);
-  const [imminentError, setImminentError] = useState(null);
+  // 마감임박행사 API 제거로 임시 미사용
+  // const [imminentEvents, setImminentEvents] = useState([]);
+  // const [imminentLoading, setImminentLoading] = useState(false);
+  // const [imminentError, setImminentError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -39,19 +40,23 @@ const EVLPage = () => {
   ];
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const loadEvents = async () => {
       try {
         setEventsLoading(true);
         setEventsError(null);
 
-        const res = await api.get("/api/v1/school_articles", {
-          params: {
-            page: currentPage,
-            category: selectedCategory !== "ALL" ? selectedCategory : undefined,
-            search: searchText.trim() !== "" ? searchText.trim() : undefined,
-            size: 20,
-          },
-        });
+        // category_id는 다중 선택 지원, 현재 단일 선택이므로 배열로 확장 가능
+        const params = {
+          page: currentPage,
+          size: 20,
+          category_id: selectedCategory !== "ALL" ? selectedCategory : undefined,
+          keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
+        };
+        // category_id가 배열일 경우 콤마로 join
+        if (Array.isArray(params.category_id)) {
+          params.category_id = params.category_id.join(",");
+        }
+        const res = await fetchEvents(params);
 
         console.log("events list:", res.data);
 
@@ -59,7 +64,6 @@ const EVLPage = () => {
         if (res.data.page_info) {
           setPageInfo(res.data.page_info);
         } else {
-          // page_info가 없을 경우
           setPageInfo({
             current_page: currentPage,
             total_pages: 1,
@@ -76,32 +80,32 @@ const EVLPage = () => {
       }
     };
 
-    fetchEvents();
+    loadEvents();
   }, [currentPage, selectedCategory, searchText]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, searchText]);
 
-  useEffect(() => {
-    const fetchImminentEvents = async () => {
-      try {
-        setImminentLoading(true);
-        setImminentError(null);
-
-        const res = await api.get("/api/v1/deadline/school_articles");
-
-        setImminentEvents(res.data.school_articles || []);
-      } catch (error) {
-        console.error("마감 임박 행사 불러오기 실패:", error);
-        setImminentError("마감 임박 행사를 불러오지 못했습니다.");
-      } finally {
-        setImminentLoading(false);
-      }
-    };
-
-    fetchImminentEvents();
-  }, []);
+  // 마감임박행사 API 제거로 임시 미사용
+  // useEffect(() => {
+  //   const loadImminentEvents = async () => {
+  //     try {
+  //       setImminentLoading(true);
+  //       setImminentError(null);
+  //
+  //       const res = await fetchImminentEvents();
+  //       setImminentEvents(res.data.school_articles || []);
+  //     } catch (error) {
+  //       console.error("마감 임박 행사 불러오기 실패:", error);
+  //       setImminentError("마감 임박 행사를 불러오지 못했습니다.");
+  //     } finally {
+  //       setImminentLoading(false);
+  //     }
+  //   };
+  //
+  //   loadImminentEvents();
+  // }, []);
 
   const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
@@ -142,12 +146,14 @@ const EVLPage = () => {
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
             <MiniCalendarSet />
+            {/* 마감임박행사 API 제거로 임시 미사용
             <ImminentSidebar
               imminentLoading={imminentLoading}
               imminentError={imminentError}
               imminentEvents={imminentEvents}
               onEventClick={handleRowClick}
             />
+            */}
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
