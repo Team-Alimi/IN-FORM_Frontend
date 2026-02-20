@@ -60,15 +60,17 @@ const EVLPage = () => {
 
         console.log("events list:", res.data);
 
-        setEvents(res.data.school_articles || []);
-        if (res.data.page_info) {
-          setPageInfo(res.data.page_info);
+        // api명세에 맞게 response 파싱
+        const apiData = res.data?.data;
+        setEvents(apiData?.school_articles || []);
+        if (apiData?.page_info) {
+          setPageInfo(apiData.page_info);
         } else {
           setPageInfo({
             current_page: currentPage,
             total_pages: 1,
-            total_articles: res.data.school_articles
-              ? res.data.school_articles.length
+            total_articles: apiData?.school_articles
+              ? apiData.school_articles.length
               : 0,
           });
         }
