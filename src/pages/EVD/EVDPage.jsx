@@ -6,7 +6,6 @@ import BackHeader from "../../components/adaptive/common/BackHeader";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { fetchEventDetail } from "../../api/getEventDetail";
-import OriginalUrlBtn from "../../components/adaptive/feature/EVD/OriginalUrlBtn";
 
 const EVDPage = () => {
   const { id } = useParams();
