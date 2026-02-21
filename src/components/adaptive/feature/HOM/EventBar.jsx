@@ -16,13 +16,13 @@ const EventBar = ({ event, startCol, span, row }) => {
 
   return (
     <div
-      className={`${bgColor} text-white text-xs px-2 py-1 rounded truncate`}
+      className={`${bgColor} text-white text-xs px-2 rounded flex items-center max-mobile:text-[8px] max-mobile:py-0`}
       style={{
         gridColumn: `${startCol + 1} / span ${span}`,
         gridRow: row + 1,
       }}
     >
-      {event.title}
+      <span className="truncate">{event.title}</span>
     </div>
   );
 };

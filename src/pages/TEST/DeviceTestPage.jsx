@@ -1,10 +1,13 @@
 import { useDeviceStore } from "../../stores/deviceStore";
+import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-red-700 max-mobile:bg-blue-400"> {/** 단순 스타일 변경 */}
+      <div className="bg-red-700 max-mobile:bg-blue-400">
+        {" "}
+        {/** 단순 스타일 변경 */}
         <div className="p-4">테일윈드 브레이크 포인트 기반 반응형 테스트</div>
         <div>파란색 : 모바일 빨간색 : 데스크탑</div>
       </div>
@@ -14,6 +17,7 @@ const DeviceTestPage = () => {
       ) : (
         <div className="bg-blue-400">데스크탑임</div>
       )}
+      <CalendarSection />
     </div>
   );
 };

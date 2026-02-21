@@ -31,11 +31,11 @@ const CalendarCell = ({
     cellTextStyle = "text-xs";
   } else {
     //기본 캘린더용
-    cellStyle = "w-12 h-8 md:w-14 md:h-9";
+    cellStyle = "w-12 h-8 md:w-14 md:h-9 max-mobile:w-10 max-mobile:h-6 ";
     cellTextStyle = "text-xs sm:text-base md:text-base font-medium";
   }
   return (
-    <div className="flex justify-center pt-1 sm:pt-2">
+    <div className="flex justify-center pt-1 sm:pt-2 max-mobile:p-0">
       <div
         className={`${cellStyle} flex flex-col items-center justify-center rounded-lg transition-colors
           ${isToday ? "bg-blue-500 text-white" : isSelected && inCurrentMonth ? "bg-blue-300 text-white" : textColor}
@@ -45,7 +45,9 @@ const CalendarCell = ({
         `}
         onClick={handleClick}
       >
-        <span className={`${cellTextStyle}`}>{date.getDate()}</span>
+        <span className={`${cellTextStyle} max-mobile:text-[12px]`}>
+          {date.getDate()}
+        </span>
       </div>
     </div>
   );
