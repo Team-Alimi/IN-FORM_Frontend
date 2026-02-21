@@ -1,40 +1,67 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../stores/useAuthStore";
 import { useDeviceStore } from "../../stores/deviceStore";
-
-// 구글 아이콘을 분리하여 코드 가독성 향상
-const GoogleIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-      fill="#4285F4"
-    />
-    <path
-      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-      fill="#34A853"
-    />
-    <path
-      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-      fill="#FBBC05"
-    />
-    <path
-      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-      fill="#EA4335"
-    />
-  </svg>
-);
-
+import { GoogleLogin } from "@react-oauth/google";
+import { postGoogleLogin } from "../../api/postGoogleLogin";
 const LGNPage = () => {
   const login = useAuthStore((state) => state.login);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleGoogleLogin = () => {
-    // 임시 로그인 성공 처리 연동
-    login();
-    const from = location.state?.from?.pathname ?? "/";
-    navigate(from, { replace: true });
+  // 구글 로그인 성공 후 백엔드 서버로 id_token 전달
+  const handleGoogleSuccess = async (credentialResponse) => {
+    // credentialResponse 안에는 구글로부터 받은 JWT id_token(credential)이 들어있습니다.
+    const idToken = credentialResponse.credential;
+
+    // 1. 프론트엔드 단에서 이메일 도메인 사전 검증 (1차)
+    try {
+      const payloadBase64 = idToken.split(".")[1];
+      const decodedJson = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
+      const payload = JSON.parse(
+        decodeURIComponent(
+          decodedJson.split("").map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
+        )
+      );
+
+      const userEmail = payload.email || "";
+      if (!userEmail.endsWith("@inha.edu") && !userEmail.endsWith("@inha.ac.kr")) {
+        alert("인하대학교 도메인으로 로그인해주세요.");
+        return; // 올바른 도메인이 아니면 차단
+      }
+    } catch (decodeError) {
+      console.error("토큰 디코딩 실패:", decodeError);
+    }
+
+    try {
+      // 2. 백엔드 API 호출로 검증 및 회원가입/로그인 처리
+      const res = await postGoogleLogin(idToken);
+
+      // 2. 백엔드 응답이 성공이고 데이터가 있다면 스토어에 저장
+      if (res.success && res.data) {
+        // 서버에서 던져준 access_token, refresh_token, user_info를 로컬 상태에 저장!
+        login(res.data.access_token, res.data.refresh_token, res.data.user_info);
+
+        // (선택) 신규 유저일 때 특별한 액션을 취할 수도 있음
+        if (res.data.is_new_user) {
+          console.log("신규 가입을 환영합니다!");
+        }
+
+        // 로그인 이전 페이지 또는 홈으로 이동
+        const from = location.state?.from?.pathname ?? "/";
+        navigate(from, { replace: true });
+      } else {
+        alert("로그인 처리에 실패했습니다. (응답 구조 이상)");
+      }
+    } catch (error) {
+      console.error("로그인 서버 연동 실패:", error);
+      alert("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.error("Google Login Failed");
+    alert("구글 인증 팝업 호출에 실패했습니다.");
   };
 
   // 1. 모바일 전용 뷰 렌더링 (기존 파란색 전체 화면)
@@ -62,14 +89,18 @@ const LGNPage = () => {
               <p className="text-white/80 text-sm">인하대학교 이메일로 로그인하세요.</p>
             </div>
 
-            {/* 구글 로그인 버튼 */}
-            <button
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors active:scale-[0.98] shadow-sm"
-            >
-              <GoogleIcon />
-              <span className="text-gray-800 font-semibold text-base">Google 계정으로 계속하기</span>
-            </button>
+            {/* 구글 로그인 버튼 (최신 API 정책을 위한 공식 컴포넌트 강제 적용) */}
+            <div className="w-full flex justify-center mb-4 min-h-[50px]">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                shape="rectangular"
+                text="continue_with"
+                size="large"
+                width="300"
+                logo_alignment="center"
+              />
+            </div>
 
             {/* 하단 안내 푸터 */}
             <div className="mt-auto pt-8">
@@ -118,13 +149,18 @@ const LGNPage = () => {
             <p className="text-gray-500 text-base break-keep">인하대학교 이메일로 안전하게 로그인하세요.</p>
           </div>
 
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-4 px-4 bg-white border border-gray-300 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all active:scale-[0.98] shadow-sm mb-8 group"
-          >
-            <GoogleIcon />
-            <span className="text-gray-800 font-semibold text-lg group-hover:text-black">Google 계정으로 계속하기</span>
-          </button>
+          {/* 구글 로그인 공식 버튼 배치 (데스크탑 뷰) */}
+          <div className="w-full flex justify-center mb-10 min-h-[50px]">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              shape="rectangular"
+              text="continue_with"
+              size="large"
+              width="360"
+              logo_alignment="center"
+            />
+          </div>
 
           <div className="bg-blue-50/80 rounded-2xl p-5 border border-blue-100">
             <p className="text-sm text-gray-600 font-medium flex items-start gap-2 leading-relaxed break-keep">
