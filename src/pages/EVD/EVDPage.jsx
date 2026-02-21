@@ -6,6 +6,7 @@ import BackHeader from "../../components/adaptive/common/BackHeader";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { fetchEventDetail } from "../../api/getEventDetail";
+import BookmarkButton from "../../components/adaptive/feature/EVD/BookmarkButton";
 
 const EVDPage = () => {
   const { id } = useParams();
@@ -75,6 +76,7 @@ const EVDPage = () => {
           content={event.content}
         />
       </div>
+      <BookmarkButton />
       {!isMobile && <Footer />}
     </div>
   );
