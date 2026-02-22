@@ -1,10 +1,14 @@
+
 import React from "react";
+import Badge from "../../common/Badge";
 
 const EventRow = ({ id, status, title, date, onClick }) => {
+
   const getBadgeColor = (status) => {
     if (status === "진행중") return "text-Ongoing border-Ongoing bg-blue-50";
     if (status === "마감") return "text-Ended border-Ended bg-gray-50";
     if (status === "예정") return "text-Upcoming border-Upcoming bg-red-50";
+    return "";
   };
 
   return (
@@ -14,9 +18,7 @@ const EventRow = ({ id, status, title, date, onClick }) => {
     >
       <div className="flex items-center justify-between py-3">
         <div className="flex items-center gap-3">
-          <span className={`shrink-0 px-2.5 py-1 text-xs font-medium border rounded-full ${getBadgeColor(status)}`}>
-            {status}
-          </span>
+          <Badge color={getBadgeColor(status)} text={status} />
           <span className="text-gray-800 text-sm">
             {title}
           </span>

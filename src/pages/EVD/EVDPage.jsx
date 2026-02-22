@@ -6,6 +6,7 @@ import BackHeader from "../../components/adaptive/common/BackHeader";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { fetchEventDetail } from "../../api/getEventDetail";
+import BookmarkButton from "../../components/adaptive/feature/EVD/BookmarkButton";
 
 const EVDPage = () => {
   const { id } = useParams();
@@ -73,9 +74,18 @@ const EVDPage = () => {
           dueDate={event.due_date}
           created_at={event.created_at}
           content={event.content}
+          category_name={event.categories?.category_name}
+          is_bookmarked={event.is_bookmarked}
+          bookmark_count={event.bookmark_count}
+          isMobile={isMobile}
         />
       </div>
       {!isMobile && <Footer />}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 w-full z-20 bg-white px-4 py-3 border-t border-gray-200">
+          <BookmarkButton />
+        </div>
+      )}
     </div>
   );
 };

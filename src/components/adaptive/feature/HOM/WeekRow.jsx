@@ -20,7 +20,7 @@ const WeekRow = ({
 }) => {
   const { eventBars, overflows } = useMemo(
     () => calcEventBarsForWeek(week, eventsByDate),
-    [week, eventsByDate]
+    [week, eventsByDate],
   );
 
   const maxRow =
@@ -30,7 +30,7 @@ const WeekRow = ({
   const selectedDateObj = selectedDate ? parseDate(selectedDate) : null;
 
   return (
-    <div className="mb-1 sm:mb-2">
+    <div className="mb-1 sm:mb-2 max-mobile:m-0.5">
       {/* 날짜 그리드 */}
       <div className="grid grid-cols-7 text-center text-base sm:text-lg md:text-xl">
         {week.map((cellData, j) => {
@@ -58,9 +58,9 @@ const WeekRow = ({
       {/* 이벤트 바들 */}
       {eventBars.length > 0 && (
         <div
-          className="grid grid-cols-7 gap-x-0 gap-y-1 mt-1 px-1"
+          className="grid grid-cols-7 gap-x-0 gap-y-1 max-mobile:gap-y-0.5 mt-1 px-1"
           style={{
-            gridTemplateRows: `repeat(${maxRow + 1}, minmax(1.5rem, auto))`,
+            gridTemplateRows: `repeat(${maxRow + 1}, minmax(var(--event-bar-row-height), auto))`,
           }}
         >
           {eventBars.map((bar) => (
@@ -110,7 +110,7 @@ function calcEventBarsForWeek(week, eventsByDate) {
   const { visibleBars, overflows } = filterByColumnLimit(
     week,
     bars,
-    MAX_VISIBLE_ROWS
+    MAX_VISIBLE_ROWS,
   );
 
   // 표시할 이벤트들에 대해서만 행 할당
