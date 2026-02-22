@@ -3,20 +3,25 @@ import TabBar from "../../components/desktop/common/TabBar";
 import ServiceLinkList from "../../components/desktop/common/ServiceLinkList";
 import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
 import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
+import { useDeviceStore } from "../../stores/deviceStore";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
 
 const HOMPage = () => {
+  const isMobile = useDeviceStore((state) => state.isMobile);
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 ">
-      <div className="max-mobile:hidden">
-        <TabBar />
-        <div className="w-full flex justify-center px-4 mt-6 ">
-          <img
-            src="/assets/header/header.png"
-            alt="HOM 배너"
-            className="w-full max-w-6xl h-auto"
-          />
+      {isMobile ? <MobileHeader /> : (
+        <div className="max-mobile:hidden">
+          <TabBar />
+          <div className="w-full flex justify-center px-4 mt-6 ">
+            <img
+              src="/assets/header/header.png"
+              alt="HOM 배너"
+              className="w-full max-w-6xl h-auto"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
