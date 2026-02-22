@@ -12,12 +12,18 @@
   --color-background: #FFFFFF; /* 흰색 */
 
 
-  /* 카테고리 색상 */
+  /* 캘린더 카테고리별 색상 */
   --color-lectureBlue: #4E6D99;
   --color-clubGreen: #5F9B73;
   --color-competitionYellow: #C79E33;
   --color-contestRed: #B85C5C;
   --color-defaultGray: #6F7A85;
+
+  /* 카테고리 뱃지 색상 */
+  --color-contest: #9333EA;
+  --color-lecture: #059669;
+  --color-scholar: #CA8A04;
+  --color-activity: #2563EB;
 
   /* 상태 색상 */
   --color-Ongoing: #468AE5;
