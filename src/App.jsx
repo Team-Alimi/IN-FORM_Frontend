@@ -12,6 +12,7 @@ import { initDeviceListener } from "./stores/deviceStore";
 import DeviceTestPage from "./pages/TEST/DeviceTestPage";
 import LGNPage from "./pages/LGN/LGNPage";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import MYPage from "./pages/MYP/MYPage";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,14 @@ function App() {
         </Route>
         <Route path="/test" element={<DeviceTestPage />} />
         <Route path="/error" element={<ErrorPage />} />
+        <Route
+          path="/mypage"
+          element={
+            <ProtectedRoute>
+              <MYPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
