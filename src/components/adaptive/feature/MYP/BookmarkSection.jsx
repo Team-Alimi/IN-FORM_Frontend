@@ -7,13 +7,17 @@ import { deleteSchoolBookmarksAll } from "../../../../api/deleteSchoolBookmarksA
 const BookmarkSection = () => {
     const queryClient = useQueryClient();
 
-    // 1. 북마크 목록 조회 (임의로 첫 페이지, 50개까지 가져옴)
-    const { data: bookmarkData, isLoading, isError } = useQuery({
-        queryKey: ["schoolBookmarks"],
-        queryFn: () => getSchoolBookmarks({ page: 1, size: 50 }),
-    });
+    // 임시 목데이터 연동 (UI 확인용)
+    const MOCK_BOOKMARKS = Array.from({ length: 8 }).map((_, i) => ({
+        article_id: i + 1,
+        categories: { category_name: "학사공지" },
+        title: `임시 북마크된 공지사항 길게 테스트 해보기 ${i + 1}번째 글입니다. 긴 제목 처리용!`,
+        vendors: [{ vendor_name: "컴퓨터공학과" }],
+        start_date: "2026-03-01",
+        due_date: "2026-03-15",
+    }));
 
-    const bookmarks = bookmarkData?.data?.school_articles || [];
+    const bookmarks = MOCK_BOOKMARKS; // bookmarkData?.data?.school_articles || [];
 
     // 2. 일괄 삭제 Mutation
     const deleteAllMutation = useMutation({
@@ -59,11 +63,11 @@ const BookmarkSection = () => {
 
             {/* Content Section */}
             <div className="bg-white rounded-[20px] shadow-[0_2px_15px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden min-h-[400px] flex flex-col">
-                {isLoading ? (
+                {false ? (
                     <div className="flex-1 flex justify-center items-center text-gray-400">
                         <div className="w-8 h-8 border-4 border-gray-100 border-t-[#0056b3] rounded-full animate-spin"></div>
                     </div>
-                ) : isError ? (
+                ) : false ? (
                     <div className="flex-1 flex justify-center items-center text-red-400 font-medium">북마크를 불러오는데 실패했습니다.</div>
                 ) : bookmarks.length > 0 ? (
                     <div className="flex-1 overflow-y-auto max-h-[500px] p-4 custom-scrollbar">

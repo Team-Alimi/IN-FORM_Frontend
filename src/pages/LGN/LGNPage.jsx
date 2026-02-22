@@ -64,53 +64,55 @@ const LGNPage = () => {
     alert("구글 인증 팝업 호출에 실패했습니다.");
   };
 
-  // 1. 모바일 전용 뷰 렌더링 (기존 파란색 전체 화면)
+  // 1. 모바일 전용 뷰 렌더링 (디자인 시안 반영)
   if (isMobile) {
     return (
-      <div className="flex justify-center bg-[#0056b3] min-h-[100dvh]">
+      <div className="flex justify-center bg-gray-50 min-h-[100dvh]">
         <div className="w-full flex flex-col relative overflow-hidden">
-          {/* 상단 파란색 헤더 영역 */}
-          <div className="flex flex-col items-center justify-center pt-24 pb-12 flex-none">
-            {/* Logo 박스 */}
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-md">
-              <span className="text-[#0056b3] font-bold text-2xl tracking-tighter">InF</span>
-            </div>
+          {/* 상단 로고 영역 */}
+          <div className="flex flex-col items-center justify-center pt-28 pb-10 flex-none">
+            {/* Logo Image */}
+            <img
+              src="/inform-logo.png"
+              alt="InForm Logo"
+              className="w-24 h-auto mb-4"
+            />
             {/* 타이틀 */}
-            <h1 className="text-white text-4xl font-extrabold mb-2 tracking-wide">In:form</h1>
+            <h1 className="text-gray-900 text-3xl font-black mb-1.5 tracking-tight">IN:FORM</h1>
             {/* 서브 타이틀 */}
-            <p className="text-white/80 text-sm font-medium">인하대학교 공지사항 큐레이션</p>
+            <p className="text-gray-500 text-[13.5px] font-semibold">인하대학교 공지사항 큐레이션</p>
           </div>
 
-          {/* 하단 로그인 영역 (파란 바탕 통합) */}
-          <div className="flex-1 px-8 pt-6 pb-8 flex flex-col">
-            {/* 로그인 문구 */}
-            <div className="mb-10 text-center">
-              <h2 className="text-white text-2xl font-bold mb-2">로그인</h2>
-              <p className="text-white/80 text-sm">인하대학교 이메일로 로그인하세요.</p>
-            </div>
-
-            {/* 구글 로그인 버튼 (최신 API 정책을 위한 공식 컴포넌트 강제 적용) */}
-            <div className="w-full flex justify-center mb-4 min-h-[50px]">
+          {/* 중간 로그인 영역 */}
+          <div className="flex-1 px-10 flex flex-col pt-8">
+            {/* 구글 로그인 버튼 */}
+            <div className="w-full flex flex-col items-center mb-6 min-h-[50px]">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
-                shape="rectangular"
+                theme="filled_blue"
+                shape="pill"
                 text="continue_with"
                 size="large"
-                width="300"
-                logo_alignment="center"
+                width="320"
+                logo_alignment="left"
               />
+
+              {/* 그냥 둘러보기 링크 */}
+              <button
+                onClick={() => navigate("/")}
+                className="mt-4 text-gray-400 text-[12px] font-medium hover:text-gray-500 transition-colors"
+              >
+                그냥 둘러보기
+              </button>
             </div>
 
-            {/* 하단 안내 푸터 */}
-            <div className="mt-auto pt-8">
-              <div className="bg-white/10 rounded-xl p-4 border border-white/20">
-                <p className="text-xs text-white/90 font-medium flex items-start gap-1">
-                  <span className="text-sm shrink-0">💡</span>
-                  <span>
-                    인하대학교 재학생 및 교직원만 가입 가능합니다.<br />
-                    (@inha.edu 또는 @inha.ac.kr 메일)
-                  </span>
+            {/* 하단 안내 푸터 (시안의 둥근 박스 반영) */}
+            <div className="mt-auto px-6 pb-10">
+              <div className="bg-gray-100/60 rounded-[40px] py-8 px-6 border border-gray-200/30 shadow-sm">
+                <p className="text-[12px] md:text-[13px] text-gray-500 font-bold text-center leading-[1.6]">
+                  인하대학교 재학생 및 교직원만 가입 가능합니다.<br />
+                  <span className="opacity-90">(@inha.edu 또는 @inha.ac.kr 메일)</span>
                 </p>
               </div>
             </div>
@@ -124,16 +126,16 @@ const LGNPage = () => {
   return (
     <div className="flex w-full min-h-[100dvh] bg-gray-50">
       {/* 왼쪽: 브랜딩 패널 (파란색 배경에 로고와 장식) */}
-      <div className="hidden md:flex flex-col w-1/2 bg-[#0056b3] items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden md:flex flex-col w-1/2 bg-[#0056b3] items-center justify-center p-12 relative overflow-hidden animate-fill-down">
         {/* 장식용 배경 원 (은은한 효과) */}
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 flex flex-col items-center">
-          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
-            <span className="text-[#0056b3] font-black text-3xl tracking-tighter">InF</span>
+        <div className="relative z-10 flex flex-col items-center animate-content-fade-up">
+          <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
+            <img src="/inform-logo.png" alt="InForm Logo" className="w-16 h-auto" />
           </div>
-          <h1 className="text-white text-5xl font-extrabold mb-4 tracking-wide">In:form</h1>
+          <h1 className="text-white text-5xl font-black mb-4 tracking-tight">IN:FORM</h1>
           <p className="text-white/90 text-lg font-medium text-center leading-relaxed">
             인하대학교의 모든 공지사항을<br />바로 이곳에서 한번에
           </p>
@@ -162,12 +164,10 @@ const LGNPage = () => {
             />
           </div>
 
-          <div className="bg-blue-50/80 rounded-2xl p-5 border border-blue-100">
-            <p className="text-sm text-gray-600 font-medium flex items-start gap-2 leading-relaxed break-keep">
-              <span className="text-base mt-0.5 shrink-0">💡</span>
-              <span className="flex-1 text-[13.5px] lg:text-sm">
-                인하대학교 재학생 및 교직원만 가입할 수 있습니다. 인하대학교 이메일(@inha.edu 또는 @inha.ac.kr)로 인증해주세요.
-              </span>
+          <div className="bg-gray-50/80 rounded-[32px] py-6 px-5 border border-gray-100 shadow-sm">
+            <p className="text-[13.5px] lg:text-[14px] text-gray-500 font-bold text-center leading-relaxed break-keep">
+              인하대학교 재학생 및 교직원만 가입 가능합니다.<br />
+              <span className="opacity-80 font-semibold">(@inha.edu 또는 @inha.ac.kr 메일)</span>
             </p>
           </div>
         </div>
