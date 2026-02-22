@@ -75,6 +75,8 @@ const EVDPage = () => {
           created_at={event.created_at}
           content={event.content}
           category_name={event.categories?.category_name}
+          is_bookmarked={event.is_bookmarked}
+          bookmark_count={event.bookmark_count}
         />
       </div>
       <BookmarkButton />

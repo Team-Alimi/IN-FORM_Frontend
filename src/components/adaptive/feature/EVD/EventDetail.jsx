@@ -3,8 +3,9 @@ import { getStatus } from "../../../../utils/statusUtil";
 import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
 import DetailInfoTitle from "./DetailInfoTitle";
+import BookmarkCount from "./BookmarkCount";
 
-const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, category_name }) => {
+const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count }) => {
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
   const vendorName = mainVendor?.vendor_name || "";
   const originalUrl = mainVendor?.original_url || null;
@@ -35,6 +36,9 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, 
         />
       </div>
       <div className="p-6 md:p-8 min-h-[200px]">
+        <div className="mb-4">
+          <BookmarkCount count={bookmark_count} />
+        </div>
         <div className="prose text-gray-800 whitespace-pre-line leading-relaxed">{content}</div>
       </div>
       {originalUrl && (
