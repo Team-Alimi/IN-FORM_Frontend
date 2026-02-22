@@ -2,6 +2,7 @@ import Footer from "../../components/desktop/common/Footer";
 import TabBar from "../../components/desktop/common/TabBar";
 import ServiceLinkList from "../../components/desktop/common/ServiceLinkList";
 import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
+import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
 
 const HOMPage = () => {
   return (
@@ -25,6 +26,7 @@ const HOMPage = () => {
           </aside>
           <main className="flex-1 w-full space-y-6">
             <CalendarSection />
+            <HotEventList />
           </main>
         </div>
       </div>
