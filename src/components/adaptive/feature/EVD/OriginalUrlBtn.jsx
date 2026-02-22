@@ -1,6 +1,6 @@
 import React from "react";
 
-// 임시
+// 초안
 
 const OriginalUrlBtn = ({ vendor_name, original_url }) => {
 	const handleClick = () => {
@@ -12,7 +12,7 @@ const OriginalUrlBtn = ({ vendor_name, original_url }) => {
 	return (
 		<button
 			type="button"
-			className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gray-100 text-gray-700 text-base font-normal shadow-sm hover:bg-gray-200 transition whitespace-nowrap w-auto min-w-0 max-w-fit"
+			className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gray-100 text-gray-700 text-sm font-normal hover:bg-gray-200 transition w-auto min-w-0 max-w-fit"
 			onClick={handleClick}
 			disabled={!original_url}
 			style={{ width: "auto", minWidth: 0, maxWidth: 'fit-content' }}

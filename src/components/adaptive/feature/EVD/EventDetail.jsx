@@ -4,6 +4,7 @@ import AddToCalendar from "./AddToCalendar";
 import Badge from "../../common/Badge";
 import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
+import OriginalUrlBtn from "./OriginalUrlBtn";
 
 const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, category_name }) => {
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
@@ -29,7 +30,7 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, 
             <Badge color={categoryColor} text={displayCategoryName} />
           )}
         </div>
-        <div className="flex justify-between items-start gap-4 mb-6">
+        <div className="flex justify-between items-start gap-4 mb-2">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
             {title}
           </h1>
@@ -37,6 +38,17 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, 
             <AddToCalendar event={eventData} />
           </div>
         </div>
+        {Array.isArray(vendors) && vendors.length > 0 && (
+          <div className="flex flex-row flex-wrap gap-2 mb-4">
+            {vendors.map((vendor) => (
+              <OriginalUrlBtn
+                key={vendor.vendor_id}
+                vendor_name={vendor.vendor_name}
+                original_url={vendor.original_url}
+              />
+            ))}
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-xl">
           <div className="flex items-center gap-2"><span className="font-semibold text-gray-800">주관:</span><span>{vendorName}</span></div>
           <div className="hidden sm:block w-px h-3 bg-gray-300" />
