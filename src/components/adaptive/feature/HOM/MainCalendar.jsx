@@ -58,9 +58,9 @@ const MainCalendar = ({
   };
 
   return (
-    <div className="w-full rounded-3xl bg-white shadow-md p-6 sm:p-8 md:p-10">
+    <div className="w-full rounded-2xl bg-white p-5 sm:p-8 md:p-10 max-mobile:p-2">
       {/* 상단: 월 네비게이션 */}
-      <div className="flex items-center justify-between mb-4 md:mb-5">
+      <div className="flex items-center justify-between mb-4 md:mb-5 max-mobile:mb-1">
         <button
           type="button"
           onClick={goPrevMonth}
@@ -83,7 +83,7 @@ const MainCalendar = ({
       </div>
       <div className="border-b border-gray-200 mb-4 md:mb-5" />
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 text-center text-sm sm:text-base mb-2 md:mb-3">
+      <div className="grid grid-cols-7 text-center text-sm sm:text-base mb-2 md:mb-3 max-mobile:mb-1">
         {dayLabels.map((label, idx) => (
           <div
             key={idx}
