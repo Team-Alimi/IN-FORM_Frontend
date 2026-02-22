@@ -1,10 +1,11 @@
 import React from "react";
+import backIcon from "../../../assets/icons/back.svg";
 
-const BackHeader = ({ icon, title }) => {
+const BackHeader = ({ title }) => {
   return (
     <header className="w-full h-12 flex items-center px-4 bg-white shadow fixed top-0 left-0 z-20">
-      <button className="mr-2 text-xl" onClick={() => window.history.back()} aria-label="뒤로가기">
-        {icon || "←"}
+      <button className="mr-2" onClick={() => window.history.back()} aria-label="뒤로가기">
+        <img src={backIcon} alt="뒤로가기" className="w-6 h-6" />
       </button>
       <h1 className="text-base font-semibold truncate">{title}</h1>
     </header>

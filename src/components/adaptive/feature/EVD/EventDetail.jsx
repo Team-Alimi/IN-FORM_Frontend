@@ -4,6 +4,7 @@ import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
 import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkCount from "./BookmarkCount";
+import BookmarkButton from "./BookmarkButton";
 
 const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count }) => {
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
@@ -41,13 +42,9 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, 
         </div>
         <div className="prose text-gray-800 whitespace-pre-line leading-relaxed">{content}</div>
       </div>
-      {originalUrl && (
-        <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-center">
-          <a href={originalUrl} target="_blank" rel="noopener noreferrer" className="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm font-bold transition-colors">
-            원문 공지 보러가기 →
-          </a>
-        </div>
-      )}
+      <div className="p-3 bg-gray-50 border-t border-gray-100 flex justify-center">
+        <BookmarkButton />
+      </div>
     </div>
   );
 };
