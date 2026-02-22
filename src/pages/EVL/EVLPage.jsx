@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
 import { useNavigate } from "react-router-dom";
 import { getStatus } from "../../utils/statusUtil";
 import TabBar from "../../components/desktop/common/TabBar";
@@ -9,13 +10,14 @@ import EventRow from "../../components/adaptive/feature/EVL/EventRow";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
+import { useDeviceStore } from "../../stores/deviceStore";
 
 const EVLPage = () => {
+
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
-  const [eventsLoading, setEventsLoading] = useState(false);
-  const [eventsError, setEventsError] = useState(null);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -142,7 +144,7 @@ const EVLPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+      {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
