@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
@@ -15,10 +16,10 @@ const CBLPage = () => {
   const navigate = useNavigate();
   const isMobile = useDeviceStore((state) => state.isMobile);
 
-
-  const [clubs, setClubs] = useState([]);
   const [clubsLoading, setClubsLoading] = useState(false);
   const [clubsError, setClubsError] = useState(null);
+
+  const [clubs, setClubs] = useState([]);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -265,7 +266,7 @@ const CBLPage = () => {
         </div>
       </div>
 
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={2} /> : <Footer />}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSecti
 import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -35,7 +36,7 @@ const HOMPage = () => {
           </main>
         </div>
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
     </div>
   );
 };

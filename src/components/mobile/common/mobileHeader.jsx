@@ -26,7 +26,7 @@ export default function MobileHeader() {
                 </button>
 				<button
 					className="flex items-center h-9 px-2.5 rounded-full border border-gray-300 bg-[#ECF0FF] cursor-pointer"
-					onClick={() => navigate("/test")} // TODO: 프로필 페이지로 이동하도록 수정
+					onClick={() => navigate("/mypage")} 
 				>
 					<img src={userIcon} alt="프로필" className="w-4 h-4 mr-1" />
 					<span className="font-semibold text-sm">{userName}</span>

@@ -11,6 +11,7 @@ import SearchBar from "../../components/adaptive/common/SearchBar";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
 import { useDeviceStore } from "../../stores/deviceStore";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
 const EVLPage = () => {
 
@@ -18,6 +19,8 @@ const EVLPage = () => {
   const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -263,7 +266,7 @@ const EVLPage = () => {
           </main>
         </div>
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
     </div>
   );
 };
