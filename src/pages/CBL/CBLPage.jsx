@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDeviceStore } from "../../stores/deviceStore";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
@@ -11,10 +14,12 @@ import { fetchClubs /*, fetchImminentClubs */ } from "../../api/getClubList";
 
 const CBLPage = () => {
   const navigate = useNavigate();
+  const isMobile = useDeviceStore((state) => state.isMobile);
 
-  const [clubs, setClubs] = useState([]);
   const [clubsLoading, setClubsLoading] = useState(false);
   const [clubsError, setClubsError] = useState(null);
+
+  const [clubs, setClubs] = useState([]);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -142,7 +147,7 @@ const CBLPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+      {isMobile ? <MobileHeader /> : <TabBar />}
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -261,7 +266,7 @@ const CBLPage = () => {
         </div>
       </div>
 
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={2} /> : <Footer />}
     </div>
   );
 };
