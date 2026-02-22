@@ -9,7 +9,6 @@ import BookmarkButton from "./BookmarkButton";
 const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count, isMobile }) => {
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
   const vendorName = mainVendor?.vendor_name || "";
-  const originalUrl = mainVendor?.original_url || null;
   const eventData = {
     title,
     content,
@@ -43,7 +42,7 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content, 
         <div className="mb-4">
           <BookmarkCount count={bookmark_count} />
         </div>
-        <div className="prose text-gray-800 whitespace-pre-line leading-relaxed">{content}</div>
+          <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">{content}</div>
       </div>
       {!isMobile && (
         <div className="p-3 bg-gray-50 border-t border-gray-100 flex justify-center">
