@@ -1,5 +1,6 @@
 import { useDeviceStore } from "../../stores/deviceStore";
 import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
+import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -17,7 +18,7 @@ const DeviceTestPage = () => {
       ) : (
         <div className="bg-blue-400">데스크탑임</div>
       )}
-      <CalendarSection />
+      <HotEventList />
     </div>
   );
 };

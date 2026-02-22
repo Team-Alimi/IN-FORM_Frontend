@@ -5,7 +5,11 @@ import instance from "./axios";
  * @param {Object} params - year, month, category_id, is_my_only 등
  * @returns {Promise}
  */
-export async function getMonthlyAll({ calendarMonth, category_id, is_my_only }) {
+export async function getMonthlyAll({
+  calendarMonth,
+  category_id,
+  is_my_only,
+}) {
   // calendarMonth: 'YYYY-MM' 형식
   const [yearStr, monthStr] = calendarMonth.split("-");
   const year = parseInt(yearStr);
