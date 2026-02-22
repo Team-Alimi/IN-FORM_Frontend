@@ -1,6 +1,7 @@
 import React from "react";
 import { getStatus } from "../../../../utils/statusUtil";
 import AddToCalendar from "./AddToCalendar";
+import StatusBadge from "../../common/StatusBadge";
 
 const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content }) => {
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
@@ -19,7 +20,7 @@ const EventDetail = ({ title, vendors, startDate, dueDate, created_at, content }
     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="p-6 md:p-8 border-b border-gray-100">
         <div className="flex items-center gap-2 mb-4">
-          <span className={`px-3 py-1 text-xs font-bold border rounded-full ${status.color}`}>{status.text}</span>
+           <StatusBadge color={status.color} text={status.text} />
         </div>
         <div className="flex justify-between items-start gap-4 mb-6">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
