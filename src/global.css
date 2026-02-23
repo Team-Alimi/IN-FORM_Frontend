@@ -4,12 +4,18 @@
 @theme {
   --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  --color-primary: #294D7C; /* 핵심 요소 - 파란색 */
-  --color-secondary: #E6E7F5; /* 핵심 요소 배경 - 하늘색 */
-  --color-text-main: #15171A; /* 제목용 - 진한 회색 */
-  --color-text-sub: #727272; /* 본문,배경용 - 중간 회색 */
-  --color-surface: #F5F5F5; /* 구분선,배경 - 연한 회색 */
-  --color-background: #FFFFFF; /* 흰색 */
+  --color-primary: #294D7C;
+  /* 핵심 요소 - 파란색 */
+  --color-secondary: #E6E7F5;
+  /* 핵심 요소 배경 - 하늘색 */
+  --color-text-main: #15171A;
+  /* 제목용 - 진한 회색 */
+  --color-text-sub: #727272;
+  /* 본문,배경용 - 중간 회색 */
+  --color-surface: #F5F5F5;
+  /* 구분선,배경 - 연한 회색 */
+  --color-background: #FFFFFF;
+  /* 흰색 */
 
 
   /* 캘린더 카테고리별 색상 */
@@ -31,7 +37,8 @@
   --color-Upcoming: #D63232;
 
   /* 반응형 breakpoint */
-  --breakpoint-mobile: 431px; /* max-mobile: → 430px 이하에 적용 */
+  --breakpoint-mobile: 431px;
+  /* max-mobile: → 430px 이하에 적용 */
 }
 
 :root {
@@ -52,10 +59,46 @@ body {
 
 /* 스크롤바 숨기기 */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* 로그인 페이지 애니메이션 */
+@keyframes fillDown {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes contentFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fill-down {
+  transform-origin: top;
+  animation: fillDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-content-fade-up {
+  opacity: 0;
+  animation: contentFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
 }
