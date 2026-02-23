@@ -22,15 +22,36 @@ const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
     : [];
 
   return (
-    <div ref={ref} className="bg-white  rounded-2xl p-6 sm:p-8 md:p-10 w-full">
+    <div
+      ref={ref}
+      className="bg-white rounded-2xl p-6 max-mobile:p-4 sm:p-8 md:p-10 w-full"
+    >
       <div className="flex items-center justify-between mb-4 md:mb-5">
         <div className="w-6" />
         <div className="font-semibold text-center text-base sm:text-lg md:text-xl text-gray-800">
           {`${year}년 ${month}월 ${day}일`}
         </div>
         {totalPages > 1 ? (
-          <div className="text-xs text-gray-400">
-            {page + 1}/{totalPages}
+          <div className="flex flex-col items-center gap-0.5">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 0}
+                className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <IoChevronBackOutline className="text-gray-500 text-lg" />
+              </button>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page === totalPages - 1}
+                className="p-1.5 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <IoChevronForwardOutline className="text-gray-500 text-lg" />
+              </button>
+            </div>
+            <div className="text-xs text-gray-400">
+              {page + 1}/{totalPages}
+            </div>
           </div>
         ) : (
           <div className="w-6" />
@@ -52,25 +73,6 @@ const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
               />
             ))}
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-4">
-              <button
-                onClick={() => setPage((p) => p - 1)}
-                disabled={page === 0}
-                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                <IoChevronBackOutline className="text-gray-500 text-lg" />
-              </button>
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page === totalPages - 1}
-                className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                <IoChevronForwardOutline className="text-gray-500 text-lg" />
-              </button>
-            </div>
-          )}
         </>
       )}
     </div>

@@ -11,7 +11,9 @@ const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 ">
-      {isMobile ? <MobileHeader /> : (
+      {isMobile ? (
+        <MobileHeader />
+      ) : (
         <div className="max-mobile:hidden">
           <TabBar />
           <div className="w-full flex justify-center px-4 mt-6 ">
@@ -24,7 +26,8 @@ const HOMPage = () => {
         </div>
       )}
 
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 max-mobile:py-2 flex flex-col gap-2">
+        <HotEventList />
         <div className="flex flex-col md:flex-row gap-6 items-start">
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile : hidden">
             <ServiceLinkList />
@@ -32,10 +35,10 @@ const HOMPage = () => {
           </aside>
           <main className="flex-1 w-full space-y-6">
             <CalendarSection />
-            <HotEventList />
           </main>
         </div>
       </div>
+      <div className="w-full h-20"></div>
       {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
     </div>
   );
