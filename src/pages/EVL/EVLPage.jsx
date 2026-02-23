@@ -7,7 +7,9 @@ import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import EventRow from "../../components/adaptive/feature/EVL/EventRow";
+import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
 import SearchBar from "../../components/adaptive/common/SearchBar";
+import { FiFilter } from "react-icons/fi";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
 import { useDeviceStore } from "../../stores/deviceStore";
@@ -34,14 +36,16 @@ const EVLPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [selectedCategory, setSelectedCategory] = useState("ALL");
+  // 다중 선택 지원 (API 명세)
+  const [selectedCategories, setSelectedCategories] = useState(["ALL"]);
   const [searchText, setSearchText] = useState("");
 
+  // 실제 category_id와 label을 매핑 (API 명세에 따라 id는 숫자, label은 한글)
   const categories = [
     { id: "ALL", label: "전체" },
-    { id: "LECTURE", label: "특강" },
-    { id: "COMPETITION", label: "대회" },
-    { id: "CONTEST", label: "공모전" },
+    { id: 1, label: "공모전/대회" },
+    { id: 2, label: "특강" },
+    { id: 3, label: "장학" },
   ];
 
   useEffect(() => {
@@ -50,20 +54,20 @@ const EVLPage = () => {
         setEventsLoading(true);
         setEventsError(null);
 
-        // category_id는 다중 선택 지원, 현재 단일 선택이므로 배열로 확장 가능
+        // category_id 다중 선택 지원
+        let categoryParam;
+        if (selectedCategories.includes("ALL")) {
+          categoryParam = undefined;
+        } else {
+          categoryParam = selectedCategories.join(",");
+        }
         const params = {
           page: currentPage,
           size: 20,
-          category_id: selectedCategory !== "ALL" ? selectedCategory : undefined,
+          category_id: categoryParam,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
         };
-        // category_id가 배열일 경우 콤마로 join
-        if (Array.isArray(params.category_id)) {
-          params.category_id = params.category_id.join(",");
-        }
         const res = await fetchEvents(params);
-
-        console.log("events list:", res.data);
 
         // api명세에 맞게 response 파싱
         const apiData = res.data?.data;
@@ -88,11 +92,11 @@ const EVLPage = () => {
     };
 
     loadEvents();
-  }, [currentPage, selectedCategory, searchText]);
+  }, [currentPage, selectedCategories, searchText]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchText]);
+  }, [selectedCategories, searchText]);
 
   // 마감임박행사 API 제거로 임시 미사용
   // useEffect(() => {
@@ -146,13 +150,17 @@ const EVLPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className={
+      isMobile
+        ? "min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+        : "min-h-screen flex flex-col bg-[#f8f9fa]"
+    }>
       {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
-            <MiniCalendarSet />
+            {!isMobile && <MiniCalendarSet />}
             {/* 마감임박행사 API 제거로 임시 미사용
             <ImminentSidebar
               imminentLoading={imminentLoading}
@@ -164,37 +172,72 @@ const EVLPage = () => {
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
-          <main className="flex-1 w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 min-h-[500px] flex flex-col justify-between">
+          <main
+            className={
+              isMobile
+                ? "flex-1 w-full bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] flex flex-col justify-between"
+                : "flex-1 w-full bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8 min-h-[500px] flex flex-col justify-between"
+            }
+          >
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <h2 className="text-xl font-bold text-gray-800 w-full sm:w-auto">
-                  이벤트/행사 목록
+                  📣 공지글
                 </h2>
                 <div className="w-full sm:w-64">
                   <SearchBar
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="행사 제목 검색"
+                    placeholder="공지사항 검색..."
                   />
+                  <button
+                    type="button"
+                    className="mt-2 flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97"
+                  >
+                    <FiFilter size={18} className="text-gray-800" />
+                    <span>필터</span>
+                  </button>
                 </div>
               </div>
 
               {/* 카테고리 탭 */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
-                    ${
-                      selectedCategory === cat.id
-                        ? "bg-blue-500 text-white shadow-md transform scale-105"
-                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+              <div className="flex gap-2 mb-3">
+                {categories.map((cat) => {
+                  const isSelected = selectedCategories.includes(cat.id);
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        if (cat.id === "ALL") {
+                          setSelectedCategories(["ALL"]);
+                        } else {
+                          setSelectedCategories(prev => {
+                            let next;
+                            if (prev.includes(cat.id)) {
+                              next = prev.filter(id => id !== cat.id);
+                            } else {
+                              next = prev.filter(id => id !== "ALL").concat(cat.id);
+                            }
+                            return next.length === 0 ? ["ALL"] : next;
+                          });
+                        }
+                      }}
+                      className={
+                        isMobile
+                          ? `px-3 py-1 rounded-[18px] text-[13px] font-medium transition-all duration-200 shadow-sm
+                              ${isSelected
+                                ? "bg-blue-500 text-white shadow-md scale-105"
+                                : "bg-[#F4F8FE] text-blue-500 border border-[#E8F0FB]"}`
+                          : `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
+                              ${isSelected
+                                ? "bg-blue-500 text-white shadow-md transform scale-105"
+                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`
+                      }
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* 리스트 출력 */}
@@ -202,15 +245,30 @@ const EVLPage = () => {
                 {sortedEvents.length > 0 ? (
                   sortedEvents.map((event) => {
                     const statusObj = getStatus(event.start_date, event.due_date);
-                    return (
-                      <EventRow
-                        key={event.article_id}
-                        title={event.title}
-                        date={event.created_at}
-                        status={statusObj.text}
-                        onClick={() => handleRowClick(event.article_id)}
-                      />
-                    );
+                    if (isMobile) {
+                      return (
+                        <MobileEventRow
+                          key={event.article_id}
+                          status={statusObj.text}
+                          category={event.categories.category_name}
+                          title={event.title}
+                          source={event.vendor_name || event.vendors?.[0]?.vendor_name || ""}
+                          date={event.start_date}
+                          bookmarkCount={event.bookmark_count || 0}
+                          onClick={() => handleRowClick(event.article_id)}
+                        />
+                      );
+                    } else {
+                      return (
+                        <EventRow
+                          key={event.article_id}
+                          title={event.title}
+                          date={event.created_at}
+                          status={statusObj.text}
+                          onClick={() => handleRowClick(event.article_id)}
+                        />
+                      );
+                    }
                   })
                 ) : (
                   <div className="text-center py-20 text-gray-400 flex flex-col items-center">
