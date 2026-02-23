@@ -1,12 +1,8 @@
-import React from "react";
-
-const ClubRow = ({ title, date, attachment_url, onClick }) => {
+const ClubRow = ({ data }) => {
+  const { title, vendors, start_date, due_date, attachment_url } = data;
   return (
-    <div
-      className="w-full flex flex-col cursor-pointer group bg-gray-300 p-5 rounded-lg shadow-sm hover:bg-gray-500 transition-colors"
-      onClick={onClick}
-    >
-      <div className="w-full aspect-[4/5] bg-gray-200 overflow-hidden relative rounded-lg">
+    <div className="flex flex-col bg-white w-full rounded-3xl overflow-hidden">
+      <div className="w-full aspect-4/5 bg-gray-200 relative">
         {attachment_url ? (
           <img
             src={attachment_url}
@@ -20,19 +16,16 @@ const ClubRow = ({ title, date, attachment_url, onClick }) => {
           </div>
         )}
       </div>
-
-      <div className="w-full flex justify-between items-center pt-4">
-        <div className="flex flex-col gap-1">
-          <span className="text-white font-bold text-lg leading-none">
-            {title}
-          </span>
-          <span className="text-gray-100 text-sm font-light">
-            {date}
-          </span>
+      <div className="flex flex-col p-2">
+        <div className="max-mobile:text-base text-lg max-mobile:font-medium font-bold text-gray-700">
+          {title}
         </div>
+        <div className="max-mobile:text-sm text-base font-medium text-gray-700">
+          {vendors.vendor_name}
+        </div>
+        <div className="max-mobile:text-xs text-sm font-medium text-gray-700">{`${start_date || "미정"} ~ ${due_date || "미정"}`}</div>
       </div>
     </div>
   );
 };
-
 export default ClubRow;
