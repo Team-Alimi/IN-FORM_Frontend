@@ -1,6 +1,18 @@
 import { useDeviceStore } from "../../stores/deviceStore";
 import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
-import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
+// import HotEventList from "../../components/mobile/feature/HOM/HotEventList"
+import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
+import ClubListContainer from "../../components/adaptive/feature/CBL/ClubListContainer";
+
+const mockClubData = {
+  title: "goat 행사 참여자 모집",
+  attachment_url: "", //이미지 스토리지 주소
+  vendors: {
+    vendor_name: "별지기",
+  },
+  start_date: "2026-04-05",
+  due_date: "2026-04-10",
+};
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -18,7 +30,8 @@ const DeviceTestPage = () => {
       ) : (
         <div className="bg-blue-400">데스크탑임</div>
       )}
-      <HotEventList />
+
+      <ClubListContainer />
     </div>
   );
 };

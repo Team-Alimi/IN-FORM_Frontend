@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
@@ -51,7 +51,8 @@ const CBLPage = () => {
         if (selectedCategory !== "ALL") {
           // vendor_id는 vendor_name이 아닌 vendor_id로 전달해야 하므로 clubs에서 매칭
           const vendor = clubs.find(
-            (club) => club.vendors && club.vendors[0]?.vendor_name === selectedCategory
+            (club) =>
+              club.vendors && club.vendors[0]?.vendor_name === selectedCategory,
           );
           if (vendor && vendor.vendors && vendor.vendors[0]?.vendor_id) {
             params.vendor_id = vendor.vendors[0].vendor_id;
@@ -152,7 +153,7 @@ const CBLPage = () => {
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
-          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
+          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
             <MiniCalendarSet />
             <ImminentSidebar
               imminentLoading={imminentLoading}
@@ -160,7 +161,7 @@ const CBLPage = () => {
               imminentEvents={imminentEvents}
               onEventClick={handleClubClick}
             />
-            { /* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */ }  
+            {/* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */}
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
@@ -246,7 +247,7 @@ const CBLPage = () => {
                     >
                       {number}
                     </button>
-                  )
+                  ),
                 )}
 
                 <button

@@ -1,28 +1,25 @@
 import React from "react";
-import { IoSearchOutline } from "react-icons/io5"; // 아이콘 사용 (react-icons)
+import { IoSearchOutline } from "react-icons/io5";
 
 const SearchBar = ({ value, onChange, placeholder }) => {
   return (
     <div className="w-full">
-      {/* 검색 입력줄 */}
-      <div className="relative flex items-center">
+      <div
+        className="relative flex items-center bg-[#F7FAFC] rounded-[18px] shadow-[0_4px_24px_rgba(0,72,152,0.06)] px-5 py-3"
+      >
+        <IoSearchOutline
+          size={24}
+          className="text-gray-400 mr-2"
+        />
         <input
           type="text"
           value={value}
           onChange={onChange}
           placeholder={placeholder || ""}
-          className="w-full pr-10 outline-none bg-transparent text-gray-700"
-        />
-
-        {/* 검색 아이콘 */}
-        <IoSearchOutline
-          size={22}
-          className="text-blue-500 absolute right-0 cursor-pointer"
+          className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-[16px]"
+          style={{ minHeight: 28 }}
         />
       </div>
-
-      {/* 아래 선 */}
-      <div className="border-b border-gray-300 mt-2" />
     </div>
   );
 };
