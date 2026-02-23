@@ -4,7 +4,7 @@ import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import WeekRow from "./WeekRow";
 import { generateWeeks } from "../../../../utils/calendarUtil";
 
-const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
 
 const MainCalendar = ({
   currentMonth, // "2025-11" 형식
@@ -58,7 +58,7 @@ const MainCalendar = ({
   };
 
   return (
-    <div className="w-full rounded-2xl bg-white p-5 sm:p-8 md:p-10 max-mobile:p-2">
+    <div className="w-full rounded-2xl bg-white p-5 sm:p-8 md:p-10 max-mobile:p-1">
       {/* 상단: 월 네비게이션 */}
       <div className="flex items-center justify-between mb-4 md:mb-5 max-mobile:mb-1">
         <button
@@ -81,7 +81,7 @@ const MainCalendar = ({
           <IoChevronForwardOutline className="text-gray-500 text-lg sm:text-xl" />
         </button>
       </div>
-      <div className="border-b border-gray-200 mb-4 md:mb-5" />
+      <div className="border-b border-gray-200 mb-4 md:mb-5 max-mobile:mb-2" />
       {/* 요일 헤더 */}
       <div className="grid grid-cols-7 text-center text-sm sm:text-base mb-2 md:mb-3 max-mobile:mb-1">
         {dayLabels.map((label, idx) => (

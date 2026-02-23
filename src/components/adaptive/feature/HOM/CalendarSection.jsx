@@ -11,6 +11,7 @@ import { getMonthlyAll } from "../../../../api/getMonthlyAll";
 import ErrorPage from "../../../../pages/NOT/ErrorPage";
 import MainCalendar from "./MainCalendar";
 import CalendarFilterBar from "./CalendarFilterBar";
+import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 
 const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
@@ -138,15 +139,25 @@ const CalendarSection = () => {
     }
   };
   return (
-    <div className="flex flex-col">
-      <div className="m-2">
+    <div className="flex flex-col bg-white rounded-2xl shadow-md gap-2">
+      <div className="flex flex-row gap-2 items-center mx-8 pt-2">
+        <img src={CalendarLogo} className="w-8 h-8" />
+        <div className="flex flex-col">
+          <div className="font-bold text-md text-gray-800">일정 캘린더</div>
+          <div className="font-medium text-xs text-gray-700">
+            Schedule Caldendar
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 mx-2">
         <CalendarFilterBar
           selectedFilter={selectedFilter}
           onClick={handleFilterClick}
         />
       </div>
 
-      <div className="mb-2">
+      <div className="p-2">
         <MainCalendar
           currentMonth={calendarMonth}
           selectedDate={currentDate}
@@ -156,12 +167,14 @@ const CalendarSection = () => {
           onOverflowClick={handleOverflowClick}
         />
       </div>
-      <DaySelectEventList
-        ref={eventListRef}
-        events={filteredEventsByDate[currentDate]}
-        currentDate={currentDate}
-        onArticleClick={handleArticleClick}
-      />
+      <div className="mb-2 p-1">
+        <DaySelectEventList
+          ref={eventListRef}
+          events={filteredEventsByDate[currentDate]}
+          currentDate={currentDate}
+          onArticleClick={handleArticleClick}
+        />
+      </div>
     </div>
   );
 };

@@ -22,8 +22,24 @@ const HotEventList = () => {
       navigate(`/events/detail/${article_id}`);
     }
   };
+
+  {
+    /**
+       <HotEventRow
+            article_id={item.article_id}
+            key={item.article_id}
+            category={item.categories?.category_name}
+            title={item.title}
+            vendor={item.vendors?.[0]?.vendor_name}
+            start_date={item.start_date}
+            due_date={item.due_date}
+            bookmarks={item.bookmark_count}
+            onArticleClick={handleArticleClick}
+          />
+    */
+  }
   return (
-    <div>
+    <div className="bg-white p-2 rounded-xl ">
       <div className="text-sm font-bold">🔥 HOT 공지사항 </div>
       {/** <button onClick={() => console.log(articles)}>로그 보기</button>*/}
       <div className="flex flex-row overflow-x-auto max-mobile:scrollbar-hide">
@@ -33,10 +49,6 @@ const HotEventList = () => {
             key={item.article_id}
             category={item.categories?.category_name}
             title={item.title}
-            vendor={item.vendors?.[0]?.vendor_name}
-            start_date={item.start_date}
-            due_date={item.due_date}
-            bookmarks={item.bookmark_count}
             onArticleClick={handleArticleClick}
           />
         ))}

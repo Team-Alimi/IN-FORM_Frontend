@@ -10,6 +10,8 @@ const HotEventRow = ({
   bookmarks = 0,
   onArticleClick,
 }) => {
+  if (!article_id || !title) return null;
+
   const option = FILTER_OPTIONS.find((o) => o.key === category);
   const label = option?.label ?? "기타";
   const tagBg = option?.tagBg ?? "bg-gray-200";
@@ -17,9 +19,9 @@ const HotEventRow = ({
     onArticleClick(article_id, category_name);
   };
   return (
-    <div className="m-2 w-60 shrink-0">
+    <div className="m-1 w-60 shrink-0">
       <div
-        className="bg-white p-3 rounded-2xl  flex flex-col gap-1"
+        className="bg-white p-3 rounded-xl  flex flex-col gap-1 shadow-sm"
         onClick={() => HandleEventClick(article_id, category)}
       >
         <div
@@ -28,11 +30,13 @@ const HotEventRow = ({
           {label}
         </div>
         <div className="text-xs font-medium text-gray-700">{title}</div>
-        <div className="text-xs">{vendor}</div>
+        {/**
+         *   <div className="text-xs">{vendor}</div>
         <div className="text-xs">
           <p>{`${start_date} ~ ${due_date}`}</p>
         </div>
         <div className="text-xs">{`북마크 ${bookmarks}`}</div>
+         */}
       </div>
     </div>
   );
