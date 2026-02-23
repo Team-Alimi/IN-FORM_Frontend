@@ -44,37 +44,39 @@ const ProfileSection = ({ onEditMajor }) => {
                 </div>
             )}
 
-            {/* Kebab Menu (Top Right) */}
-            <div className="absolute top-4 right-4" ref={menuRef}>
-                <button
-                    onClick={toggleMenu}
-                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                    aria-label="더보기"
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="7" r="1.5" fill="#9CA3AF" />
-                        <circle cx="12" cy="12" r="1.5" fill="#9CA3AF" />
-                        <circle cx="12" cy="17" r="1.5" fill="#9CA3AF" />
-                    </svg>
-                </button>
+            {/* Kebab Menu (Top Right) - Only for Logged in users */}
+            {userInfo && (
+                <div className="absolute top-4 right-4" ref={menuRef}>
+                    <button
+                        onClick={toggleMenu}
+                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        aria-label="더보기"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="7" r="1.5" fill="#9CA3AF" />
+                            <circle cx="12" cy="12" r="1.5" fill="#9CA3AF" />
+                            <circle cx="12" cy="17" r="1.5" fill="#9CA3AF" />
+                        </svg>
+                    </button>
 
-                {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-lg z-30 py-1 overflow-hidden">
-                        <button
-                            onClick={() => { onEditMajor?.(); setIsMenuOpen(false); }}
-                            className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                        >
-                            학과 수정
-                        </button>
-                        <button
-                            onClick={handleLogout}
-                            className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors border-t border-gray-50 flex items-center gap-2"
-                        >
-                            <span>로그아웃</span>
-                        </button>
-                    </div>
-                )}
-            </div>
+                    {isMenuOpen && (
+                        <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-lg z-30 py-1 overflow-hidden">
+                            <button
+                                onClick={() => { onEditMajor?.(); setIsMenuOpen(false); }}
+                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                            >
+                                학과 수정
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors border-t border-gray-50 flex items-center gap-2"
+                            >
+                                <span>로그아웃</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="flex items-center gap-4">
                 {/* Simple Profile Image Avatar */}
@@ -92,17 +94,19 @@ const ProfileSection = ({ onEditMajor }) => {
                 <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h2 className="text-[18px] md:text-2xl font-extrabold text-gray-900 truncate">
-                            {userInfo?.name || "사용자"}
+                            {userInfo ? userInfo.name : "익명의 뷰어"}
                         </h2>
                     </div>
                     <p className="text-gray-400 text-[13px] md:text-sm mt-0.5 truncate font-medium">
-                        {userInfo?.email || "student@inha.edu"}
+                        {userInfo ? userInfo.email : "address@inha.edu"}
                     </p>
-                    <div className="mt-1 flex items-center">
-                        <span className="text-xs md:text-sm text-gray-500 font-semibold bg-gray-100 px-2 py-0.5 rounded-full">
-                            {userInfo?.major?.vendor_name || "학과 미설정"}
-                        </span>
-                    </div>
+                    {userInfo && (
+                        <div className="mt-1 flex items-center">
+                            <span className="text-xs md:text-sm text-gray-500 font-semibold bg-gray-100 px-2 py-0.5 rounded-full">
+                                {userInfo?.major?.vendor_name || "학과 미설정"}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
