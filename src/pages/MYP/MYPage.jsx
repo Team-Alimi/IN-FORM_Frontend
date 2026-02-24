@@ -7,10 +7,12 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import DepartmentEditModal from "../../components/adaptive/feature/MYP/DepartmentEditModal";
+import BottomSheet from "../../components/mobile/common/BottomSheet";
 
 const MYPage = () => {
     const isMobile = useDeviceStore((state) => state.isMobile);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
     if (isMobile) {
         return (
@@ -18,6 +20,12 @@ const MYPage = () => {
                 <MobileHeader />
                 <main className="flex-1 w-full px-4 py-6">
                     <ProfileSection onEditMajor={() => setIsEditModalOpen(true)} />
+                    <button
+                        onClick={() => setIsBottomSheetOpen(true)}
+                        className="mt-4 w-full py-3 bg-[#294D7C] text-white rounded-xl font-medium shadow-sm active:scale-95 transition-transform"
+                    >
+                        바텀시트 테스트 열기
+                    </button>
                     <BookmarkSection />
                 </main>
                 <MobileTabBar activeIndex={3} />
@@ -26,6 +34,22 @@ const MYPage = () => {
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
                 />
+
+                <BottomSheet
+                    isOpen={isBottomSheetOpen}
+                    onClose={() => setIsBottomSheetOpen(false)}
+                >
+                    <div className="text-center">
+                        <h2 className="text-xl font-bold text-[#15171A] mb-2">바텀시트 테스트</h2>
+                        <p className="text-[#727272] mb-6">색깔: #F4F4F4</p>
+                        <button
+                            onClick={() => setIsBottomSheetOpen(false)}
+                            className="w-full py-3 bg-gray-200 text-gray-700 rounded-lg font-medium"
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </BottomSheet>
             </div>
         );
     }
