@@ -1,8 +1,10 @@
 import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import BookmarkItem from "./BookmarkItem";
 import { deleteSchoolBookmarksAll } from "../../../../api/deleteSchoolBookmarksAll";
+import { deleteSchoolBookmark } from "../../../../api/deleteSchoolBookmark";
+import { getSchoolBookmarks } from "../../../../api/getSchoolBookmarks";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import useAuthStore from "../../../../stores/useAuthStore";
 
@@ -12,18 +14,15 @@ const BookmarkSection = () => {
     const { userInfo } = useAuthStore();
     const isLoggedIn = !!userInfo;
 
-    // 임시 목데이터 연동 (UI 확인용 - 많은 데이터 테스트)
-    const MOCK_BOOKMARKS = Array.from({ length: 20 }).map((_, i) => ({
-        article_id: i + 1,
-        categories: { category_name: "학사공지" },
-        title: `임시 북마크된 공지사항 길게 테스트 해보기 ${i + 1}번째 글입니다. 긴 제목 처리용!`,
-        vendors: [{ vendor_name: "컴퓨터공학과" }],
-        start_date: "2026-03-01",
-        due_date: "2026-03-15",
-    }));
+    // 실제 데이터 페칭
+    const { data: bookmarkData, isLoading } = useQuery({
+        queryKey: ["schoolBookmarks"],
+        queryFn: () => getSchoolBookmarks({ page: 1, size: 50 }),
+        enabled: isLoggedIn,
+    });
 
-    // 로그인 상태일 때만 실제 데이터(여기는 목데이터) 사용, 비로그인 시 빈 배열
-    const bookmarks = isLoggedIn ? MOCK_BOOKMARKS : [];
+    // API 응답 구조에 맞게 데이터 가공 (school_articles)
+    const bookmarks = bookmarkData?.data?.school_articles || [];
 
     // 일괄 삭제 Mutation
     const deleteAllMutation = useMutation({
@@ -38,8 +37,23 @@ const BookmarkSection = () => {
         }
     });
 
+    // 개별 삭제 Mutation
+    const deleteBookmarkMutation = useMutation({
+        mutationFn: (id) => deleteSchoolBookmark(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["schoolBookmarks"]);
+            alert("북마크가 삭제되었습니다.");
+        },
+        onError: (error) => {
+            console.error("북마크 삭제 실패:", error);
+            alert("북마크 삭제에 실패했습니다.");
+        }
+    });
+
     const handleDelete = (id) => {
-        alert("아직 준비 중인 기능입니다.");
+        if (window.confirm("이 북마크를 삭제하시겠습니까?")) {
+            deleteBookmarkMutation.mutate(id);
+        }
     };
 
     const handleBatchDelete = () => {
@@ -82,7 +96,9 @@ const BookmarkSection = () => {
                 </div>
 
                 {isLoggedIn ? (
-                    bookmarks.length > 0 ? (
+                    isLoading ? (
+                        <div className="py-20 text-center text-gray-400">데이터를 불러오는 중입니다...</div>
+                    ) : bookmarks.length > 0 ? (
                         <div className={`
                             overflow-y-auto pr-1 custom-scrollbar
                             ${isMobile ? "max-h-[450px] flex flex-col gap-2.5" : "max-h-[600px] flex flex-col gap-4"}
@@ -91,11 +107,13 @@ const BookmarkSection = () => {
                                 <BookmarkItem
                                     key={bookmark.article_id}
                                     id={bookmark.article_id}
-                                    category={bookmark.categories?.category_name || "분류없음"}
+                                    category={bookmark.categories?.category_name || "분속없음"}
                                     title={bookmark.title}
-                                    source={bookmark.vendors?.[0]?.vendor_name || "출처없음"}
-                                    startDate={bookmark.start_date}
-                                    dueDate={bookmark.due_date}
+                                    source={bookmark.vendors?.[0]?.vendor_name || bookmark.vendor_name || "출처없음"}
+                                    startDate={bookmark.start_date || ""}
+                                    dueDate={bookmark.due_date || ""}
+                                    status={bookmark.status}
+                                    bookmarkCount={bookmark.bookmark_count || 0}
                                     onDelete={handleDelete}
                                 />
                             ))}

@@ -6,25 +6,26 @@ import BookmarkSection from "../../components/adaptive/feature/MYP/BookmarkSecti
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import DepartmentEditSheet from "../../components/adaptive/feature/MYP/DepartmentEditSheet";
 import DepartmentEditModal from "../../components/adaptive/feature/MYP/DepartmentEditModal";
 
 const MYPage = () => {
     const isMobile = useDeviceStore((state) => state.isMobile);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     if (isMobile) {
         return (
             <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20">
                 <MobileHeader />
                 <main className="flex-1 w-full px-4 py-6">
-                    <ProfileSection onEditMajor={() => setIsEditModalOpen(true)} />
+                    <ProfileSection onEditMajor={() => setIsEditOpen(true)} />
                     <BookmarkSection />
                 </main>
                 <MobileTabBar activeIndex={3} />
 
-                <DepartmentEditModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
+                <DepartmentEditSheet
+                    isOpen={isEditOpen}
+                    onClose={() => setIsEditOpen(false)}
                 />
             </div>
         );
@@ -35,15 +36,15 @@ const MYPage = () => {
             <TabBar />
 
             <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-8 md:py-12 flex flex-col items-center">
-                <ProfileSection onEditMajor={() => setIsEditModalOpen(true)} />
+                <ProfileSection onEditMajor={() => setIsEditOpen(true)} />
                 <BookmarkSection />
             </main>
 
             <Footer />
 
             <DepartmentEditModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
+                isOpen={isEditOpen}
+                onClose={() => setIsEditOpen(false)}
             />
         </div>
     );
