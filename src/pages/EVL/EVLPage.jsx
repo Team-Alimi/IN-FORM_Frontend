@@ -37,6 +37,7 @@ const EVLPage = () => {
   // const [imminentError, setImminentError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [searchText, setSearchText] = useState("");
   const [activeFilters, setActiveFilters] = useState({
     startDate: "",
@@ -59,7 +60,7 @@ const EVLPage = () => {
 
         const params = {
           page: currentPage,
-          size: 20,
+          size: pageSize,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
           start_date: activeFilters.startDate || undefined,
           end_date: activeFilters.endDate || undefined,
@@ -91,11 +92,11 @@ const EVLPage = () => {
 
     loadEvents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(",")]);
+  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(",")]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchText]);
+  }, [searchText, pageSize]);
 
   // 마감임박행사 API 제거로 임시 미사용
   // useEffect(() => {
@@ -208,14 +209,25 @@ const EVLPage = () => {
                     onChange={(e) => setSearchText(e.target.value)}
                     placeholder="공지사항 검색..."
                   />
-                  <button
-                    type="button"
-                    onClick={() => setIsFilterOpen(true)}
-                    className="mt-2 flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97"
-                  >
-                    <FiFilter size={18} className="text-gray-800" />
-                    <span>필터</span>
-                  </button>
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsFilterOpen(true)}
+                      className="flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97"
+                    >
+                      <FiFilter size={18} className="text-gray-800" />
+                      <span>필터</span>
+                    </button>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => setPageSize(Number(e.target.value))}
+                      className="bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] outline-none cursor-pointer"
+                    >
+                      {[5, 10, 20].map((n) => (
+                        <option key={n} value={n}>{n}개씩 보기</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -275,21 +287,38 @@ const EVLPage = () => {
                   &lt;
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (number) => (
-                    <button
-                      key={number}
-                      onClick={() => handlePageChange(number)}
-                      className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                        currentPage === number
-                          ? "bg-blue-500 text-white shadow-sm"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {number}
-                    </button>
-                  ),
-                )}
+                {(() => {
+                  const pages = [];
+                  const delta = 2;
+                  const left = currentPage - delta;
+                  const right = currentPage + delta;
+
+                  let prev = null;
+                  for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+                      if (prev !== null && i - prev > 1) {
+                        pages.push(
+                          <span key={`ellipsis-${i}`} className="px-1 text-gray-400 text-sm select-none">…</span>
+                        );
+                      }
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+                            currentPage === i
+                              ? "bg-blue-500 text-white shadow-sm"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                      prev = i;
+                    }
+                  }
+                  return pages;
+                })()}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
