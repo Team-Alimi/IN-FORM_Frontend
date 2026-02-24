@@ -4,7 +4,7 @@ import { useDeviceStore } from "../../../../stores/deviceStore";
 import SearchBar from "../../common/SearchBar";
 import {
   fetchClubs /*, fetchImminentClubs */,
-} from "../../../../api/getClubList";
+} from "../../../../api/clubArticles";
 import { useState, useEffect } from "react";
 import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 const CLUB_PAGE_COUNT = 4;

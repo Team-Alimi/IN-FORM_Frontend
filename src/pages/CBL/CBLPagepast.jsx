@@ -10,7 +10,7 @@ import SearchBar from "../../components/adaptive/common/SearchBar";
 import ClubCarousel from "../../components/desktop/common/ClubCarousel";
 import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
-import { fetchClubs /*, fetchImminentClubs */ } from "../../api/getClubList";
+import { fetchClubs /*, fetchImminentClubs */ } from "../../api/clubArticles";
 
 const CBLPage = () => {
   const navigate = useNavigate();

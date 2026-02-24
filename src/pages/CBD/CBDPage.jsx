@@ -5,7 +5,7 @@ import Footer from "../../components/desktop/common/Footer";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import ClubDetail from "../../components/adaptive/feature/CBD/ClubDetail";
-import { fetchClubDetail } from "../../api/getClubDetail";
+import { fetchClubDetail } from "../../api/clubArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
 
 const CBDPage = () => {

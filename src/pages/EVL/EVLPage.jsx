@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
 import FilterBottomSheet from "../../components/adaptive/feature/EVL/FilterBottomSheet";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
-import { fetchEvents } from "../../api/getEventList";
+import { fetchEvents } from "../../api/schoolArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
@@ -20,8 +19,6 @@ const EVLPage = () => {
   const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
-  const [eventsLoading, setEventsLoading] = useState(false);
-  const [eventsError, setEventsError] = useState(null);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -47,9 +44,6 @@ const EVLPage = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        setEventsLoading(true);
-        setEventsError(null);
-
         const params = {
           page: currentPage,
           size: pageSize,
@@ -75,9 +69,7 @@ const EVLPage = () => {
         }
       } catch (error) {
         console.error("행사 목록 불러오기 실패:", error);
-        setEventsError("행사 목록을 불러오지 못했습니다.");
-      } finally {
-        setEventsLoading(false);
+        console.error("행사 목록을 불러오지 못했습니다.");
       }
     };
 
