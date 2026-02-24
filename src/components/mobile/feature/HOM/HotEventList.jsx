@@ -2,8 +2,10 @@ import HotEventRow from "./HotEventRow";
 import { useQuery } from "@tanstack/react-query";
 import { getHotEventList } from "../../../../api/getHotEventList";
 import { useNavigate } from "react-router-dom";
+import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const HotEventList = () => {
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const { data, isLoading, error } = useQuery({
     queryKey: ["getHotEventList"],
     queryFn: () => getHotEventList(),
@@ -39,7 +41,13 @@ const HotEventList = () => {
     */
   }
   return (
-    <div className="bg-white p-2 rounded-xl ">
+    <div
+      className={
+        isMobile
+          ? "bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-3"
+          : "bg-gray-500 p-2 rounded-2xl "
+      }
+    >
       <div className="text-sm font-bold">🔥 HOT 공지사항 </div>
       {/** <button onClick={() => console.log(articles)}>로그 보기</button>*/}
       <div className="flex flex-row overflow-x-auto max-mobile:scrollbar-hide">

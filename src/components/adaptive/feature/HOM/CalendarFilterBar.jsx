@@ -12,7 +12,7 @@ const CalendarFilterBar = ({ selectedFilter, onClick }) => {
           <button
             key={item.key}
             onClick={() => onClick(item.key)}
-            className={`text-sm font-medium ${variant} p-1 px-2 rounded-xl mx-1 `}
+            className={`text-sm max-mobile:text-xs font-medium ${variant} p-1 px-2 rounded-xl mx-1 `}
           >
             {item.label}
           </button>

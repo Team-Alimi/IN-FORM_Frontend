@@ -16,7 +16,6 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
 const EVLPage = () => {
-
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
 
@@ -121,8 +120,6 @@ const EVLPage = () => {
   const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
 
-
-
   const sortedEvents = useMemo(() => {
     if (!events) return [];
 
@@ -150,11 +147,13 @@ const EVLPage = () => {
   };
 
   return (
-    <div className={
-      isMobile
-        ? "min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
-        : "min-h-screen flex flex-col bg-[#f8f9fa]"
-    }>
+    <div
+      className={
+        isMobile
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          : "min-h-screen flex flex-col bg-[#f8f9fa]"
+      }
+    >
       {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -211,12 +210,14 @@ const EVLPage = () => {
                         if (cat.id === "ALL") {
                           setSelectedCategories(["ALL"]);
                         } else {
-                          setSelectedCategories(prev => {
+                          setSelectedCategories((prev) => {
                             let next;
                             if (prev.includes(cat.id)) {
-                              next = prev.filter(id => id !== cat.id);
+                              next = prev.filter((id) => id !== cat.id);
                             } else {
-                              next = prev.filter(id => id !== "ALL").concat(cat.id);
+                              next = prev
+                                .filter((id) => id !== "ALL")
+                                .concat(cat.id);
                             }
                             return next.length === 0 ? ["ALL"] : next;
                           });
@@ -225,13 +226,17 @@ const EVLPage = () => {
                       className={
                         isMobile
                           ? `px-3 py-1 rounded-[18px] text-[13px] font-medium transition-all duration-200 shadow-sm
-                              ${isSelected
-                                ? "bg-blue-500 text-white shadow-md scale-105"
-                                : "bg-[#F4F8FE] text-blue-500 border border-[#E8F0FB]"}`
+                              ${
+                                isSelected
+                                  ? "bg-blue-500 text-white shadow-md scale-105"
+                                  : "bg-[#F4F8FE] text-blue-500 border border-[#E8F0FB]"
+                              }`
                           : `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
-                              ${isSelected
-                                ? "bg-blue-500 text-white shadow-md transform scale-105"
-                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`
+                              ${
+                                isSelected
+                                  ? "bg-blue-500 text-white shadow-md transform scale-105"
+                                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                              }`
                       }
                     >
                       {cat.label}
@@ -244,7 +249,10 @@ const EVLPage = () => {
               <div className="space-y-1">
                 {sortedEvents.length > 0 ? (
                   sortedEvents.map((event) => {
-                    const statusObj = getStatus(event.start_date, event.due_date);
+                    const statusObj = getStatus(
+                      event.start_date,
+                      event.due_date,
+                    );
                     if (isMobile) {
                       return (
                         <MobileEventRow
@@ -252,7 +260,11 @@ const EVLPage = () => {
                           status={statusObj.text}
                           category={event.categories.category_name}
                           title={event.title}
-                          source={event.vendor_name || event.vendors?.[0]?.vendor_name || ""}
+                          source={
+                            event.vendor_name ||
+                            event.vendors?.[0]?.vendor_name ||
+                            ""
+                          }
                           date={event.start_date}
                           bookmarkCount={event.bookmark_count || 0}
                           onClick={() => handleRowClick(event.article_id)}
@@ -305,7 +317,7 @@ const EVLPage = () => {
                     >
                       {number}
                     </button>
-                  )
+                  ),
                 )}
 
                 <button

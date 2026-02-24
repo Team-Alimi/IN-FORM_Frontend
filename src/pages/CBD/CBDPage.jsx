@@ -23,7 +23,7 @@ const CBDPage = () => {
         const res = await api.get(`/api/v1/club_articles/${id}`);
         console.log("event detail:", res.data);
 
-        setClub(res.data);
+        setClub(res.data.data);
       } catch (err) {
         console.error("행사 상세 불러오기 실패:", err);
         setError("행사 상세를 불러오지 못했습니다.");
@@ -65,7 +65,7 @@ const CBDPage = () => {
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <ClubDetail
           title={club.title}
-          vendor={club.vendors.vendor_name}
+          vendor={club.vendors?.[0]?.vendor_name}
           startDate={club.start_date}
           dueDate={club.due_date}
           created_at={club.created_at}

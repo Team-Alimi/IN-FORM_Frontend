@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
 import DaySelectEvent from "./DaySelectEvent";
+import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const PAGE_SIZE = 8;
 
 const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
   const [page, setPage] = useState(0);
-
+  const isMobile = useDeviceStore((state) => state.isMobile);
   // 날짜가 바뀌면 첫 페이지로 초기화
   useEffect(() => {
     setPage(0);
@@ -24,7 +25,11 @@ const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
   return (
     <div
       ref={ref}
-      className="bg-white rounded-2xl p-6 max-mobile:p-4 sm:p-8 md:p-10 w-full"
+      className={
+        isMobile
+          ? "w-full bg-gray-50 rounded-[18px] px-4 py-3 mb-3 cursor-pointer shadow-[0_2px_12px_rgba(0,72,152,0.04)"
+          : "bg-white rounded-2xl p-6 max-mobile:p-4 sm:p-8 md:p-10 w-full"
+      }
     >
       <div className="flex items-center justify-between mb-4 md:mb-5">
         <div className="w-6" />

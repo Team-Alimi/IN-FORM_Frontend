@@ -12,9 +12,11 @@ import ErrorPage from "../../../../pages/NOT/ErrorPage";
 import MainCalendar from "./MainCalendar";
 import CalendarFilterBar from "./CalendarFilterBar";
 import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
+import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
   const eventListRef = useRef(null);
   const [currentDate, setCurrentDate] = useState(() => {
@@ -139,8 +141,14 @@ const CalendarSection = () => {
     }
   };
   return (
-    <div className="flex flex-col bg-white rounded-2xl shadow-md gap-2">
-      <div className="flex flex-row gap-2 items-center mx-8 pt-2">
+    <div
+      className={
+        isMobile
+          ? "flex flex-col gap-2 bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 min-h-[500px] justify-between"
+          : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between"
+      }
+    >
+      <div className="flex flex-row gap-4 items-center mx-4 pt-1">
         <img src={CalendarLogo} className="w-8 h-8" />
         <div className="flex flex-col">
           <div className="font-bold text-md text-gray-800">일정 캘린더</div>

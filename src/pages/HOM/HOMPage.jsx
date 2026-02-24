@@ -10,7 +10,13 @@ import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 ">
+    <div
+      className={
+        isMobile
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          : "min-h-screen flex flex-col bg-[#f8f9fa]"
+      }
+    >
       {isMobile ? (
         <MobileHeader />
       ) : (
@@ -38,7 +44,7 @@ const HOMPage = () => {
           </main>
         </div>
       </div>
-      <div className="w-full h-20"></div>
+
       {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
     </div>
   );

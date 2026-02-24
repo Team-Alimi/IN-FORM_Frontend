@@ -58,7 +58,7 @@ const MainCalendar = ({
   };
 
   return (
-    <div className="w-full rounded-2xl bg-white p-5 sm:p-8 md:p-10 max-mobile:p-1">
+    <div className="w-full rounded-2xl bg-gray-50 p-5 sm:p-8 md:p-10 max-mobile:p-1">
       {/* 상단: 월 네비게이션 */}
       <div className="flex items-center justify-between mb-4 md:mb-5 max-mobile:mb-1">
         <button
