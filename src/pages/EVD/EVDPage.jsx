@@ -59,6 +59,7 @@ const EVDPage = () => {
       <TabBar />
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <EventDetail
+          articleId={event.article_id}
           title={event.title}
           vendors={event.vendors}
           startDate={event.start_date}

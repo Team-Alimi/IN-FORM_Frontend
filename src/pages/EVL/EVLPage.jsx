@@ -361,6 +361,7 @@ const EVLPage = () => {
         <MobileEventDetail
           isOpen={isBottomSheetOpen}
           onClose={handleBottomSheetClose}
+          articleId={selectedEvent.article_id}
           title={selectedEvent.title}
           vendors={selectedEvent.vendors}
           startDate={selectedEvent.start_date}

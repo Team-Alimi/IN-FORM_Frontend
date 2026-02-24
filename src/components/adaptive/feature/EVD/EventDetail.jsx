@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { getStatus } from "../../../../utils/statusUtil";
 import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
@@ -6,6 +6,7 @@ import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkButton from "./BookmarkButton";
 
 const EventDetail = ({
+  articleId,
   title,
   vendors,
   startDate,
@@ -16,6 +17,11 @@ const EventDetail = ({
   is_bookmarked,
   bookmark_count
 }) => {
+  const [bookmarkCount, setBookmarkCount] = useState(bookmark_count);
+
+  const handleBookmarkToggle = (bookmarked) => {
+    setBookmarkCount((prev) => bookmarked ? prev + 1 : prev - 1);
+  };
   const mainVendor =
     Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
 
@@ -53,6 +59,7 @@ const EventDetail = ({
           vendors={vendors}
           created_at={created_at}
           dueDate={dueDate}
+          bookmark={bookmarkCount}
         />
       </div>
 
@@ -64,7 +71,7 @@ const EventDetail = ({
       </div>
 
       <div className="p-3 bg-gray-50 border-t border-gray-100 flex justify-center">
-        <BookmarkButton />
+        <BookmarkButton articleId={articleId} isBookmarked={is_bookmarked} onToggle={handleBookmarkToggle} />
       </div>
     </div>
   );
