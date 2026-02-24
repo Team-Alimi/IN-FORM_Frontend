@@ -1,39 +1,37 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import ClubDetail from "../../components/adaptive/feature/CBD/ClubDetail";
-//import CBLMockData from "../../mocks/CBL/ClubRowMock.json"
-//import CBDMockData from "../../mocks/CBD/ClubDetailMock.json";
-import api from "../../api/axios";
+import { fetchClubDetail } from "../../api/getClubDetail";
+import { useDeviceStore } from "../../stores/deviceStore";
 
 const CBDPage = () => {
-  // URL 파라미터에서 id값 가져오기
   const { id } = useParams();
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEventDetail = async () => {
+    const loadDetail = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const res = await api.get(`/api/v1/club_articles/${id}`);
-        console.log("event detail:", res.data);
-
-        setClub(res.data.data);
+        const data = await fetchClubDetail(id);
+        setClub(data);
       } catch (err) {
-        console.error("행사 상세 불러오기 실패:", err);
-        setError("행사 상세를 불러오지 못했습니다.");
+        console.error("동아리 공지 상세 불러오기 실패:", err);
+        setError("상세 내용을 불러오지 못했습니다.");
       } finally {
         setLoading(false);
       }
     };
 
     if (id) {
-      fetchEventDetail();
+      loadDetail();
     }
   }, [id]);
 
@@ -54,27 +52,27 @@ const CBDPage = () => {
   if (!club) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 text-center">
-        행사를 찾을 수 없습니다.
+        공지사항을 찾을 수 없습니다.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20" : "min-h-screen flex flex-col bg-gray-50"}>
+      {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <ClubDetail
           title={club.title}
-          vendor={club.vendors?.[0]?.vendor_name}
+          vendors={club.vendors}
           startDate={club.start_date}
           dueDate={club.due_date}
           created_at={club.created_at}
           content={club.content}
           linkUrl={club.original_url}
-          attachmentUrls={club.attachment_urls}
+          attachments={club.attachments}
         />
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={2} /> : <Footer />}
     </div>
   );
 };

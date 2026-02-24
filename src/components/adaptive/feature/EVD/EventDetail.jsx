@@ -6,8 +6,8 @@ import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkButton from "./BookmarkButton";
 
 const isHTML = (str) => str && /<[a-z][\s\S]*>/i.test(str);
-
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
+
 
 const EventDetail = ({
   articleId,
@@ -86,13 +86,13 @@ const EventDetail = ({
 
         {/* 첨부 이미지 */}
         {imageAttachments.length > 0 && (
-          <div className="mt-6 flex flex-col gap-3">
+          <div className="mt-6 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
             {imageAttachments.map((a) => (
               <img
                 key={a.file_id}
                 src={a.attachment_url}
                 alt={`첨부파일 ${a.file_id}`}
-                className="w-full rounded-xl border border-gray-100 object-contain"
+                className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start"
               />
             ))}
           </div>
