@@ -30,11 +30,10 @@ const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategory
         ))}
       </div>
     )}
-    <div className="flex flex-row items-center gap-3 text-xs text-gray-600 rounded-xl">
-      <div className="flex items-center gap-2"><span className="font-medium text-gray-600">게시일:</span><span>{created_at}</span></div>
-      <div className="flex items-center gap-2"><span className="font-medium text-gray-600">마감일:</span><span>{dueDate}</span></div>
-      <div className="mx-9" />
-      <div className="flex items-center gap-2"><span className="font-medium text-gray-600">북마크</span><span>{bookmark}</span></div>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 rounded-xl">
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">게시일:</span><span>{created_at}</span></div>
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">마감일:</span><span>{dueDate}</span></div>
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">북마크</span><span>{bookmark}</span></div>
     </div>
   </>
 );

@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
 import { fetchEventDetail } from "../../api/getEventDetail";
+import { useDeviceStore } from "../../stores/deviceStore";
 
 const EVDPage = () => {
   const { id } = useParams();
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +21,6 @@ const EVDPage = () => {
         setLoading(true);
         setError(null);
         const eventData = await fetchEventDetail(id);
-        console.log("event detail:", eventData);
         setEvent(eventData);
       } catch (err) {
         console.error("행사 상세 불러오기 실패:", err);
@@ -55,8 +58,8 @@ const EVDPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20" : "min-h-screen flex flex-col bg-gray-50"}>
+      {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <EventDetail
           articleId={event.article_id}
@@ -72,7 +75,7 @@ const EVDPage = () => {
           bookmark_count={event.bookmark_count}
         />
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
     </div>
   );
 };

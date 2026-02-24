@@ -8,13 +8,10 @@ import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import EventRow from "../../components/adaptive/feature/EVL/EventRow";
 import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
-import MobileEventDetail from "../../components/adaptive/feature/EVD/MobileEventDetail";
 import FilterBottomSheet from "../../components/adaptive/feature/EVL/FilterBottomSheet";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
-import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
-import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
-import { fetchEventDetail } from "../../api/getEventDetail";
+import { fetchEvents } from "../../api/getEventList";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
@@ -30,11 +27,6 @@ const EVLPage = () => {
     total_pages: 1,
     total_articles: 0,
   });
-
-  // 마감임박행사 API 제거로 임시 미사용
-  // const [imminentEvents, setImminentEvents] = useState([]);
-  // const [imminentLoading, setImminentLoading] = useState(false);
-  // const [imminentError, setImminentError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -68,7 +60,6 @@ const EVLPage = () => {
         };
         const res = await fetchEvents(params);
 
-        // api명세에 맞게 response 파싱
         const apiData = res.data?.data;
         setEvents(apiData?.school_articles || []);
         if (apiData?.page_info) {
@@ -98,27 +89,6 @@ const EVLPage = () => {
     setCurrentPage(1);
   }, [searchText, pageSize]);
 
-  // 마감임박행사 API 제거로 임시 미사용
-  // useEffect(() => {
-  //   const loadImminentEvents = async () => {
-  //     try {
-  //       setImminentLoading(true);
-  //       setImminentError(null);
-  //
-  //       const res = await fetchImminentEvents();
-  //       setImminentEvents(res.data.school_articles || []);
-  //     } catch (error) {
-  //       console.error("마감 임박 행사 불러오기 실패:", error);
-  //       setImminentError("마감 임박 행사를 불러오지 못했습니다.");
-  //     } finally {
-  //       setImminentLoading(false);
-  //     }
-  //   };
-  //
-  //   loadImminentEvents();
-  // }, []);
-
-  const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
 
   const sortedEvents = useMemo(() => {
@@ -138,26 +108,8 @@ const EVLPage = () => {
     return [...filtered].sort((a, b) => score(b.status) - score(a.status));
   }, [events, activeFilters.selectedStatuses]);
 
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
-  };
-
-  const handleMobileRowClick = async (id) => {
-    try {
-      const eventData = await fetchEventDetail(id);
-      setSelectedEvent(eventData);
-      setIsBottomSheetOpen(true);
-    } catch (err) {
-      console.error("행사 상세 불러오기 실패:", err);
-    }
-  };
-
-  const handleBottomSheetClose = () => {
-    setIsBottomSheetOpen(false);
-    setTimeout(() => setSelectedEvent(null), 300);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -180,14 +132,6 @@ const EVLPage = () => {
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
             {!isMobile && <MiniCalendarSet />}
-            {/* 마감임박행사 API 제거로 임시 미사용
-            <ImminentSidebar
-              imminentLoading={imminentLoading}
-              imminentError={imminentError}
-              imminentEvents={imminentEvents}
-              onEventClick={handleRowClick}
-            />
-            */}
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
@@ -250,7 +194,7 @@ const EVLPage = () => {
                           }
                           date={event.start_date}
                           bookmarkCount={event.bookmark_count || 0}
-                          onClick={() => handleMobileRowClick(event.article_id)}
+                          onClick={() => handleRowClick(event.article_id)}
                         />
                       );
                     } else {
@@ -344,23 +288,6 @@ const EVLPage = () => {
         totalCount={pageInfo.total_articles}
         keyword={searchText}
       />
-      {selectedEvent && (
-        <MobileEventDetail
-          isOpen={isBottomSheetOpen}
-          onClose={handleBottomSheetClose}
-          articleId={selectedEvent.article_id}
-          status={selectedEvent.status}
-          title={selectedEvent.title}
-          vendors={selectedEvent.vendors}
-          startDate={selectedEvent.start_date}
-          dueDate={selectedEvent.due_date}
-          created_at={selectedEvent.created_at}
-          content={selectedEvent.content}
-          category_name={selectedEvent.categories?.category_name}
-          is_bookmarked={selectedEvent.is_bookmarked}
-          bookmark_count={selectedEvent.bookmark_count}
-        />
-      )}
     </div>
   );
 };
