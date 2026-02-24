@@ -73,13 +73,13 @@ const AddToCalendar = ({ event }) => {
               onClick={handleGoogleClick} 
               className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-50"
             >
-              🗓️ 구글 캘린더
+              🗓️ 구글 캘린더에 저장
             </button>
             <button 
               onClick={handleIcsClick} 
               className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
             >
-              📥 내 캘린더 저장
+              📥 내 캘린더에 저장
             </button>
           </div>
         </>

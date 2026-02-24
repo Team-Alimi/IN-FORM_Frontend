@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import BottomSheet from "../../../mobile/common/BottomSheet";
 import { getVendors } from "../../../../api/getVendors";
-import { fetchEvents } from "../../../../api/getEventList";
+import { fetchEvents } from "../../../../api/schoolArticles";
 
 const STATUS_OPTIONS = [
   { value: "ALL",         label: "전체",   selected: "bg-blue-500 text-white border-blue-500",      unselected: "bg-white text-gray-600 border-gray-300" },
