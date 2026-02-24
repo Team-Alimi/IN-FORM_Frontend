@@ -1,0 +1,117 @@
+import React, { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import useAuthStore from "../../../../stores/useAuthStore";
+import { getVendors } from "../../../../api/getVendors";
+import { patchUserMajor } from "../../../../api/patchUserMajor";
+import BottomSheet from "../../../mobile/common/BottomSheet";
+
+/**
+ * DepartmentEditSheet Component
+ * @param {boolean} isOpen - 시트 열림 상태
+ * @param {function} onClose - 시트 닫기 함수
+ */
+const DepartmentEditSheet = ({ isOpen, onClose }) => {
+    const { userInfo, login, accessToken, refreshToken } = useAuthStore();
+    const [selectedMajorId, setSelectedMajorId] = useState(
+        userInfo?.major?.vendor_id || ""
+    );
+
+    // 1. 학과(SCHOOL) 벤더 목록 조회
+    const { data: vendorsData, isLoading: isVendorsLoading } = useQuery({
+        queryKey: ["vendors", "SCHOOL"],
+        queryFn: () => getVendors("SCHOOL"),
+        staleTime: 1000 * 60 * 60, // 1시간 캐싱
+        enabled: isOpen, // 시트가 열릴 때만 조회
+    });
+
+    const vendors = vendorsData?.data || [];
+
+    // 2. 학과 수정 Mutation
+    const updateMajorMutation = useMutation({
+        mutationFn: (majorId) => patchUserMajor(userInfo?.user_id, majorId),
+        onSuccess: (_, majorId) => {
+            const newMajor = vendors.find((v) => v.vendor_id === Number(majorId));
+            if (newMajor && userInfo) {
+                const updatedUserInfo = {
+                    ...userInfo,
+                    major: newMajor,
+                };
+                login(accessToken, refreshToken, updatedUserInfo);
+                alert("학과가 성공적으로 변경되었습니다.");
+                onClose();
+            }
+        },
+        onError: (error) => {
+            console.error("학과 변경 실패:", error);
+            alert("학과 변경 중 오류가 발생했습니다.");
+            setSelectedMajorId(userInfo?.major?.vendor_id || "");
+        }
+    });
+
+    const handleSave = () => {
+        if (!selectedMajorId) {
+            alert("학과를 선택해주세요.");
+            return;
+        }
+        updateMajorMutation.mutate(selectedMajorId);
+    };
+
+    return (
+        <BottomSheet
+            isOpen={isOpen}
+            onClose={onClose}
+        >
+            <div className="p-2">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-gray-900">학과 설정</h2>
+                </div>
+
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-500 mb-3 ml-1">현재 설정된 학과</label>
+                        <div className="relative">
+                            <select
+                                value={selectedMajorId}
+                                onChange={(e) => setSelectedMajorId(e.target.value)}
+                                disabled={isVendorsLoading || updateMajorMutation.isPending}
+                                className="w-full px-4 py-4 bg-white text-gray-800 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer disabled:opacity-50 shadow-sm font-medium"
+                            >
+                                <option value="" disabled>
+                                    {isVendorsLoading ? "학과 목록을 불러오는 중..." : "학과를 선택하세요"}
+                                </option>
+                                {vendors.map((vendor) => (
+                                    <option key={vendor.vendor_id} value={vendor.vendor_id}>
+                                        {vendor.vendor_name}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="absolute top-1/2 -translate-y-1/2 right-4 pointer-events-none text-gray-400">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            onClick={onClose}
+                            className="flex-1 py-4 text-[15px] font-bold text-gray-500 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors active:scale-95"
+                        >
+                            취소
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={updateMajorMutation.isPending || (Number(selectedMajorId) === userInfo?.major?.vendor_id)}
+                            className="flex-1 py-4 text-[15px] font-bold text-white bg-[#294D7C] rounded-2xl hover:bg-[#1e3a5f] transition-colors shadow-lg shadow-blue-900/10 disabled:bg-gray-300 disabled:shadow-none active:scale-95"
+                        >
+                            {updateMajorMutation.isPending ? "저장 중..." : "저장하기"}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </BottomSheet>
+    );
+};
+
+export default DepartmentEditSheet;
