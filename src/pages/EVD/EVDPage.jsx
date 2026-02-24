@@ -2,19 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
-import BackHeader from "../../components/adaptive/common/BackHeader";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
-import { useDeviceStore } from "../../stores/deviceStore";
 import { fetchEventDetail } from "../../api/getEventDetail";
-import BookmarkButton from "../../components/adaptive/feature/EVD/BookmarkButton";
 
 const EVDPage = () => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const isMobile = useDeviceStore((state) => state.isMobile);
 
   useEffect(() => {
     const fetchEventDetailAsync = async () => {
@@ -61,12 +56,8 @@ const EVDPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {isMobile ? (
-        <BackHeader title="공지사항" />
-      ) : (
-        <TabBar />
-      )}
-      <div className={isMobile ? "flex-1 w-full pt-12 px-0 pb-4" : "flex-1 w-full max-w-6xl mx-auto px-4 py-6"}>
+      <TabBar />
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <EventDetail
           title={event.title}
           vendors={event.vendors}
@@ -77,15 +68,9 @@ const EVDPage = () => {
           category_name={event.categories?.category_name}
           is_bookmarked={event.is_bookmarked}
           bookmark_count={event.bookmark_count}
-          isMobile={isMobile}
         />
       </div>
-      {!isMobile && <Footer />}
-      {isMobile && (
-        <div className="fixed bottom-0 left-0 w-full z-20 bg-white px-4 py-3 border-t border-gray-200">
-          <BookmarkButton />
-        </div>
-      )}
+      <Footer />
     </div>
   );
 };

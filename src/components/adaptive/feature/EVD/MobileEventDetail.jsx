@@ -5,23 +5,11 @@ import categoryColorMap from "../../../../constants/categoryColorMap";
 import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkCount from "./BookmarkCount";
 import BookmarkButton from "./BookmarkButton";
+import BottomSheet from "../../../mobile/common/BottomSheet";
 
-const EventDetail = ({
-  title,
-  vendors,
-  startDate,
-  dueDate,
-  created_at,
-  content,
-  category_name,
-  is_bookmarked,
-  bookmark_count
-}) => {
-  const mainVendor =
-    Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
-
+const MobileEventDetail = ({ isOpen, onClose, title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count }) => {
+  const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
   const vendorName = mainVendor?.vendor_name || "";
-
   const eventData = {
     title,
     content,
@@ -29,21 +17,13 @@ const EventDetail = ({
     due_date: dueDate,
     vendors: { vendor_name: vendorName }
   };
-
   const status = getStatus(startDate, dueDate);
-
-  const displayCategoryName = category_name
-    ? categoryNameMap[category_name] || category_name
-    : "";
-
-  const categoryColor = category_name
-    ? categoryColorMap[category_name] ||
-      "border-gray-300 text-gray-700 bg-gray-100 ml-2"
-    : "";
+  const displayCategoryName = category_name ? (categoryNameMap[category_name] || category_name) : "";
+  const categoryColor = category_name ? (categoryColorMap[category_name] || "border-gray-300 text-gray-700 bg-gray-100 ml-2") : "";
 
   return (
-    <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="p-6 md:p-8 border-b border-gray-100">
+    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">
+      <div className="border-b border-gray-200 pb-4 mb-4">
         <DetailInfoTitle
           status={status}
           category_name={category_name}
@@ -56,22 +36,17 @@ const EventDetail = ({
           dueDate={dueDate}
         />
       </div>
-
-      <div className="p-6 md:p-8 min-h-[200px]">
+      <div className="min-h-[100px]">
         <div className="mb-4">
           <BookmarkCount count={bookmark_count} />
         </div>
-
-        <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">
-          {content}
-        </div>
+        <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">{content}</div>
       </div>
-
-      <div className="p-3 bg-gray-50 border-t border-gray-100 flex justify-center">
+      <div className="mt-6 flex justify-center">
         <BookmarkButton />
       </div>
-    </div>
+    </BottomSheet>
   );
 };
 
-export default EventDetail;
+export default MobileEventDetail;

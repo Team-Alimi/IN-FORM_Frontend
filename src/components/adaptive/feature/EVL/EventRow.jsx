@@ -4,9 +4,9 @@ import Badge from "../../common/Badge";
 const EventRow = ({ id, status, title, date, onClick }) => {
 
   const getBadgeColor = (status) => {
-    if (status === "진행중") return "text-Ongoing border-Ongoing bg-blue-50";
+    if (status === "진행중") return "text-Ongoing border-Ongoing bg-green-50";
     if (status === "마감") return "text-Ended border-Ended bg-gray-50";
-    if (status === "예정") return "text-Upcoming border-Upcoming bg-red-50";
+    if (status === "예정") return "text-Upcoming border-Upcoming bg-blue-50";
     return "";
   };
 

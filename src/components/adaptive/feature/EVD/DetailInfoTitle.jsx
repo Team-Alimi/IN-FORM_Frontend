@@ -6,10 +6,10 @@ import AddToCalendar from "./AddToCalendar";
 const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategoryName, title, eventData, vendors, created_at, dueDate }) => (
   <>
     <div className="flex items-center gap-2 mb-4">
-      <Badge color={status.color} text={status.text} />
       {category_name && (
         <Badge color={categoryColor} text={displayCategoryName} />
       )}
+      <Badge color={status.color} text={status.text} />
     </div>
     <div className="flex justify-between items-start gap-4 mb-2">
       <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">

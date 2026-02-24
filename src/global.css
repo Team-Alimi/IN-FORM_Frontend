@@ -32,9 +32,9 @@
   --color-activity: #2563EB;
 
   /* 상태 색상 */
-  --color-Ongoing: #468AE5;
-  --color-Ended: #616976;
-  --color-Upcoming: #D63232;
+  --color-Ongoing: #00A63E;
+  --color-Ended: #656565;
+  --color-Upcoming: #2D6FF5;
 
   /* 반응형 breakpoint */
   --breakpoint-mobile: 431px;

@@ -8,10 +8,12 @@ import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import EventRow from "../../components/adaptive/feature/EVL/EventRow";
 import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
+import MobileEventDetail from "../../components/adaptive/feature/EVD/MobileEventDetail";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import { fetchEvents /*, fetchImminentEvents */ } from "../../api/getEventList";
+import { fetchEventDetail } from "../../api/getEventDetail";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 
@@ -136,8 +138,26 @@ const EVLPage = () => {
     });
   }, [events]);
 
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
+  };
+
+  const handleMobileRowClick = async (id) => {
+    try {
+      const eventData = await fetchEventDetail(id);
+      setSelectedEvent(eventData);
+      setIsBottomSheetOpen(true);
+    } catch (err) {
+      console.error("행사 상세 불러오기 실패:", err);
+    }
+  };
+
+  const handleBottomSheetClose = () => {
+    setIsBottomSheetOpen(false);
+    setTimeout(() => setSelectedEvent(null), 300);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -267,7 +287,7 @@ const EVLPage = () => {
                           }
                           date={event.start_date}
                           bookmarkCount={event.bookmark_count || 0}
-                          onClick={() => handleRowClick(event.article_id)}
+                          onClick={() => handleMobileRowClick(event.article_id)}
                         />
                       );
                     } else {
@@ -337,6 +357,21 @@ const EVLPage = () => {
         </div>
       </div>
       {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      {selectedEvent && (
+        <MobileEventDetail
+          isOpen={isBottomSheetOpen}
+          onClose={handleBottomSheetClose}
+          title={selectedEvent.title}
+          vendors={selectedEvent.vendors}
+          startDate={selectedEvent.start_date}
+          dueDate={selectedEvent.due_date}
+          created_at={selectedEvent.created_at}
+          content={selectedEvent.content}
+          category_name={selectedEvent.categories?.category_name}
+          is_bookmarked={selectedEvent.is_bookmarked}
+          bookmark_count={selectedEvent.bookmark_count}
+        />
+      )}
     </div>
   );
 };
