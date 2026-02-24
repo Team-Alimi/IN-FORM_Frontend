@@ -1,7 +1,11 @@
-const ClubRow = ({ data }) => {
-  const { title, vendors, start_date, due_date, attachment_url } = data;
+const ClubRow = ({ data, onClick }) => {
+  const { title, vendors, start_date, due_date, attachment_url, article_id } =
+    data;
   return (
-    <div className="flex flex-col bg-white w-full rounded-3xl overflow-hidden">
+    <div
+      className="flex flex-col bg-white w-full rounded-3xl overflow-hidden"
+      onClick={() => onClick(article_id)}
+    >
       <div className="w-full aspect-4/5 bg-gray-200 relative">
         {attachment_url ? (
           <img
@@ -21,7 +25,7 @@ const ClubRow = ({ data }) => {
           {title}
         </div>
         <div className="max-mobile:text-sm text-base font-medium text-gray-700">
-          {vendors.vendor_name}
+          {vendors[0]?.vendor_name}
         </div>
         <div className="max-mobile:text-xs text-sm font-medium text-gray-700">{`${start_date || "미정"} ~ ${due_date || "미정"}`}</div>
       </div>

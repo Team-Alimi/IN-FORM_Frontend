@@ -7,14 +7,19 @@ import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import SearchBar from "../../components/adaptive/common/SearchBar";
+import ClubCarousel from "../../components/desktop/common/ClubCarousel";
 import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
+import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
 import { fetchClubs /*, fetchImminentClubs */ } from "../../api/getClubList";
 
 const CBLPage = () => {
   const navigate = useNavigate();
   const isMobile = useDeviceStore((state) => state.isMobile);
+
   const [clubsLoading, setClubsLoading] = useState(false);
-  const [clubs, setClubs] = useState([]); // 나중에 MAP Constant 폴더에 객체 만들어서 import 하자
+  const [clubsError, setClubsError] = useState(null);
+
+  const [clubs, setClubs] = useState([]);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
@@ -27,11 +32,16 @@ const CBLPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [searchText, setSearchText] = useState("");
 
+  const [imminentEvents, setImminentEvents] = useState([]);
+  const [imminentLoading, setImminentLoading] = useState(false);
+  const [imminentError, setImminentError] = useState(null);
+
   useEffect(() => {
     const loadClubs = async () => {
       try {
         setClubsLoading(true);
-      
+        setClubsError(null);
+
         const params = {
           page: currentPage,
           size: itemsPerPage,
@@ -103,6 +113,26 @@ const CBLPage = () => {
     return isCategoryMatch;
   });
 
+  // 마감임박 동아리 행사 API 미사용 (필요시 주석 해제)
+  // useEffect(() => {
+  //   const loadImminentClubs = async () => {
+  //     try {
+  //       setImminentLoading(true);
+  //       setImminentError(null);
+  //
+  //       const res = await fetchImminentClubs();
+  //       setImminentEvents(res.data.club_articles || []);
+  //     } catch (error) {
+  //       console.error("마감 임박 행사 불러오기 실패:", error);
+  //       setImminentError("마감 임박 행사를 불러오지 못했습니다.");
+  //     } finally {
+  //       setImminentLoading(false);
+  //     }
+  //   };
+  //
+  //   loadImminentClubs();
+  // }, []);
+
   const currentClubs = filteredClubs;
   const totalPages = pageInfo.total_pages || 1;
 
@@ -125,6 +155,13 @@ const CBLPage = () => {
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
             <MiniCalendarSet />
+            <ImminentSidebar
+              imminentLoading={imminentLoading}
+              imminentError={imminentError}
+              imminentEvents={imminentEvents}
+              onEventClick={handleClubClick}
+            />
+            {/* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */}
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
