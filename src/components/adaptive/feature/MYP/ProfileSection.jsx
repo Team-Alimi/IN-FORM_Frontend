@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "../../../../stores/useAuthStore";
 import { getVendors } from "../../../../api/getVendors";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const ProfileSection = ({ onEditMajor }) => {
     const { userInfo, logout } = useAuthStore();
+    const queryClient = useQueryClient();
     const isMobile = useDeviceStore((state) => state.isMobile);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -24,6 +25,7 @@ const ProfileSection = ({ onEditMajor }) => {
     const handleLogout = () => {
         if (window.confirm("로그아웃 하시겠습니까?")) {
             logout();
+            queryClient.clear(); // 전역 캐시 초기화
         }
     };
 

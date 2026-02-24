@@ -80,7 +80,9 @@ const BookmarkSection = () => {
                         ${isMobile ? "text-[17px]" : "text-[20px]"}
                     `}>
                         📌 북마크한 글
-                        <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
+                        {isLoggedIn && (
+                            <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
+                        )}
                     </h2>
                     {isLoggedIn && bookmarks.length > 0 && (
                         <button
