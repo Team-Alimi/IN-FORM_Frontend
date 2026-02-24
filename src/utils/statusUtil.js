@@ -1,31 +1,15 @@
 /**
- * 이벤트/동아리의 상태를 계산하는 유틸리티 함수
+ * API status 문자열을 한국어 표시명과 색상으로 변환
+ * @param {string} apiStatus - API 응답 status ("OPEN" | "ENDING_SOON" | "UPCOMING" | "CLOSED")
+ * @returns {{ text: string, color: string }}
  */
-
-/**
- * 시작일과 종료일을 기반으로 현재 상태를 반환
- * @param {string} startDate - 시작일 (YYYY-MM-DD 포맷)
- * @param {string} dueDate - 종료일 (YYYY-MM-DD 포맷)
- * @returns {string} - "예정"|"진행중"|"마감"
- */
-export const getStatus = (startDate, dueDate) => {
-  const today = new Date();
-  const start = new Date(startDate);
-  const end = new Date(dueDate);
-
-  today.setHours(0, 0, 0, 0);
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
-
-  let text = "진행중";
-  if (today < start) text = "예정";
-  else if (today > end) text = "마감";
-
-  const colorMap = {
-    "예정": "text-Upcoming bg-red-50 border-Upcoming",
-    "마감": "text-Ended bg-gray-100 border-Ended",
-    "진행중": "text-Ongoing bg-blue-50 border-Ongoing",
+export const getStatus = (apiStatus) => {
+  const statusMap = {
+    OPEN:         { text: "진행중",  color: "text-Ongoing bg-green-50 border-Ongoing" },
+    ENDING_SOON:  { text: "마감임박", color: "text-EndingSoon bg-orange-50 border-EndingSoon" },
+    UPCOMING:     { text: "예정",    color: "text-Upcoming bg-blue-50 border-Upcoming" },
+    CLOSED:       { text: "마감",    color: "text-Ended bg-gray-100 border-Ended" },
   };
 
-  return { text, color: colorMap[text] };
+  return statusMap[apiStatus] ?? { text: apiStatus ?? "-", color: "text-gray-500 bg-gray-100 border-gray-300" };
 };

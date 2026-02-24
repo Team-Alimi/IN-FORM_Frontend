@@ -6,7 +6,7 @@ import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkButton from "./BookmarkButton";
 import BottomSheet from "../../../mobile/common/BottomSheet";
 
-const MobileEventDetail = ({ isOpen, onClose, articleId, title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count }) => {
+const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count }) => {
   const [bookmarkCount, setBookmarkCount] = useState(bookmark_count);
 
   const handleBookmarkToggle = (bookmarked) => {
@@ -22,7 +22,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, title, vendors, startDa
     due_date: dueDate,
     vendors: { vendor_name: vendorName }
   };
-  const status = getStatus(startDate, dueDate);
+  const status = getStatus(apiStatus);
   const displayCategoryName = category_name ? (categoryNameMap[category_name] || category_name) : "";
   const categoryColor = category_name ? (categoryColorMap[category_name] || "border-gray-300 text-gray-700 bg-gray-100 ml-2") : "";
 

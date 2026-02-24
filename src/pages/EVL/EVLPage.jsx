@@ -125,17 +125,14 @@ const EVLPage = () => {
   const sortedEvents = useMemo(() => {
     if (!events) return [];
 
-    return [...events].sort((a, b) => {
-      const statusA = getStatus(a.start_date, a.due_date);
-      const statusB = getStatus(b.start_date, b.due_date);
+    const score = (status) => {
+      if (status === "ENDING_SOON") return 4;
+      if (status === "OPEN")        return 3;
+      if (status === "UPCOMING")    return 2;
+      return 1;
+    };
 
-      const score = (status) => {
-        if (status === "진행중") return 3;
-        if (status === "예정") return 2;
-        return 1;
-      };
-      return score(statusB) - score(statusA);
-    });
+    return [...events].sort((a, b) => score(b.status) - score(a.status));
   }, [events]);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -269,15 +266,12 @@ const EVLPage = () => {
               <div className="space-y-1">
                 {sortedEvents.length > 0 ? (
                   sortedEvents.map((event) => {
-                    const statusObj = getStatus(
-                      event.start_date,
-                      event.due_date,
-                    );
+                    const statusText = getStatus(event.status).text;
                     if (isMobile) {
                       return (
                         <MobileEventRow
                           key={event.article_id}
-                          status={statusObj.text}
+                          status={statusText}
                           category={event.categories.category_name}
                           title={event.title}
                           source={
@@ -296,7 +290,7 @@ const EVLPage = () => {
                           key={event.article_id}
                           title={event.title}
                           date={event.created_at}
-                          status={statusObj.text}
+                          status={statusText}
                           onClick={() => handleRowClick(event.article_id)}
                         />
                       );
@@ -362,6 +356,7 @@ const EVLPage = () => {
           isOpen={isBottomSheetOpen}
           onClose={handleBottomSheetClose}
           articleId={selectedEvent.article_id}
+          status={selectedEvent.status}
           title={selectedEvent.title}
           vendors={selectedEvent.vendors}
           startDate={selectedEvent.start_date}

@@ -7,6 +7,7 @@ import BookmarkButton from "./BookmarkButton";
 
 const EventDetail = ({
   articleId,
+  status: apiStatus,
   title,
   vendors,
   startDate,
@@ -35,7 +36,7 @@ const EventDetail = ({
     vendors: { vendor_name: vendorName }
   };
 
-  const status = getStatus(startDate, dueDate);
+  const status = getStatus(apiStatus);
 
   const displayCategoryName = category_name
     ? categoryNameMap[category_name] || category_name

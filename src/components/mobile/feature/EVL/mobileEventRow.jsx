@@ -18,9 +18,10 @@ const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, 
   const categoryBadge = category ? getCategoryBadge(category) : null;
   // 상태 뱃지 색상
   let statusBadge = { text: status, color: "bg-gray-100 text-gray-500" };
-  if (status === "진행중") statusBadge = { text: status, color: "text-Ongoing border-Ongoing bg-green-50" };
-  else if (status === "예정") statusBadge = { text: status, color: "text-Upcoming border-Upcoming bg-blue-50" };
-  else if (status === "마감") statusBadge = { text: status, color: "text-Ended border-Ended bg-gray-50" };
+  if (status === "진행중")       statusBadge = { text: status, color: "text-Ongoing border-Ongoing bg-green-50" };
+  else if (status === "마감임박") statusBadge = { text: status, color: "text-EndingSoon border-EndingSoon bg-orange-50" };
+  else if (status === "예정")    statusBadge = { text: status, color: "text-Upcoming border-Upcoming bg-blue-50" };
+  else if (status === "마감")    statusBadge = { text: status, color: "text-Ended border-Ended bg-gray-50" };
 
   return (
     <div
