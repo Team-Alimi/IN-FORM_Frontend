@@ -46,6 +46,10 @@
   --event-bar-row-height: 1.5rem;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 @media (max-width: 430px) {
   :root {
     --event-bar-row-height: 1.1rem;

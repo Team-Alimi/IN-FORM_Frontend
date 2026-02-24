@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bookmarkIcon from "../../../../assets/icons/bookmark.svg";
-import PressedBookmarkIcon from "../../../../assets/icons/bookmark_pressed.svg"; 
+import PressedBookmarkIcon from "../../../../assets/icons/bookmark_pressed.svg";
 import { postBookmark } from "../../../../api/postBookmark";
 
 const BookmarkButton = ({ articleId, articleType = "SCHOOL", isBookmarked = false, onToggle }) => {
   const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setBookmarked(isBookmarked);
+  }, [isBookmarked]);
 
   const handleClick = async () => {
     if (loading) return;
