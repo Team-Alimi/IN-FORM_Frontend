@@ -36,18 +36,7 @@ const EVLPage = () => {
   // const [imminentError, setImminentError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-
-  // 다중 선택 지원 (API 명세)
-  const [selectedCategories, setSelectedCategories] = useState(["ALL"]);
   const [searchText, setSearchText] = useState("");
-
-  // 실제 category_id와 label을 매핑 (API 명세에 따라 id는 숫자, label은 한글)
-  const categories = [
-    { id: "ALL", label: "전체" },
-    { id: 1, label: "공모전/대회" },
-    { id: 2, label: "특강" },
-    { id: 3, label: "장학" },
-  ];
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -55,17 +44,9 @@ const EVLPage = () => {
         setEventsLoading(true);
         setEventsError(null);
 
-        // category_id 다중 선택 지원
-        let categoryParam;
-        if (selectedCategories.includes("ALL")) {
-          categoryParam = undefined;
-        } else {
-          categoryParam = selectedCategories.join(",");
-        }
         const params = {
           page: currentPage,
           size: 20,
-          category_id: categoryParam,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
         };
         const res = await fetchEvents(params);
@@ -93,11 +74,11 @@ const EVLPage = () => {
     };
 
     loadEvents();
-  }, [currentPage, selectedCategories, searchText]);
+  }, [currentPage, searchText]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategories, searchText]);
+  }, [searchText]);
 
   // 마감임박행사 API 제거로 임시 미사용
   // useEffect(() => {
@@ -214,52 +195,6 @@ const EVLPage = () => {
                     <span>필터</span>
                   </button>
                 </div>
-              </div>
-
-              {/* 카테고리 탭 */}
-              <div className="flex gap-2 mb-3">
-                {categories.map((cat) => {
-                  const isSelected = selectedCategories.includes(cat.id);
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        if (cat.id === "ALL") {
-                          setSelectedCategories(["ALL"]);
-                        } else {
-                          setSelectedCategories((prev) => {
-                            let next;
-                            if (prev.includes(cat.id)) {
-                              next = prev.filter((id) => id !== cat.id);
-                            } else {
-                              next = prev
-                                .filter((id) => id !== "ALL")
-                                .concat(cat.id);
-                            }
-                            return next.length === 0 ? ["ALL"] : next;
-                          });
-                        }
-                      }}
-                      className={
-                        isMobile
-                          ? `px-3 py-1 rounded-[18px] text-[13px] font-medium transition-all duration-200 shadow-sm
-                              ${
-                                isSelected
-                                  ? "bg-blue-500 text-white shadow-md scale-105"
-                                  : "bg-[#F4F8FE] text-blue-500 border border-[#E8F0FB]"
-                              }`
-                          : `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
-                              ${
-                                isSelected
-                                  ? "bg-blue-500 text-white shadow-md transform scale-105"
-                                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                              }`
-                      }
-                    >
-                      {cat.label}
-                    </button>
-                  );
-                })}
               </div>
 
               {/* 리스트 출력 */}
