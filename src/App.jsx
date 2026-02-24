@@ -13,6 +13,7 @@ import DeviceTestPage from "./pages/TEST/DeviceTestPage";
 import LGNPage from "./pages/LGN/LGNPage";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import MYPage from "./pages/MYP/MYPage";
+import ONBPage from "./pages/ONB/ONBPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Routes>
         <Route path="/login" element={<LGNPage />} />
+        <Route path="/onboarding" element={<ONBPage />} />
         <Route path="/" element={<HOMPage />} />
         <Route path="clubs">
           <Route
