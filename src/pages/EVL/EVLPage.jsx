@@ -9,6 +9,7 @@ import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
 import EventRow from "../../components/adaptive/feature/EVL/EventRow";
 import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
 import MobileEventDetail from "../../components/adaptive/feature/EVD/MobileEventDetail";
+import FilterBottomSheet from "../../components/adaptive/feature/EVL/FilterBottomSheet";
 import SearchBar from "../../components/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
 import ImminentSidebar from "../../components/desktop/common/ImminentSidebar";
@@ -37,6 +38,18 @@ const EVLPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
+  const [activeFilters, setActiveFilters] = useState({
+    startDate: "",
+    endDate: "",
+    selectedStatuses: ["ALL"],
+    vendorIds: [],
+  });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const handleFilterApply = (filters) => {
+    setActiveFilters(filters);
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -48,6 +61,9 @@ const EVLPage = () => {
           page: currentPage,
           size: 20,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
+          start_date: activeFilters.startDate || undefined,
+          end_date: activeFilters.endDate || undefined,
+          vendor_id: activeFilters.vendorIds.length > 0 ? activeFilters.vendorIds.join(",") : undefined,
         };
         const res = await fetchEvents(params);
 
@@ -74,7 +90,8 @@ const EVLPage = () => {
     };
 
     loadEvents();
-  }, [currentPage, searchText]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(",")]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -113,8 +130,12 @@ const EVLPage = () => {
       return 1;
     };
 
-    return [...events].sort((a, b) => score(b.status) - score(a.status));
-  }, [events]);
+    const filtered = activeFilters.selectedStatuses.includes("ALL")
+      ? events
+      : events.filter((e) => activeFilters.selectedStatuses.includes(e.status));
+
+    return [...filtered].sort((a, b) => score(b.status) - score(a.status));
+  }, [events, activeFilters.selectedStatuses]);
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -179,7 +200,7 @@ const EVLPage = () => {
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <h2 className="text-xl font-bold text-gray-800 w-full sm:w-auto">
-                  📣 공지글
+                  📣 공지사항
                 </h2>
                 <div className="w-full sm:w-64">
                   <SearchBar
@@ -189,6 +210,7 @@ const EVLPage = () => {
                   />
                   <button
                     type="button"
+                    onClick={() => setIsFilterOpen(true)}
                     className="mt-2 flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97"
                   >
                     <FiFilter size={18} className="text-gray-800" />
@@ -286,6 +308,13 @@ const EVLPage = () => {
         </div>
       </div>
       {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      <FilterBottomSheet
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApply={handleFilterApply}
+        totalCount={pageInfo.total_articles}
+        keyword={searchText}
+      />
       {selectedEvent && (
         <MobileEventDetail
           isOpen={isBottomSheetOpen}
