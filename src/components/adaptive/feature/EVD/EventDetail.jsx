@@ -3,7 +3,6 @@ import { getStatus } from "../../../../utils/statusUtil";
 import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
 import DetailInfoTitle from "./DetailInfoTitle";
-import BookmarkCount from "./BookmarkCount";
 import BookmarkButton from "./BookmarkButton";
 
 const EventDetail = ({
@@ -58,9 +57,6 @@ const EventDetail = ({
       </div>
 
       <div className="p-6 md:p-8 min-h-[200px]">
-        <div className="mb-4">
-          <BookmarkCount count={bookmark_count} />
-        </div>
 
         <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">
           {content}

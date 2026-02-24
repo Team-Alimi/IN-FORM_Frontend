@@ -3,7 +3,6 @@ import { getStatus } from "../../../../utils/statusUtil";
 import categoryNameMap from "../../../../constants/categoryNameMap";
 import categoryColorMap from "../../../../constants/categoryColorMap";
 import DetailInfoTitle from "./DetailInfoTitle";
-import BookmarkCount from "./BookmarkCount";
 import BookmarkButton from "./BookmarkButton";
 import BottomSheet from "../../../mobile/common/BottomSheet";
 
@@ -34,12 +33,10 @@ const MobileEventDetail = ({ isOpen, onClose, title, vendors, startDate, dueDate
           vendors={vendors}
           created_at={created_at}
           dueDate={dueDate}
+          bookmark={bookmark_count}
         />
       </div>
       <div className="min-h-[100px]">
-        <div className="mb-4">
-          <BookmarkCount count={bookmark_count} />
-        </div>
         <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">{content}</div>
       </div>
       <div className="mt-6 flex justify-center">
