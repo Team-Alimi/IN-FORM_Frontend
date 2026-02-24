@@ -1,28 +1,43 @@
 import React from "react";
-
-// 초안
+import urlIcon from "../../../../assets/icons/url.svg";
 
 const OriginalUrlBtn = ({ vendor_name, original_url }) => {
-	const handleClick = () => {
-		if (original_url) {
-			window.open(original_url, "_blank", "noopener,noreferrer");
-		}
-	};
+  const handleClick = () => {
+    if (original_url) {
+      window.open(original_url, "_blank", "noopener,noreferrer");
+    }
+  };
 
-	return (
-		<button
-			type="button"
-			className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gray-100 text-gray-700 text-sm font-normal hover:bg-gray-200 transition w-auto min-w-0 max-w-fit"
-			onClick={handleClick}
-			disabled={!original_url}
-			style={{ width: "auto", minWidth: 0, maxWidth: 'fit-content' }}
-		>
-			<span>{vendor_name}</span>
-			<svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 3h7m0 0v7m0-7L10 14m-4 0h4v4" />
-			</svg>
-		</button>
-	);
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={!original_url}
+      className="
+        inline-flex items-center gap-1.5
+        px-3 h-8
+        bg-gray-200
+        rounded-[10px]
+        shadow-[0px_4px_6px_0px_rgba(0,0,0,0.03)]
+        backdrop-blur-[2.5px]
+        text-gray-700 text-xs font-normal
+        hover:bg-gray-200
+        transition
+        disabled:opacity-50 disabled:cursor-not-allowed
+        w-auto max-w-fit
+      "
+    >
+      <span className="leading-5">
+        {vendor_name}
+      </span>
+
+      <img
+        src={urlIcon}
+        alt="external link"
+        className="w-3.5 h-3.5"
+      />
+    </button>
+  );
 };
 
 export default OriginalUrlBtn;
