@@ -73,6 +73,7 @@ const EVDPage = () => {
           category_name={event.categories?.category_name}
           is_bookmarked={event.is_bookmarked}
           bookmark_count={event.bookmark_count}
+          attachments={event.attachments}
         />
       </div>
       {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
