@@ -75,15 +75,20 @@ const BookmarkSection = () => {
             `}>
                 {/* Header section (Title & Batch Delete) - Integrated inside box */}
                 <div className="flex justify-between items-center mb-5 md:mb-6 px-1">
-                    <h2 className={`
-                        font-bold text-gray-900 flex items-center gap-2
-                        ${isMobile ? "text-[17px]" : "text-[20px]"}
-                    `}>
-                        📌 북마크한 글
-                        {isLoggedIn && (
-                            <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
-                        )}
-                    </h2>
+                    <div className="flex flex-col gap-0.5">
+                        <h2 className={`
+                            font-bold text-gray-900 flex items-center gap-2
+                            ${isMobile ? "text-[17px]" : "text-[20px]"}
+                        `}>
+                            📌 북마크한 글
+                            {isLoggedIn && (
+                                <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
+                            )}
+                        </h2>
+                        <span className={`text-gray-700 font-semibold ml-7 leading-none ${isMobile ? "text-[12px]" : "text-[13px]"}`}>
+                            Bookmarked posts
+                        </span>
+                    </div>
                     {isLoggedIn && bookmarks.length > 0 && (
                         <button
                             onClick={handleBatchDelete}
