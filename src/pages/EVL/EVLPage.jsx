@@ -13,6 +13,7 @@ import { FiFilter } from "react-icons/fi";
 import { fetchEvents } from "../../api/schoolArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import SectionTitle from "../../components/mobile/common/SectionTitle";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -135,15 +136,8 @@ const EVLPage = () => {
             }
           >
             <div>
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <div className="flex flex-col gap-0.5 w-full sm:w-auto">
-                  <h2 className={`font-bold text-gray-900 flex items-center gap-2 ${isMobile ? "text-[17px]" : "text-[20px]"}`}>
-                    📣 공지사항
-                  </h2>
-                  <span className={`text-gray-700 font-medium ml-7 leading-none ${isMobile ? "text-[12px]" : "text-[13px]"}`}>
-                    Notice list
-                  </span>
-                </div>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <SectionTitle KoreanTitle="공지사항" EnglishTitle="Notice list" />
                 <div className="w-full sm:w-64">
                   <SearchBar
                     value={searchText}
