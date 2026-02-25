@@ -75,7 +75,7 @@ const ClubListContainer = () => {
       />
       <div className="m-2">
         <SearchBar
-          placeholder={"동아리명을 입력하세요"}
+          placeholder={"동아리 검색..."}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
