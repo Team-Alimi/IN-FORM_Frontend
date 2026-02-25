@@ -69,7 +69,6 @@ const ClubListContainer = () => {
   return (
     <div>
       <SectionTitle
-        logoImage={ClubLogo}
         KoreanTitle={"동아리 홍보글"}
         EnglishTitle={"Club promotional article"}
       />

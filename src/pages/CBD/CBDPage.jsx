@@ -52,7 +52,7 @@ const CBDPage = () => {
   if (!club) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 text-center">
-        공지사항을 찾을 수 없습니다.
+        동아리를 찾을 수 없습니다.
       </div>
     );
   }
