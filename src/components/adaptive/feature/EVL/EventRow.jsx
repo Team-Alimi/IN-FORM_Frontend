@@ -1,14 +1,21 @@
 import React from "react";
 import Badge from "../../common/Badge";
+import { STATE_OPTIONS } from "../../../../constants/filterOption";
 
-const EventRow = ({ id, status, title, date, onClick }) => {
+const STATUS_KEY_MAP = {
+  "진행중": "OnGoing",
+  "마감임박": "EndingSoon",
+  "예정": "UpComing",
+  "마감": "Ended",
+};
+
+const EventRow = ({ status, title, date, onClick }) => {
 
   const getBadgeColor = (status) => {
-    if (status === "진행중")  return "text-Ongoing border-Ongoing bg-green-50";
-    if (status === "마감임박") return "text-EndingSoon border-EndingSoon bg-orange-50";
-    if (status === "예정")    return "text-Upcoming border-Upcoming bg-blue-50";
-    if (status === "마감")    return "text-Ended border-Ended bg-gray-50";
-    return "";
+    const key = STATUS_KEY_MAP[status];
+    const opt = STATE_OPTIONS.find((o) => o.key === key);
+    if (!opt) return "bg-gray-100 text-gray-500 border-gray-300 border";
+    return `${opt.backgroundColor} ${opt.textColor} ${opt.borderColor} border`;
   };
 
   return (
