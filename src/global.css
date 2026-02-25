@@ -28,12 +28,12 @@
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoing: #dcfce7;
-  --color-Ended: #FFE2E2;
+  --color-Ended: #d5d5d5;
   --color-UpComing: #d9e7fd;
   --color-EndingSoon: #ffe2e2;
   /*상태 텍스트 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoingText: #00a63e;
-  --color-EndedText: #e7000b;
+  --color-EndedText: #656565;
   --color-UpComingText: #2d6ff5;
   --color-EndingSoonText: #c73b3b;
 
