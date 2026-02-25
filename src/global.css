@@ -1,41 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Roboto", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  --color-primary: #294D7C;
+  --color-primary: #294d7c;
   /* 핵심 요소 - 파란색 */
-  --color-secondary: #E6E7F5;
+  --color-secondary: #e6e7f5;
   /* 핵심 요소 배경 - 하늘색 */
-  --color-text-main: #15171A;
+  --color-text-main: #15171a;
   /* 제목용 - 진한 회색 */
   --color-text-sub: #727272;
   /* 본문,배경용 - 중간 회색 */
-  --color-surface: #F5F5F5;
+  --color-surface: #f5f5f5;
   /* 구분선,배경 - 연한 회색 */
-  --color-background: #FFFFFF;
+  --color-background: #ffffff;
   /* 흰색 */
 
-
   /* 캘린더 카테고리별 색상 */
-  --color-lectureBlue: #4E6D99;
-  --color-clubGreen: #5F9B73;
-  --color-competitionYellow: #C79E33;
-  --color-contestRed: #B85C5C;
-  --color-defaultGray: #6F7A85;
+  --color-lectureBlue: #4e6d99;
+  --color-clubGreen: #5f9b73;
+  --color-competitionYellow: #c79e33;
+  --color-contestRed: #b85c5c;
+  --color-defaultGray: #6f7a85;
 
   /* 카테고리 뱃지 색상 */
-  --color-contest: #9333EA;
+  --color-contest: #9333ea;
   --color-lecture: #059669;
-  --color-scholar: #CA8A04;
-  --color-activity: #2563EB;
+  --color-scholar: #ca8a04;
+  --color-activity: #2563eb;
 
-  /* 상태 색상 */
-  --color-Ongoing: #00A63E;
-  --color-Ended: #656565;
-  --color-Upcoming: #2D6FF5;
-  --color-EndingSoon: #F97316;
+  /*상태 배경 색상[진행중|마감|예정|마감임박]*/
+  --color-Ongoing: #dcfce7;
+  --color-Ended: #d5d5d5;
+  --color-Upcoming: #d9e7fd;
+  --color-EndingSoon: #ffe2e2;
+  /*상태 텍스트 색상[진행중|마감|예정|마감임박]*/
+  --color-OngoingText: #00a63e;
+  --color-EndedText: #e7000b;
+  --color-UpcomingText: #2d6ff5;
 
   /* 반응형 breakpoint */
   --breakpoint-mobile: 431px;

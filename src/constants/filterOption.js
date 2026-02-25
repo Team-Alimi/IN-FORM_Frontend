@@ -1,6 +1,7 @@
 export const FILTER_OPTIONS = [
   {
     key: "CONTEST",
+    category_id: 1,
     label: "공모전/대회",
     color: "bg-contestRed",
     tagBg: "bg-contestRed/30",
@@ -9,6 +10,7 @@ export const FILTER_OPTIONS = [
   },
   {
     key: "LECTURE",
+    category_id: 2,
     label: "특강",
     color: "bg-lectureBlue",
     tagBg: "bg-lectureBlue/30",
@@ -17,6 +19,7 @@ export const FILTER_OPTIONS = [
   },
   {
     key: "SCHOLAR",
+    category_id: 3,
     label: "장학",
     color: "bg-competitionYellow",
     tagBg: "bg-competitionYellow/30",
@@ -25,6 +28,7 @@ export const FILTER_OPTIONS = [
   },
   {
     key: "ACTIVITY",
+    category_id: 4,
     label: "대외활동",
     color: "bg-clubGreen",
     tagBg: "bg-clubGreen/30",
@@ -33,6 +37,7 @@ export const FILTER_OPTIONS = [
   },
   {
     key: "MY",
+    category_id: null,
     label: "북마크",
     color: "bg-clubGreen",
     tagBg: "bg-clubGreen/30",
