@@ -20,27 +20,22 @@
   /* 흰색 */
 
   /* 캘린더 카테고리별 색상 */
-  --color-lectureBlue: #4e6d99;
-  --color-clubGreen: #5f9b73;
-  --color-competitionYellow: #c79e33;
-  --color-contestRed: #b85c5c;
-  --color-defaultGray: #6f7a85;
-
-  /* 카테고리 뱃지 색상 */
-  --color-contest: #9333ea;
-  --color-lecture: #059669;
-  --color-scholar: #ca8a04;
-  --color-activity: #2563eb;
+  --color-contest: #ff6f91;
+  --color-lecture: #ffc75f;
+  --color-scholar: #008f7a;
+  --color-activity: #0081cf;
+  --color-my: #845ec2;
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
-  --color-Ongoing: #dcfce7;
+  --color-OnGoing: #dcfce7;
   --color-Ended: #d5d5d5;
-  --color-Upcoming: #d9e7fd;
+  --color-UpComing: #d9e7fd;
   --color-EndingSoon: #ffe2e2;
   /*상태 텍스트 색상[진행중|마감|예정|마감임박]*/
-  --color-OngoingText: #00a63e;
+  --color-OnGoingText: #00a63e;
   --color-EndedText: #e7000b;
-  --color-UpcomingText: #2d6ff5;
+  --color-UpComingText: #2d6ff5;
+  --color-EndingSoonText: #c73b3b;
 
   /* 반응형 breakpoint */
   --breakpoint-mobile: 431px;
