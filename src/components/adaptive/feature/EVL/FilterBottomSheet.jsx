@@ -2,14 +2,35 @@ import { useState, useEffect, useRef } from "react";
 import BottomSheet from "../../../mobile/common/BottomSheet";
 import { getVendors } from "../../../../api/getVendors";
 import { fetchEvents } from "../../../../api/schoolArticles";
+import { STATE_OPTIONS } from "../../../../constants/filterOption";
+
+const API_TO_STATE_KEY = {
+  OPEN: "OnGoing",
+  ENDING_SOON: "EndingSoon",
+  UPCOMING: "UpComing",
+  CLOSED: "Ended",
+};
 
 const STATUS_OPTIONS = [
-  { value: "ALL",         label: "전체",   selected: "bg-blue-500 text-white border-blue-500",      unselected: "bg-white text-gray-600 border-gray-300" },
-  { value: "CLOSED",      label: "마감",   selected: "bg-gray-500 text-white border-gray-500",       unselected: "bg-white text-gray-600 border-gray-300" },
-  { value: "ENDING_SOON", label: "마감임박", selected: "bg-orange-500 text-white border-orange-500",  unselected: "bg-white text-orange-500 border-orange-300" },
-  { value: "OPEN",        label: "진행중", selected: "bg-green-500 text-white border-green-500",     unselected: "bg-white text-green-600 border-green-300" },
-  { value: "UPCOMING",    label: "예정",   selected: "bg-blue-400 text-white border-blue-400",       unselected: "bg-white text-blue-500 border-blue-300" },
+  { value: "ALL",         label: "전체"   },
+  { value: "OPEN",        label: "진행중" },
+  { value: "ENDING_SOON", label: "마감임박" },
+  { value: "UPCOMING",    label: "예정"   },
+  { value: "CLOSED",      label: "마감"   },
 ];
+
+const getChipClass = (value, isSelected) => {
+  if (value === "ALL") {
+    return isSelected
+      ? "bg-blue-500 text-white border-blue-500"
+      : "bg-white text-gray-600 border-gray-300";
+  }
+  const opt = STATE_OPTIONS.find((o) => o.key === API_TO_STATE_KEY[value]);
+  if (!opt) return isSelected ? "bg-gray-200 text-gray-700 border-gray-300" : "bg-white text-gray-500 border-gray-200";
+  return isSelected
+    ? `${opt.backgroundColor} ${opt.textColor} ${opt.borderColor}`
+    : "bg-white text-gray-500 border-gray-200";
+};
 
 const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) => {
   const [startDate, setStartDate] = useState("");
@@ -119,7 +140,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
               <button
                 key={opt.value}
                 onClick={() => toggleStatus(opt.value)}
-                className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${isSelected ? opt.selected : opt.unselected}`}
+                className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${getChipClass(opt.value, isSelected)}`}
               >
                 {opt.label}
               </button>
