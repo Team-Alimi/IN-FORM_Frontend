@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getStatus } from "../../../../utils/statusUtil";
-import categoryNameMap from "../../../../constants/categoryNameMap";
-import categoryColorMap from "../../../../constants/categoryColorMap";
+import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkButton from "./BookmarkButton";
 import BottomSheet from "../../../mobile/common/BottomSheet";
@@ -44,8 +43,14 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
     vendors: { vendor_name: vendorName }
   };
   const status = getStatus(apiStatus);
-  const displayCategoryName = category_name ? (categoryNameMap[category_name] || category_name) : "";
-  const categoryColor = category_name ? (categoryColorMap[category_name] || "border-gray-300 text-gray-700 bg-gray-100 ml-2") : "";
+  const categoryOpt = category_name
+    ? FILTER_OPTIONS.find((o) => o.key === category_name)
+    : null;
+
+  const displayCategoryName = categoryOpt?.label ?? category_name ?? "";
+  const categoryColor = categoryOpt
+    ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
+    : "border-gray-300 text-gray-700 bg-gray-100 border";
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">

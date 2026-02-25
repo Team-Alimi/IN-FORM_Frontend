@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { getStatus } from "../../../../utils/statusUtil";
-import categoryNameMap from "../../../../constants/categoryNameMap";
-import categoryColorMap from "../../../../constants/categoryColorMap";
+import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 import DetailInfoTitle from "./DetailInfoTitle";
 import BookmarkButton from "./BookmarkButton";
 
@@ -43,14 +42,15 @@ const EventDetail = ({
 
   const status = getStatus(apiStatus);
 
-  const displayCategoryName = category_name
-    ? categoryNameMap[category_name] || category_name
-    : "";
+  const categoryOpt = category_name
+    ? FILTER_OPTIONS.find((o) => o.key === category_name)
+    : null;
 
-  const categoryColor = category_name
-    ? categoryColorMap[category_name] ||
-      "border-gray-300 text-gray-700 bg-gray-100 ml-2"
-    : "";
+  const displayCategoryName = categoryOpt?.label ?? category_name ?? "";
+
+  const categoryColor = categoryOpt
+    ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
+    : "border-gray-300 text-gray-700 bg-gray-100 border";
 
   const imageAttachments = (attachments || []).filter((a) => IMAGE_EXTS.test(a.attachment_url));
   const fileAttachments  = (attachments || []).filter((a) => !IMAGE_EXTS.test(a.attachment_url));

@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   parseDate,
   formatDateKey,
@@ -16,6 +16,9 @@ import CalendarFilterBar from "./CalendarFilterBar";
 import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import MobileEventDetail from "../EVD/MobileEventDetail";
+import { FILTER_OPTIONS } from "../../../../constants/filterOption";
+import { useCalendarPrefetch } from "../../../../hooks/useCalendarPrefetch";
+import SectionTitle from "../../../mobile/common/SectionTitle";
 
 const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
@@ -37,13 +40,26 @@ const CalendarSection = () => {
     const today = new Date();
     return formatMonthKey(today); //'YYYY-MM' 형식
   });
+  useCalendarPrefetch(calendarMonth);
+  // selectedFilter key → category_id 변환 (MY 제외)
+  const categoryIds = selectedFilter
+    .filter((key) => key !== "MY")
+    .map((key) => FILTER_OPTIONS.find((opt) => opt.key === key)?.category_id)
+    .filter(Boolean);
+  const isMyOnly = selectedFilter.includes("MY") || undefined;
 
   // React Query로 월간 일정 데이터 가져오기
   const { data, isLoading, error } = useQuery({
-    queryKey: ["monthlyAll", calendarMonth], // calendarMonth가 바뀌면 재요청
-    queryFn: () => getMonthlyAll({ calendarMonth }),
+    queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 필터 변경 시 재요청
+    queryFn: () =>
+      getMonthlyAll({
+        calendarMonth,
+        category_id: categoryIds,
+        is_my_only: isMyOnly,
+      }),
     staleTime: 60 * 1000 * 10,
     gcTime: 60 * 1000 * 20,
+    placeholderData: keepPreviousData,
   });
 
   // 상세 데이터 페칭 (바텀시트용)
@@ -62,8 +78,9 @@ const CalendarSection = () => {
   // 2. eventsByDate : 일별로 이벤트 매핑
   const eventsByDate = useMemo(() => {
     const eventMap = {};
+    const articles = data?.articles ?? [];
 
-    events.articles.forEach((article) => {
+    articles.forEach((article) => {
       const startDate = parseDate(article.start_date);
       const endDate = parseDate(article.due_date);
       if (!startDate || !endDate) return;
@@ -90,20 +107,7 @@ const CalendarSection = () => {
     });
     console.log(eventMap);
     return eventMap;
-  }, [events]); // events가 변경될 때만 재계산
-
-  // 3. filteredEventsByDate : selectedFilter 기반 필터링
-  const filteredEventsByDate = useMemo(() => {
-    if (selectedFilter.length === 0) return eventsByDate;
-    return Object.fromEntries(
-      Object.entries(eventsByDate)
-        .map(([date, evts]) => [
-          date,
-          evts.filter((e) => selectedFilter.includes(e.category_name)),
-        ])
-        .filter(([, evts]) => evts.length > 0),
-    );
-  }, [eventsByDate, selectedFilter]);
+  }, [data]); // data가 변경될 때만 재계산
 
   /******핸들러 핸들러 핸들러*******/
   //1. 날짜 클릭 핸들러 - CalendarCell에서 전달받은 날짜 처리
@@ -183,16 +187,11 @@ const CalendarSection = () => {
           : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between"
       }
     >
-      <div className="flex flex-row gap-4 items-center mx-4 pt-1">
-        <img src={CalendarLogo} className="w-8 h-8" />
-        <div className="flex flex-col">
-          <div className="font-bold text-md text-gray-800">일정 캘린더</div>
-          <div className="font-medium text-xs text-gray-700">
-            Schedule Caldendar
-          </div>
-        </div>
-      </div>
-
+      <SectionTitle
+        logoImage={CalendarLogo}
+        KoreanTitle={"일정 캘린더"}
+        EnglishTitle={"Schedule Calendar"}
+      />
       <div className="mt-2 mx-2">
         <CalendarFilterBar
           selectedFilter={selectedFilter}
@@ -204,7 +203,7 @@ const CalendarSection = () => {
         <MainCalendar
           currentMonth={calendarMonth}
           selectedDate={currentDate}
-          eventsByDate={filteredEventsByDate}
+          eventsByDate={eventsByDate}
           onSelectDate={handleDateClick}
           onMonthChange={handleMonthChange}
           onOverflowClick={handleOverflowClick}
@@ -213,7 +212,7 @@ const CalendarSection = () => {
       <div className="mb-2 p-1">
         <DaySelectEventList
           ref={eventListRef}
-          events={filteredEventsByDate[currentDate]}
+          events={eventsByDate[currentDate]}
           currentDate={currentDate}
           onArticleClick={handleArticleClick}
         />

@@ -1,7 +1,4 @@
 import { useDeviceStore } from "../../stores/deviceStore";
-import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
-// import HotEventList from "../../components/mobile/feature/HOM/HotEventList"
-import ClubRow from "../../components/adaptive/feature/CBL/ClubRow";
 import ClubListContainer from "../../components/adaptive/feature/CBL/ClubListContainer";
 
 const mockClubData = {

@@ -28,20 +28,20 @@ export default function MobileHeader() {
 
 	return (
 		<header className="w-full flex items-center justify-between px-2 py-1.5 bg-[#ECF0FF]">
-			<div className="flex items-center">
-				<img src={logoIcon} alt="INFORM Logo" className="h-6 mr-1" />
+			<div className="flex items-center mt-1">
+				<img src={logoIcon} alt="INFORM Logo" className="h-6 mr-1 ml-2" />
 				<span
-					className="text-lg font-bold tracking-tight text-black cursor-pointer"
+					className="text-lg font-bold tracking-tight text-black cursor-pointer ml-1"
 					onClick={handleLogoClick}
 				>
-					INFORM
+					IN:FORM
 				</span>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-2 mt-1">
 				{isLogIn && (
 					<button
 						onClick={() => setIsNotificationOpen(true)}
-						className="relative w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-[#ECF0FF] cursor-pointer"
+						className="relative w-9 h-9 flex items-center justify-center rounded-full border border-[#CDCDCD] bg-[#ECF0FF] cursor-pointer"
 					>
 						<img src={bellIcon} alt="알림" className="w-4 h-4" />
 						{unreadCount > 0 && (
@@ -52,11 +52,11 @@ export default function MobileHeader() {
 					</button>
 				)}
 				<button
-					className="flex items-center h-9 px-2.5 rounded-full border border-gray-300 bg-[#ECF0FF] cursor-pointer"
+					className="flex items-center h-9 px-2.5 rounded-full border border-[#CDCDCD] bg-[#ECF0FF] cursor-pointer"
 					onClick={() => navigate("/mypage")}
 				>
 					<img src={userIcon} alt="프로필" className="w-4 h-4 mr-1" />
-					<span className="font-semibold text-sm">{userName}</span>
+					<span className="font-medium text-sm">{userName}</span>
 				</button>
 			</div>
 
