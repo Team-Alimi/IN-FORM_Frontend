@@ -15,6 +15,7 @@ import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 import { useCalendarPrefetch } from "../../../../hooks/useCalendarPrefetch";
+import SectionTitle from "../../../mobile/common/SectionTitle";
 
 const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
@@ -149,16 +150,11 @@ const CalendarSection = () => {
           : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between"
       }
     >
-      <div className="flex flex-row gap-4 items-center mx-4 pt-1">
-        <img src={CalendarLogo} className="w-8 h-8" />
-        <div className="flex flex-col">
-          <div className="font-bold text-md text-gray-800">일정 캘린더</div>
-          <div className="font-medium text-xs text-gray-700">
-            Schedule Caldendar
-          </div>
-        </div>
-      </div>
-
+      <SectionTitle
+        logoImage={CalendarLogo}
+        KoreanTitle={"일정 캘린더"}
+        EnglishTitle={"Schedule Calendar"}
+      />
       <div className="mt-2 mx-2">
         <CalendarFilterBar
           selectedFilter={selectedFilter}
