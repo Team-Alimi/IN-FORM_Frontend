@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getStatus } from "../../../../utils/statusUtil";
 import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 import DetailInfoTitle from "./DetailInfoTitle";
@@ -22,6 +23,7 @@ const EventDetail = ({
   bookmark_count,
   attachments,
 }) => {
+  const navigate = useNavigate();
   const [bookmarkCount, setBookmarkCount] = useState(bookmark_count);
 
   const handleBookmarkToggle = (bookmarked) => {
@@ -57,6 +59,17 @@ const EventDetail = ({
 
   return (
     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="px-6 md:px-8 pt-5">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-sm text-gray-800 hover:text-gray-900 transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          공지사항
+        </button>
+      </div>
       <div className="p-6 md:p-8 border-b border-gray-100">
         <DetailInfoTitle
           status={status}
