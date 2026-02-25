@@ -45,10 +45,12 @@ const HotEventList = () => {
       className={
         isMobile
           ? "bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-3"
-          : "bg-gray-50 p-2 rounded-2xl "
+          : "bg-gray-50  rounded-2xl "
       }
     >
-      <div className="text-sm font-bold">🔥 HOT 공지사항 </div>
+      <div className="text-lg font-bold max-mobile:text-base">
+        🔥 HOT 공지사항{" "}
+      </div>
       {/** <button onClick={() => console.log(articles)}>로그 보기</button>*/}
       <div className="flex flex-row overflow-x-auto max-mobile:scrollbar-hide">
         {articles.map((item) => (
