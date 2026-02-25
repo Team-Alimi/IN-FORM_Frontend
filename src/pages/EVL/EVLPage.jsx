@@ -150,7 +150,7 @@ const EVLPage = () => {
                     onChange={(e) => setSearchText(e.target.value)}
                     placeholder="공지사항 검색..."
                   />
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2 flex items-center justify-between">
                     <button
                       type="button"
                       onClick={() => setIsFilterOpen(true)}
