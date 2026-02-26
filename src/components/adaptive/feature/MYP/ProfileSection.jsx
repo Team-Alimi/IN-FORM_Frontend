@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "../../../../stores/useAuthStore";
 import { getVendors } from "../../../../api/getVendors";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const ProfileSection = ({ onEditMajor }) => {
     const { userInfo, logout } = useAuthStore();
+    const queryClient = useQueryClient();
     const isMobile = useDeviceStore((state) => state.isMobile);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
@@ -24,6 +25,7 @@ const ProfileSection = ({ onEditMajor }) => {
     const handleLogout = () => {
         if (window.confirm("로그아웃 하시겠습니까?")) {
             logout();
+            queryClient.clear(); // 전역 캐시 초기화
         }
     };
 
@@ -84,7 +86,7 @@ const ProfileSection = ({ onEditMajor }) => {
                     <svg
                         className="w-10 h-10 md:w-12 md:h-12 mt-2"
                         fill="currentColor"
-                        viewBox="0 0 24 24"
+                        viewBox="0 2.5 24 24"
                     >
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                     </svg>

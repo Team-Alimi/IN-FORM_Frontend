@@ -42,14 +42,14 @@ const LGNPage = () => {
         // 서버에서 던져준 access_token, refresh_token, user_info를 로컬 상태에 저장!
         login(res.data.access_token, res.data.refresh_token, res.data.user_info);
 
-        // (선택) 신규 유저일 때 특별한 액션을 취할 수도 있음
+        // 신규 유저일 경우 온보딩 페이지로, 기존 유저는 홈 또는 이전 페이지로 이동
         if (res.data.is_new_user) {
-          console.log("신규 가입을 환영합니다!");
+          console.log("신규 가입을 환영합니다! 온보딩으로 이동합니다.");
+          navigate("/onboarding", { replace: true });
+        } else {
+          const from = location.state?.from?.pathname ?? "/";
+          navigate(from, { replace: true });
         }
-
-        // 로그인 이전 페이지 또는 홈으로 이동
-        const from = location.state?.from?.pathname ?? "/";
-        navigate(from, { replace: true });
       } else {
         alert("로그인 처리에 실패했습니다. (응답 구조 이상)");
       }

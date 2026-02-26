@@ -1,9 +1,15 @@
-import React from "react";
 import Badge from "../../../adaptive/common/Badge";
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
+import { FILTER_OPTIONS, STATE_OPTIONS } from "../../../../constants/filterOption";
+
+const STATUS_KEY_MAP = {
+  "진행중": "OnGoing",
+  "마감임박": "EndingSoon",
+  "예정": "UpComing",
+  "마감": "Ended",
+};
 
 const getCategoryBadge = (categoryKey) => {
-  const found = FILTER_OPTIONS.find(opt => opt.key === categoryKey);
+  const found = FILTER_OPTIONS.find((opt) => opt.key === categoryKey);
   if (found) {
     return {
       label: found.label,
@@ -13,15 +19,16 @@ const getCategoryBadge = (categoryKey) => {
   return { label: categoryKey, color: "bg-blue-100 border-blue-300 text-blue-700 border" };
 };
 
+const getStatusBadge = (status) => {
+  const key = STATUS_KEY_MAP[status];
+  const opt = STATE_OPTIONS.find((o) => o.key === key);
+  if (!opt) return { text: status, color: "bg-gray-100 text-gray-500 border-gray-300 border" };
+  return { text: status, color: `${opt.backgroundColor} ${opt.textColor} ${opt.borderColor} border` };
+};
+
 const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, onClick }) => {
-  // 카테고리 뱃지 색상
   const categoryBadge = category ? getCategoryBadge(category) : null;
-  // 상태 뱃지 색상
-  let statusBadge = { text: status, color: "bg-gray-100 text-gray-500" };
-  if (status === "진행중")       statusBadge = { text: status, color: "text-Ongoing border-Ongoing bg-green-50" };
-  else if (status === "마감임박") statusBadge = { text: status, color: "text-EndingSoon border-EndingSoon bg-orange-50" };
-  else if (status === "예정")    statusBadge = { text: status, color: "text-Upcoming border-Upcoming bg-blue-50" };
-  else if (status === "마감")    statusBadge = { text: status, color: "text-Ended border-Ended bg-gray-50" };
+  const statusBadge = getStatusBadge(status);
 
   return (
     <div

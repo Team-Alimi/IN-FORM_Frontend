@@ -13,6 +13,7 @@ import { FiFilter } from "react-icons/fi";
 import { fetchEvents } from "../../api/schoolArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import SectionTitle from "../../components/mobile/common/SectionTitle";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -122,8 +123,8 @@ const EVLPage = () => {
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
-          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
-            {!isMobile && <MiniCalendarSet />}
+          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
+            <MiniCalendarSet />
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
@@ -135,29 +136,29 @@ const EVLPage = () => {
             }
           >
             <div>
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-xl font-bold text-gray-800 w-full sm:w-auto">
-                  📣 공지사항
-                </h2>
-                <div className="w-full sm:w-64">
+              <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
+                {/* 왼쪽: 제목 */}
+                <SectionTitle KoreanTitle="공지사항" EnglishTitle="Notice list" />
+                {/* 오른쪽: 검색바 + 필터/페이지 선택 */}
+                <div className="w-full sm:w-64 flex flex-col gap-2">
                   <SearchBar
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                     placeholder="공지사항 검색..."
                   />
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center justify-between sm:justify-end sm:gap-2">
                     <button
                       type="button"
                       onClick={() => setIsFilterOpen(true)}
-                      className="flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97"
+                      className="flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
                     >
-                      <FiFilter size={18} className="text-gray-800" />
+                      <FiFilter size={14} className="text-gray-800" />
                       <span>필터</span>
                     </button>
                     <select
                       value={pageSize}
                       onChange={(e) => setPageSize(Number(e.target.value))}
-                      className="bg-[#F7FAFC] rounded-[10px] px-3 py-1.5 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] outline-none cursor-pointer"
+                      className="bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
                     >
                       {[5, 10, 20].map((n) => (
                         <option key={n} value={n}>{n}개씩 보기</option>

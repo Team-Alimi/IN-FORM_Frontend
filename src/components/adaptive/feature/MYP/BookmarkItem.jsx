@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeviceStore } from '../../../../stores/deviceStore';
 import Badge from '../../../adaptive/common/Badge';
+import { getStatus } from '../../../../utils/statusUtil';
+import { FILTER_OPTIONS } from '../../../../constants/filterOption';
 
 const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status, bookmarkCount, onDelete }) => {
     const isMobile = useDeviceStore((state) => state.isMobile);
@@ -11,24 +13,15 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
         navigate(`/events/detail/${id}`);
     };
 
-    // 모바일 상태 뱃지 색상 정의
-    const getStatusBadgeMobile = (status) => {
-        if (status === "진행중") return { text: status, color: "bg-green-100 text-green-700 font-bold" };
-        if (status === "예정") return { text: status, color: "bg-red-100 text-red-600 font-bold" };
-        if (status === "마감") return { text: status, color: "bg-gray-100 text-gray-500 font-bold" };
-        return null;
-    };
+    const statusInfo = getStatus(status);
 
-    // 데스크탑 상태 뱃지 색상 정의
-    const getStatusBadgeColorDesktop = (status) => {
-        if (status === "진행중") return "text-Ongoing border-Ongoing bg-blue-50";
-        if (status === "마감") return "text-Ended border-Ended bg-gray-50";
-        if (status === "예정") return "text-Upcoming border-Upcoming bg-red-50";
-        return "";
-    };
+    const categoryOpt = FILTER_OPTIONS.find((o) => o.key === category);
+    const categoryLabel = categoryOpt?.label ?? category ?? "";
+    const categoryColor = categoryOpt
+        ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
+        : "bg-blue-100 border-blue-300 text-blue-700 border";
 
     if (isMobile) {
-        const statusInfo = getStatusBadgeMobile(status);
         return (
             <div
                 onClick={handleItemClick}
@@ -38,14 +31,14 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex gap-2">
                         <Badge
-                            text={category}
-                            color="bg-blue-100 border-blue-300 text-blue-700 border"
+                            text={categoryLabel}
+                            color={categoryColor}
                             className="text-xs px-2 py-0.5 font-medium"
                         />
                         {statusInfo && (
                             <Badge
                                 text={statusInfo.text}
-                                color={statusInfo.color}
+                                color={`${statusInfo.color} border`}
                                 className="text-xs px-2 py-0.5"
                             />
                         )}
@@ -89,14 +82,14 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
                 <div className="flex-1">
                     <div className="flex gap-2 mb-2">
                         <Badge
-                            text={category}
-                            color="text-[#004898] border-blue-200 bg-blue-50 border"
+                            text={categoryLabel}
+                            color={categoryColor}
                             className="text-[10px] px-2 py-0.5"
                         />
-                        {status && (
+                        {statusInfo && (
                             <Badge
-                                text={status}
-                                color={getStatusBadgeColorDesktop(status)}
+                                text={statusInfo.text}
+                                color={`${statusInfo.color} border`}
                                 className="text-[10px] px-2 py-0.5"
                             />
                         )}
