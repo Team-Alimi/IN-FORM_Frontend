@@ -72,6 +72,7 @@ function App() {
             <MYPage />
           }
         />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

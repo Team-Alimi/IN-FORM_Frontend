@@ -5,8 +5,14 @@ import api from "./axios";
  * @param {Object} params - page, size, vendor_id, keyword 등
  * @returns {Promise}
  */
-export const fetchClubs = (params) => {
-  return api.get("/api/v1/club_articles", { params });
+export const fetchClubs = async (params) => {
+  try {
+    const res = await api.get("/api/v1/club_articles", { params });
+    return res;
+  } catch (error) {
+    console.log("API 호출 오류", error);
+    throw error;
+  }
 };
 
 /**

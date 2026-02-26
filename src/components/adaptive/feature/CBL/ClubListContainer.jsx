@@ -5,7 +5,6 @@ import {
   fetchClubs /*, fetchImminentClubs */,
 } from "../../../../api/clubArticles";
 import { useState, useEffect } from "react";
-import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 import SectionTitle from "../../../mobile/common/SectionTitle";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 const CLUB_PAGE_COUNT = 4;
@@ -19,11 +18,11 @@ const ClubListContainer = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageInfo, setPageInfo] = useState({
-    current_page: 1,
-    total_pages: 1,
-    total_articles: 0,
-  });
+  // const [pageInfo, setPageInfo] = useState({
+  //   current_page: 1,
+  //   total_pages: 1,
+  //   total_articles: 0,
+  // });
 
   // searchText 변경 후 400ms 뒤에 debouncedSearch 업데이트
   useEffect(() => {
@@ -33,7 +32,7 @@ const ClubListContainer = () => {
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["clubs", debouncedSearch, currentPage], // ← 이 key가 기준
     queryFn: async () => {
       const res = await fetchClubs({
@@ -65,6 +64,24 @@ const ClubListContainer = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg text-gray-600">로딩 중...</div>
+      </div>
+    );
+  }
+  // 에러 상태 처리
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500"> 동아리 데이터를 불러오지 못했습니다.</p>
+        <button onClick={() => refetch()}>새로고침</button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <SectionTitle

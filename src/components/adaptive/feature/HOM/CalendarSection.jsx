@@ -10,7 +10,7 @@ import DaySelectEventList from "./DaySelectEventList";
 import { getMonthlyAll } from "../../../../api/getMonthlyAll";
 import { fetchEventDetail } from "../../../../api/schoolArticles";
 import { fetchClubDetail } from "../../../../api/clubArticles";
-import ErrorPage from "../../../../pages/NOT/ErrorPage";
+
 import MainCalendar from "./MainCalendar";
 import CalendarFilterBar from "./CalendarFilterBar";
 import { useDeviceStore } from "../../../../stores/deviceStore";
@@ -48,7 +48,7 @@ const CalendarSection = () => {
   const isMyOnly = selectedFilter.includes("MY") || undefined;
 
   // React Query로 월간 일정 데이터 가져오기
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 필터 변경 시 재요청
     queryFn: () =>
       getMonthlyAll({
@@ -62,7 +62,11 @@ const CalendarSection = () => {
   });
 
   // 상세 데이터 페칭 (바텀시트용)
-  const { data: detailData, isLoading: isDetailLoading, isFetching: isDetailFetching } = useQuery({
+  const {
+    data: detailData,
+    isLoading: isDetailLoading,
+    isFetching: isDetailFetching,
+  } = useQuery({
     queryKey: ["eventDetail", selectedEventId, selectedCategory],
     queryFn: () =>
       selectedCategory === "CLUB"
@@ -72,8 +76,6 @@ const CalendarSection = () => {
     staleTime: 60 * 1000 * 5,
   });
 
-  // API 데이터가 로드되면 사용, 아니면 빈 배열
-  const events = data || { articles: [] };
   // 2. eventsByDate : 일별로 이벤트 매핑
   const eventsByDate = useMemo(() => {
     const eventMap = {};
@@ -143,7 +145,7 @@ const CalendarSection = () => {
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
     // 닫힐 때 선택된 ID 초기화 (선택 사항, 애니메이션 고려하여 유지 가능)
-    // setSelectedEventId(null); 
+    // setSelectedEventId(null);
   };
   //4. 필터 토글 핸들러
   const handleFilterClick = (key) => {
@@ -161,7 +163,12 @@ const CalendarSection = () => {
   }
   // 에러 상태 처리
   if (error) {
-    return <ErrorPage />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">캘린더 데이터를 불러오지 못했습니다.</p>
+        <button onClick={() => refetch()}>새로고침</button>
+      </div>
+    );
   }
   const handleArticleClick = (article_id, category) => {
     if (isMobile) {
