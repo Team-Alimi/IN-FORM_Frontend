@@ -21,8 +21,13 @@ export const fetchClubs = async (params) => {
  * @returns {Promise}
  */
 export const fetchClubDetail = async (id) => {
-  const res = await api.get(`/api/v1/club_articles/${id}`);
-  return res.data.data;
+  try {
+    const res = await api.get(`/api/v1/club_articles/${id}`);
+    return res.data.data;
+  } catch (error) {
+    console.error("동아리 상세 조회 실패:", error);
+    throw error;
+  }
 };
 
 // 마감임박 동아리 공지사항 목록 조회 (현재 미사용, 필요시 주석 해제)

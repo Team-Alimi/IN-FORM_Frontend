@@ -7,6 +7,11 @@ import instance from "./axios";
  * @returns {Promise<boolean>} true: 등록됨, false: 해제됨
  */
 export async function postBookmark(article_type, article_id) {
-  const res = await instance.post("/api/v1/bookmarks", { article_type, article_id });
-  return res.data.data;
+  try {
+    const res = await instance.post("/api/v1/bookmarks", { article_type, article_id });
+    return res.data.data;
+  } catch (error) {
+    console.error("북마크 처리 실패:", error);
+    throw error;
+  }
 }
