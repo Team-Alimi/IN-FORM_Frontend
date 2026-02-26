@@ -7,7 +7,6 @@ import {
 import { useState, useEffect } from "react";
 import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 import SectionTitle from "../../../mobile/common/SectionTitle";
-import ClubLogo from "../../../../assets/icons/ClubLogo.png";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 const CLUB_PAGE_COUNT = 4;
 const DEBOUNCE_DELAY = 400;
@@ -69,7 +68,6 @@ const ClubListContainer = () => {
   return (
     <div>
       <SectionTitle
-        logoImage={ClubLogo}
         KoreanTitle={"동아리 홍보글"}
         EnglishTitle={"Club promotional article"}
       />

@@ -5,8 +5,9 @@ const CalendarFilterBar = ({ selectedFilter, onClick }) => {
     <div>
       {FILTER_OPTIONS.map((item) => {
         const isSelected = selectedFilter.includes(item.key);
+        let category = item.color;
         const variant = isSelected
-          ? "bg-blue-500 text-white"
+          ? `${category} text-white`
           : "bg-gray-200 text-gray-800";
         return (
           <button

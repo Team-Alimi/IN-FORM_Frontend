@@ -11,7 +11,6 @@ import { getMonthlyAll } from "../../../../api/getMonthlyAll";
 import ErrorPage from "../../../../pages/NOT/ErrorPage";
 import MainCalendar from "./MainCalendar";
 import CalendarFilterBar from "./CalendarFilterBar";
-import CalendarLogo from "../../../../assets/icons/calendarLogo.png";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 import { useCalendarPrefetch } from "../../../../hooks/useCalendarPrefetch";
@@ -151,7 +150,6 @@ const CalendarSection = () => {
       }
     >
       <SectionTitle
-        logoImage={CalendarLogo}
         KoreanTitle={"일정 캘린더"}
         EnglishTitle={"Schedule Calendar"}
       />

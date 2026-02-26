@@ -6,7 +6,7 @@
 export const getStatus = (apiStatus) => {
   const statusMap = {
     OPEN:         { text: "진행중",  color: "text-Ongoing bg-green-50 border-Ongoing" },
-    ENDING_SOON:  { text: "마감임박", color: "text-EndingSoon bg-orange-50 border-EndingSoon" },
+    ENDING_SOON:  { text: "마감임박", color: "text-EndingSoonText bg-EndingSoon border-EndingSoon" },
     UPCOMING:     { text: "예정",    color: "text-Upcoming bg-blue-50 border-Upcoming" },
     CLOSED:       { text: "마감",    color: "text-Ended bg-gray-100 border-Ended" },
   };
