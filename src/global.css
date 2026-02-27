@@ -20,11 +20,11 @@
   /* 흰색 */
 
   /* 캘린더 카테고리별 색상 */
-  --color-contest: #ff6f91;
-  --color-lecture: #f0ae33;
-  --color-scholar: #008f7a;
-  --color-activity: #0081cf;
-  --color-my: #845ec2;
+  --color-contest: #FF5C00;
+  --color-lecture: #7C3AED;
+  --color-scholar: #10B981;
+  --color-activity: #FACC15;
+  --color-my: #FB7185;
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoing: #dcfce7;
