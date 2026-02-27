@@ -33,6 +33,7 @@ const EVLPage = () => {
     startDate: "",
     endDate: "",
     selectedStatuses: ["ALL"],
+    categoryIds: [],
     vendorIds: [],
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -55,6 +56,7 @@ const EVLPage = () => {
           status: activeFilters.selectedStatuses.includes("ALL")
             ? undefined
             : activeFilters.selectedStatuses.join(","),
+          category_id: activeFilters.categoryIds.length > 0 ? activeFilters.categoryIds.join(",") : undefined,
         };
         const res = await fetchEvents(params);
 
@@ -79,7 +81,7 @@ const EVLPage = () => {
 
     loadEvents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(","), activeFilters.selectedStatuses.join(",")]);
+  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(","), activeFilters.selectedStatuses.join(","), activeFilters.categoryIds.join(",")]);
 
   useEffect(() => {
     setCurrentPage(1);

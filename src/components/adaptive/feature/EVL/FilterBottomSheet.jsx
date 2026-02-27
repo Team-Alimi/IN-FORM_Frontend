@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import BottomSheet from "../../../mobile/common/BottomSheet";
 import { getVendors } from "../../../../api/getVendors";
 import { fetchEvents } from "../../../../api/schoolArticles";
-import { STATE_OPTIONS } from "../../../../constants/filterOption";
+import { STATE_OPTIONS, FILTER_OPTIONS } from "../../../../constants/filterOption";
+
+const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.category_id !== null);
 
 const API_TO_STATE_KEY = {
   OPEN: "OnGoing",
@@ -36,6 +38,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
   const [selectedVendorIds, setSelectedVendorIds] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
@@ -52,9 +55,6 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(async () => {
       try {
-        const statusParam = selectedStatuses.includes("ALL")
-          ? undefined
-          : selectedStatuses.join(",");
         const params = {
           page: 1,
           size: 1,
@@ -62,7 +62,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           start_date: startDate || undefined,
           end_date: endDate || undefined,
           vendor_id: selectedVendorIds.length > 0 ? selectedVendorIds.join(",") : undefined,
-          status: statusParam,
+          status: selectedStatuses.includes("ALL") ? undefined : selectedStatuses.join(","),
+          category_id: selectedCategoryIds.length > 0 ? selectedCategoryIds.join(",") : undefined,
         };
         const res = await fetchEvents(params);
         const apiData = res.data?.data;
@@ -73,7 +74,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       }
     }, 300);
     return () => clearTimeout(timerRef.current);
-  }, [startDate, endDate, selectedVendorIds, keyword, selectedStatuses]);
+  }, [startDate, endDate, selectedVendorIds, keyword, selectedStatuses, selectedCategoryIds]);
 
   const toggleStatus = (value) => {
     if (value === "ALL") {
@@ -90,6 +91,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     });
   };
 
+  const toggleCategory = (id) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+    );
+  };
+
   const toggleVendor = (id) => {
     setSelectedVendorIds((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
@@ -100,11 +107,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setStartDate("");
     setEndDate("");
     setSelectedStatuses(["ALL"]);
+    setSelectedCategoryIds([]);
     setSelectedVendorIds([]);
   };
 
   const handleApply = () => {
-    onApply({ startDate, endDate, selectedStatuses, vendorIds: selectedVendorIds });
+    onApply({ startDate, endDate, selectedStatuses, categoryIds: selectedCategoryIds, vendorIds: selectedVendorIds });
     onClose();
   };
 
@@ -145,6 +153,31 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
                 key={opt.value}
                 onClick={() => toggleStatus(opt.value)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${getChipClass(opt.value, isSelected)}`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 카테고리 */}
+      <div className="mb-6">
+        <p className="text-[13px] font-semibold text-gray-800 mb-2">
+          카테고리 <span className="text-gray-500 font-normal">Category</span>
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORY_OPTIONS.map((opt) => {
+            const isSelected = selectedCategoryIds.includes(opt.category_id);
+            return (
+              <button
+                key={opt.category_id}
+                onClick={() => toggleCategory(opt.category_id)}
+                className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
+                  isSelected
+                    ? `${opt.tagBg} ${opt.textColor} ${opt.borderColor}`
+                    : "bg-white text-gray-500 border-gray-200"
+                }`}
               >
                 {opt.label}
               </button>
