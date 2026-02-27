@@ -115,6 +115,13 @@ const CalendarSection = () => {
   const handleDateClick = (date) => {
     const dateKey = formatDateKey(date); // Date 객체 → "2025-11-16"
     setCurrentDate(dateKey);
+
+    if (eventListRef.current) {
+      eventListRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
   //2. Overflow 버튼 클릭 핸들러 (+n 클릭 시)
   const handleOverflowClick = (dateKey) => {
