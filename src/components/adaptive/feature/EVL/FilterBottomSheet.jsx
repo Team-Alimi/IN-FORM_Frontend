@@ -47,19 +47,14 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       .catch(() => {});
   }, []);
 
-  // 필터 변경 시 미리 카운트 조회
-  // 주의: API가 status 파라미터를 지원하지 않으므로, 상태 필터가 활성화된 경우
-  // 정확한 카운트를 제공할 수 없어 카운트 표시를 숨깁니다.
+  // 필터 변경 시 미리 카운트 조회 (날짜 입력은 300ms 디바운스)
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
-
-    if (!selectedStatuses.includes("ALL")) {
-      setPreviewCount(null);
-      return;
-    }
-
     timerRef.current = setTimeout(async () => {
       try {
+        const statusParam = selectedStatuses.includes("ALL")
+          ? undefined
+          : selectedStatuses.join(",");
         const params = {
           page: 1,
           size: 1,
@@ -67,6 +62,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           start_date: startDate || undefined,
           end_date: endDate || undefined,
           vendor_id: selectedVendorIds.length > 0 ? selectedVendorIds.join(",") : undefined,
+          status: statusParam,
         };
         const res = await fetchEvents(params);
         const apiData = res.data?.data;

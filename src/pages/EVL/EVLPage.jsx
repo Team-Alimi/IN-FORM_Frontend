@@ -52,6 +52,9 @@ const EVLPage = () => {
           start_date: activeFilters.startDate || undefined,
           end_date: activeFilters.endDate || undefined,
           vendor_id: activeFilters.vendorIds.length > 0 ? activeFilters.vendorIds.join(",") : undefined,
+          status: activeFilters.selectedStatuses.includes("ALL")
+            ? undefined
+            : activeFilters.selectedStatuses.join(","),
         };
         const res = await fetchEvents(params);
 
@@ -76,7 +79,7 @@ const EVLPage = () => {
 
     loadEvents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(",")]);
+  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(","), activeFilters.selectedStatuses.join(",")]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -84,6 +87,7 @@ const EVLPage = () => {
 
   const totalPages = pageInfo.total_pages || 1;
 
+  // 서버에서 status 필터링되어 오므로 정렬만 수행
   const sortedEvents = useMemo(() => {
     if (!events) return [];
 
@@ -94,12 +98,8 @@ const EVLPage = () => {
       return 1;
     };
 
-    const filtered = activeFilters.selectedStatuses.includes("ALL")
-      ? events
-      : events.filter((e) => activeFilters.selectedStatuses.includes(e.status));
-
-    return [...filtered].sort((a, b) => score(b.status) - score(a.status));
-  }, [events, activeFilters.selectedStatuses]);
+    return [...events].sort((a, b) => score(b.status) - score(a.status));
+  }, [events]);
 
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
