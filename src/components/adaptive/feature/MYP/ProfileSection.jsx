@@ -4,7 +4,7 @@ import useAuthStore from "../../../../stores/useAuthStore";
 import { getVendors } from "../../../../api/getVendors";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 
-const ProfileSection = ({ onEditMajor }) => {
+const ProfileSection = ({ onEditMajor, onDeleteAccount }) => {
     const { userInfo, logout } = useAuthStore();
     const queryClient = useQueryClient();
     const isMobile = useDeviceStore((state) => state.isMobile);
@@ -71,9 +71,15 @@ const ProfileSection = ({ onEditMajor }) => {
                             </button>
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors border-t border-gray-50 flex items-center gap-2"
+                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors border-t border-gray-50 flex items-center gap-2"
                             >
                                 <span>로그아웃</span>
+                            </button>
+                            <button
+                                onClick={() => { onDeleteAccount?.(); setIsMenuOpen(false); }}
+                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors border-t border-gray-50 flex items-center gap-2"
+                            >
+                                <span>회원 탈퇴</span>
                             </button>
                         </div>
                     )}
