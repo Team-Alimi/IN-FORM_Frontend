@@ -43,7 +43,7 @@ const LGNPage = () => {
         login(res.data.access_token, res.data.refresh_token, res.data.user_info);
 
         // 신규 유저일 경우 온보딩 페이지로, 기존 유저는 홈 또는 이전 페이지로 이동
-        if (res.data.is_new_user) {
+        if (res.data.new_user) {
           console.log("신규 가입을 환영합니다! 온보딩으로 이동합니다.");
           navigate("/onboarding", { replace: true });
         } else {
