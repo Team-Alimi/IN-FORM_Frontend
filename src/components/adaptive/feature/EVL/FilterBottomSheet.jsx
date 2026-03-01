@@ -3,6 +3,7 @@ import BottomSheet from "../../../mobile/common/BottomSheet";
 import { getVendors } from "../../../../api/getVendors";
 import { fetchEvents } from "../../../../api/schoolArticles";
 import { STATE_OPTIONS, FILTER_OPTIONS } from "../../../../constants/filterOption";
+import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.category_id !== null);
 
@@ -35,6 +36,7 @@ const getChipClass = (value, isSelected) => {
 };
 
 const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) => {
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
@@ -133,7 +135,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            {!startDate && (
+            {isMobile && !startDate && (
               <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
                 시작일 선택
               </span>
@@ -147,7 +149,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           </div>
           <span className="text-gray-400 text-sm">~</span>
           <div className="relative flex-1">
-            {!endDate && (
+            {isMobile && !endDate && (
               <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
                 종료일 선택
               </span>
