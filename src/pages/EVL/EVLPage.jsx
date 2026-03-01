@@ -52,11 +52,17 @@ const EVLPage = () => {
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
           start_date: activeFilters.startDate || undefined,
           end_date: activeFilters.endDate || undefined,
-          vendor_id: activeFilters.vendorIds.length > 0 ? activeFilters.vendorIds.join(",") : undefined,
+          vendor_id:
+            activeFilters.vendorIds.length > 0
+              ? activeFilters.vendorIds.join(",")
+              : undefined,
           status: activeFilters.selectedStatuses.includes("ALL")
             ? undefined
             : activeFilters.selectedStatuses.join(","),
-          category_id: activeFilters.categoryIds.length > 0 ? activeFilters.categoryIds.join(",") : undefined,
+          category_id:
+            activeFilters.categoryIds.length > 0
+              ? activeFilters.categoryIds.join(",")
+              : undefined,
         };
         const res = await fetchEvents(params);
 
@@ -80,8 +86,17 @@ const EVLPage = () => {
     };
 
     loadEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(","), activeFilters.selectedStatuses.join(","), activeFilters.categoryIds.join(",")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentPage,
+    pageSize,
+    searchText,
+    activeFilters.startDate,
+    activeFilters.endDate,
+    activeFilters.vendorIds.join(","),
+    activeFilters.selectedStatuses.join(","),
+    activeFilters.categoryIds.join(","),
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -95,8 +110,8 @@ const EVLPage = () => {
 
     const score = (status) => {
       if (status === "ENDING_SOON") return 4;
-      if (status === "OPEN")        return 3;
-      if (status === "UPCOMING")    return 2;
+      if (status === "OPEN") return 3;
+      if (status === "UPCOMING") return 2;
       return 1;
     };
 
@@ -122,7 +137,7 @@ const EVLPage = () => {
       }
     >
       {isMobile ? <MobileHeader /> : <TabBar />}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-2 max-mobile:py-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
@@ -140,7 +155,10 @@ const EVLPage = () => {
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                 {/* 왼쪽: 제목 */}
-                <SectionTitle KoreanTitle="공지사항" EnglishTitle="Notice list" />
+                <SectionTitle
+                  KoreanTitle="공지사항"
+                  EnglishTitle="Notice list"
+                />
                 {/* 오른쪽: 검색바 + 필터/페이지 선택 */}
                 <div className="w-full sm:w-64 flex flex-col gap-2">
                   <SearchBar
@@ -163,7 +181,9 @@ const EVLPage = () => {
                       className="bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
                     >
                       {[5, 10, 20].map((n) => (
-                        <option key={n} value={n}>{n}개씩 보기</option>
+                        <option key={n} value={n}>
+                          {n}개씩 보기
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -234,10 +254,19 @@ const EVLPage = () => {
 
                   let prev = null;
                   for (let i = 1; i <= totalPages; i++) {
-                    if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+                    if (
+                      i === 1 ||
+                      i === totalPages ||
+                      (i >= left && i <= right)
+                    ) {
                       if (prev !== null && i - prev > 1) {
                         pages.push(
-                          <span key={`ellipsis-${i}`} className="px-1 text-gray-400 text-sm select-none">…</span>
+                          <span
+                            key={`ellipsis-${i}`}
+                            className="px-1 text-gray-400 text-sm select-none"
+                          >
+                            …
+                          </span>,
                         );
                       }
                       pages.push(
@@ -251,7 +280,7 @@ const EVLPage = () => {
                           }`}
                         >
                           {i}
-                        </button>
+                        </button>,
                       );
                       prev = i;
                     }
