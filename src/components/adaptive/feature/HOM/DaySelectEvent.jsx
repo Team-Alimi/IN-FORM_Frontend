@@ -3,10 +3,9 @@ import { FILTER_OPTIONS } from "../../../../constants/filterOption";
 const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
   const HandleEventClick = () => {
     onArticleClick(event.article_id, event.category_name);
-    console.log("eventClicked : ", event.category_name);
   };
 
-  const option = FILTER_OPTIONS.find((o) => o.key === event.category_name);
+  const option = FILTER_OPTIONS.find((o) => o.key === event.category_name?.toUpperCase());
   const category = option?.label ?? "기타";
 
   if (isMini) {
