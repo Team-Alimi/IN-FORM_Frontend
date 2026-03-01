@@ -3,7 +3,6 @@ import BottomSheet from "../../../mobile/common/BottomSheet";
 import { getVendors } from "../../../../api/getVendors";
 import { fetchEvents } from "../../../../api/schoolArticles";
 import { STATE_OPTIONS, FILTER_OPTIONS } from "../../../../constants/filterOption";
-import { useDeviceStore } from "../../../../stores/deviceStore";
 
 const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.category_id !== null);
 
@@ -36,7 +35,6 @@ const getChipClass = (value, isSelected) => {
 };
 
 const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) => {
-  const isMobile = useDeviceStore((state) => state.isMobile);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
@@ -134,31 +132,21 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            {isMobile && !startDate && (
-              <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
-                시작일 선택
-              </span>
-            )}
+          <div className="flex-1">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-[#F4F4F4] rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
             />
           </div>
           <span className="text-gray-400 text-sm">~</span>
-          <div className="relative flex-1">
-            {isMobile && !endDate && (
-              <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
-                종료일 선택
-              </span>
-            )}
+          <div className="flex-1">
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full bg-[#F4F4F4] rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
             />
           </div>
         </div>
