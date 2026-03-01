@@ -1,4 +1,3 @@
-import MockData from "../../../mocks/HOM/maincalendarMock.json";
 import MiniCalendar from "./MiniCalendar";
 import { parseDate, formatDateKey, formatMonthKey } from "../../../utils/dateUtil";
 import { useState, useMemo } from "react";
@@ -6,6 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getMonthlyAll } from "../../../api/getMonthlyAll";
 import MiniCalendarEventList from "./MiniCalendarEventList";
 import { useNavigate } from "react-router-dom";
+import { FILTER_OPTIONS } from "../../../constants/filterOption";
+
+const ALL_CATEGORY_IDS = FILTER_OPTIONS
+  .filter((opt) => opt.category_id !== null)
+  .map((opt) => opt.category_id);
 
 const MiniCalendarSet = () => {
   const navigate = useNavigate();
@@ -27,10 +31,10 @@ const MiniCalendarSet = () => {
     }
   };
 
-  // React Query로 API 데이터 가져오기
+  // React Query로 API 데이터 가져오기 (전체 카테고리 명시 요청)
   const { data, isLoading, error } = useQuery({
-    queryKey: ["monthlyAll", calendarMonth], // calendarMonth가 바뀌면 재요청
-    queryFn: () => getMonthlyAll({ calendarMonth }), // 함수로 래핑
+    queryKey: ["monthlyAll", calendarMonth, "ALL"],
+    queryFn: () => getMonthlyAll({ calendarMonth, category_id: ALL_CATEGORY_IDS }),
   });
 
   const events = useMemo(() => data || { articles: [] }, [data]);

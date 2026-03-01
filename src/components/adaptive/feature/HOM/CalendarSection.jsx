@@ -154,11 +154,20 @@ const CalendarSection = () => {
     // 닫힐 때 선택된 ID 초기화 (선택 사항, 애니메이션 고려하여 유지 가능)
     // setSelectedEventId(null);
   };
-  //4. 필터 토글 핸들러
+  //4. 필터 토글 핸들러 (MY는 단독 선택, 카테고리 필터와 상호 배타적)
   const handleFilterClick = (key) => {
-    setSelectedFilter((prev) =>
-      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key],
-    );
+    setSelectedFilter((prev) => {
+      if (key === "MY") {
+        // MY 토글: 이미 선택됐으면 해제, 아니면 MY만 단독 선택
+        return prev.includes("MY") ? prev.filter((f) => f !== "MY") : ["MY"];
+      }
+      // 카테고리 필터 클릭 시: MY 제거 후 해당 필터 토글
+      const withoutMY = prev.filter((f) => f !== "MY");
+      if (withoutMY.includes(key)) {
+        return withoutMY.filter((f) => f !== key);
+      }
+      return [...withoutMY, key];
+    });
   };
   /**로딩 상태 처리*/
   if (isLoading) {

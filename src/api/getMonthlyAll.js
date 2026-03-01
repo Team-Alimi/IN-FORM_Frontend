@@ -19,7 +19,7 @@ export async function getMonthlyAll({
       params: {
         year,
         month,
-        category_id: category_id ? category_id.join(",") : undefined,
+        category_id: category_id?.length > 0 ? category_id.join(",") : undefined,
         is_my_only: is_my_only || undefined,
       },
     });
