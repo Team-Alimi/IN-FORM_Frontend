@@ -141,8 +141,8 @@ const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, l
             rel="noopener noreferrer"
             className="w-full max-w-md inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors shadow-sm text-m bg-gray-200 text-gray-700 hover:bg-gray-300"
           >
-            <img src={urlIcon} alt="원문 링크" className="w-5 h-5" />
-            원문 보러가기
+            <img src={urlIcon} alt="지원 링크" className="w-5 h-5" />
+            지원하러 가기
           </a>
         </div>
       )}
