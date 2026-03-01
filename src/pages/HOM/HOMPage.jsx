@@ -6,6 +6,7 @@ import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchClubs } from "../../api/clubArticles";
@@ -29,7 +30,7 @@ const HOMPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
@@ -60,7 +61,12 @@ const HOMPage = () => {
         </div>
       </div>
 
-      {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
+      {isMobile ? (
+        <>
+          <MobileFooter />
+          <MobileTabBar activeIndex={0} />
+        </>
+      ) : <Footer />}
     </div>
   );
 };

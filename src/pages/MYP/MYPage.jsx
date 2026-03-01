@@ -6,6 +6,7 @@ import BookmarkSection from "../../components/adaptive/feature/MYP/BookmarkSecti
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 import DepartmentEditSheet from "../../components/adaptive/feature/MYP/DepartmentEditSheet";
 import DepartmentEditModal from "../../components/adaptive/feature/MYP/DepartmentEditModal";
 import AccountDeleteSheet from "../../components/adaptive/feature/MYP/AccountDeleteSheet";
@@ -18,7 +19,7 @@ const MYPage = () => {
 
     if (isMobile) {
         return (
-            <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20">
+            <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA]">
                 <MobileHeader />
                 <main className="flex-1 w-full px-4 py-6">
                     <ProfileSection
@@ -27,6 +28,7 @@ const MYPage = () => {
                     />
                     <BookmarkSection />
                 </main>
+                <MobileFooter />
                 <MobileTabBar activeIndex={3} />
 
                 <DepartmentEditSheet

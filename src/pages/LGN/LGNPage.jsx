@@ -110,7 +110,7 @@ const LGNPage = () => {
             {/* 하단 안내 푸터 (시안의 둥근 박스 반영) */}
             <div className="mt-auto px-6 pb-10">
               <div className="bg-gray-100/60 rounded-[40px] py-8 px-6 border border-gray-200/30 shadow-sm">
-                <p className="text-[12px] md:text-[13px] text-gray-500 font-bold text-center leading-[1.6]">
+                <p className="text-[11px] md:text-[13px] text-gray-500 font-bold text-center leading-[1.6]">
                   인하대학교 재학생 및 교직원만 가입 가능합니다.<br />
                   <span className="opacity-90">(@inha.edu 또는 @inha.ac.kr 메일)</span>
                 </p>

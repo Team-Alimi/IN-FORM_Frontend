@@ -4,6 +4,7 @@ import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
 import { fetchEventDetail } from "../../api/schoolArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
@@ -58,7 +59,7 @@ const EVDPage = () => {
   }
 
   return (
-    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20" : "min-h-screen flex flex-col bg-gray-50"}>
+    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]" : "min-h-screen flex flex-col bg-gray-50"}>
       {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <EventDetail
@@ -76,7 +77,12 @@ const EVDPage = () => {
           attachments={event.attachments}
         />
       </div>
-      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      {isMobile ? (
+        <>
+          <MobileFooter />
+          <MobileTabBar activeIndex={1} />
+        </>
+      ) : <Footer />}
     </div>
   );
 };

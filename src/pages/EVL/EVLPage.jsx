@@ -15,6 +15,7 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import SectionTitle from "../../components/mobile/common/SectionTitle";
 import useEVLFilterStore from "../../stores/useEVLFilterStore";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -112,7 +113,7 @@ const EVLPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
@@ -270,7 +271,12 @@ const EVLPage = () => {
           </main>
         </div>
       </div>
-      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      {isMobile ? (
+        <>
+          <MobileFooter />
+          <MobileTabBar activeIndex={1} />
+        </>
+      ) : <Footer />}
       <FilterBottomSheet
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
