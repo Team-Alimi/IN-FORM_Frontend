@@ -8,6 +8,30 @@ import BookmarkButton from "./BookmarkButton";
 const isHTML = (str) => str && /<\/?(p|br|div|span|img|a|strong|b|i|u|em|table|thead|tbody|tr|td|th|ul|ol|li|h[1-6])(\s|>|\/)/i.test(str);
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
 
+// HTML 콘텐츠: <a> 태그에 target="_blank" 추가 (이미 있는 경우 제외)
+const processHTML = (html) =>
+  html.replace(/<a(?![^>]*target=)([^>]*)>/g, '<a$1 target="_blank" rel="noopener noreferrer">');
+
+// 일반 텍스트 콘텐츠: URL을 하이퍼링크로 변환
+const linkifyText = (text) => {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline break-all"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
 
 const EventDetail = ({
   articleId,
@@ -90,11 +114,11 @@ const EventDetail = ({
         {isHTML(content) ? (
           <div
             className="prose max-w-none text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: processHTML(content) }}
           />
         ) : (
           <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">
-            {content}
+            {linkifyText(content)}
           </div>
         )}
 
