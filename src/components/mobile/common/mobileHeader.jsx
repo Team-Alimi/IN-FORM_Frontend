@@ -27,7 +27,10 @@ export default function MobileHeader() {
 	const unreadCount = unreadData?.unread_count || 0;
 
 	return (
-		<header className="w-full flex items-center justify-between px-2 py-1.5 bg-[#ECF0FF]">
+		<>
+		{/* 헤더 고정 */}
+		<div className="h-[52px]" />
+		<header className="fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-2 py-1.5 bg-[#ECF0FF]">
 			<div className="flex items-center mt-1">
 				<img src={logoIcon} alt="INFORM Logo" className="h-6 mr-1 ml-2" />
 				<span
@@ -66,5 +69,6 @@ export default function MobileHeader() {
 				onClose={() => setIsNotificationOpen(false)}
 			/>
 		</header>
+		</>
 	);
 }

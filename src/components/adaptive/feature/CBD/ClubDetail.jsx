@@ -4,6 +4,30 @@ import urlIcon from "../../../../assets/icons/url.svg";
 
 const isHTML = (str) => str && /<\/?(p|br|div|span|img|a|strong|b|i|u|em|table|thead|tbody|tr|td|th|ul|ol|li|h[1-6])(\s|>|\/)/i.test(str);
 
+// HTML 콘텐츠: <a> 태그에 target="_blank" 추가 (이미 있는 경우 제외)
+const processHTML = (html) =>
+  html.replace(/<a(?![^>]*target=)([^>]*)>/g, '<a$1 target="_blank" rel="noopener noreferrer">');
+
+// 일반 텍스트 콘텐츠: URL을 하이퍼링크로 변환
+const linkifyText = (text) => {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g);
+  return parts.map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline break-all"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
 const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, linkUrl, attachments }) => {
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -115,11 +139,11 @@ const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, l
         {isHTML(content) ? (
           <div
             className="prose max-w-none text-gray-800 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: processHTML(content) }}
           />
         ) : (
           <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">
-            {content}
+            {linkifyText(content)}
           </div>
         )}
       </div>
@@ -187,8 +211,8 @@ const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, l
             rel="noopener noreferrer"
             className="w-full max-w-md inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors shadow-sm text-m bg-gray-200 text-gray-700 hover:bg-gray-300"
           >
-            <img src={urlIcon} alt="원문 링크" className="w-5 h-5" />
-            원문 보러가기
+            <img src={urlIcon} alt="지원 링크" className="w-5 h-5" />
+            지원하러 가기
           </a>
         </div>
       )}
