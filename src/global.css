@@ -3,8 +3,8 @@
 
 @theme {
   --font-sans:
-    "LINE Seed Sans KR", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "LINE Seed Sans KR", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-primary: #294d7c;
   /* 핵심 요소 - 파란색 */
@@ -20,11 +20,11 @@
   /* 흰색 */
 
   /* 캘린더 카테고리별 색상 */
-  --color-contest: #FF5C00;
-  --color-lecture: #7C3AED;
-  --color-scholar: #10B981;
-  --color-activity: #FACC15;
-  --color-my: #FB7185;
+  --color-contest: #ff5c00;
+  --color-lecture: #7c3aed;
+  --color-scholar: #10b981;
+  --color-activity: #eaa72b;
+  --color-my: #fb7185;
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoing: #dcfce7;
