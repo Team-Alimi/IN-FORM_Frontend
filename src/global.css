@@ -1,42 +1,212 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import "@kfonts/line-seed-sans-kr";
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "LINE Seed Sans KR", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  --color-primary: #294D7C; /* 핵심 요소 - 파란색 */
-  --color-secondary: #E6E7F5; /* 핵심 요소 배경 - 하늘색 */
-  --color-text-main: #15171A; /* 제목용 - 진한 회색 */
-  --color-text-sub: #727272; /* 본문,배경용 - 중간 회색 */
-  --color-surface: #F5F5F5; /* 구분선,배경 - 연한 회색 */
-  --color-background: #FFFFFF; /* 흰색 */
+  --color-primary: #294d7c;
+  /* 핵심 요소 - 파란색 */
+  --color-secondary: #e6e7f5;
+  /* 핵심 요소 배경 - 하늘색 */
+  --color-text-main: #15171a;
+  /* 제목용 - 진한 회색 */
+  --color-text-sub: #727272;
+  /* 본문,배경용 - 중간 회색 */
+  --color-surface: #f5f5f5;
+  /* 구분선,배경 - 연한 회색 */
+  --color-background: #ffffff;
+  /* 흰색 */
 
+  /* 캘린더 카테고리별 색상 */
+  --color-contest: #FF5C00;
+  --color-lecture: #7C3AED;
+  --color-scholar: #10B981;
+  --color-activity: #FACC15;
+  --color-my: #FB7185;
 
-  /* 카테고리 색상 */
-  --color-lectureBlue: #4E6D99;
-  --color-clubGreen: #5F9B73;
-  --color-competitionYellow: #C79E33;
-  --color-contestRed: #B85C5C;
-  --color-defaultGray: #6F7A85;
+  /*상태 배경 색상[진행중|마감|예정|마감임박]*/
+  --color-OnGoing: #dcfce7;
+  --color-Ended: #d5d5d5;
+  --color-UpComing: #d9e7fd;
+  --color-EndingSoon: #ffe2e2;
+  /*상태 텍스트 색상[진행중|마감|예정|마감임박]*/
+  --color-OnGoingText: #00a63e;
+  --color-EndedText: #656565;
+  --color-UpComingText: #2d6ff5;
+  --color-EndingSoonText: #c73b3b;
 
-  /* 상태 색상 */
-  --color-Ongoing: #468AE5;
-  --color-Ended: #616976;
-  --color-Upcoming: #D63232;
+  /* 반응형 breakpoint */
+  --breakpoint-mobile: 431px;
+  /* max-mobile: → 430px 이하에 적용 */
+}
+
+:root {
+  --event-bar-row-height: 1.5rem;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 430px) {
+  :root {
+    --event-bar-row-height: 1.1rem;
+  }
 }
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "LINE Seed Sans KR", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* 스크롤바 숨기기 */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* 로그인 페이지 애니메이션 */
+@keyframes fillDown {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes contentFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fill-down {
+  transform-origin: top;
+  animation: fillDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-content-fade-up {
+  opacity: 0;
+  animation: contentFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+/* 바텀시트 애니메이션 */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
 }

@@ -1,128 +1,106 @@
-import React from "react";
 import { useState, useEffect, useMemo } from "react";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
 import { useNavigate } from "react-router-dom";
 import { getStatus } from "../../utils/statusUtil";
-import Header from "../../components/common/Header";
-import TabBar from "../../components/common/TabBar";
-import Footer from "../../components/common/Footer";
-import MiniCalendarSet from "../../components/common/MiniCalendarSet";
-import EventRow from "../../components/EVL/EventRow";
-import SearchBar from "../../components/common/SearchBar";
-import ImminentSidebar from "../../components/common/ImminentSidebar";
-import api from "../../api/axios";
+import TabBar from "../../components/desktop/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
+import EventRow from "../../components/adaptive/feature/EVL/EventRow";
+import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
+import FilterBottomSheet from "../../components/adaptive/feature/EVL/FilterBottomSheet";
+import SearchBar from "../../components/adaptive/common/SearchBar";
+import { FiFilter } from "react-icons/fi";
+import { fetchEvents } from "../../api/schoolArticles";
+import { useDeviceStore } from "../../stores/deviceStore";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import SectionTitle from "../../components/mobile/common/SectionTitle";
 
 const EVLPage = () => {
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
-  const [eventsLoading, setEventsLoading] = useState(false);
-  const [eventsError, setEventsError] = useState(null);
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
     total_articles: 0,
   });
 
-  const [imminentEvents, setImminentEvents] = useState([]);
-  const [imminentLoading, setImminentLoading] = useState(false);
-  const [imminentError, setImminentError] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
-
-  const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [pageSize, setPageSize] = useState(20);
   const [searchText, setSearchText] = useState("");
+  const [activeFilters, setActiveFilters] = useState({
+    startDate: "",
+    endDate: "",
+    selectedStatuses: ["ALL"],
+    categoryIds: [],
+    vendorIds: [],
+  });
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const categories = [
-    { id: "ALL", label: "전체" },
-    { id: "LECTURE", label: "특강" },
-    { id: "COMPETITION", label: "대회" },
-    { id: "CONTEST", label: "공모전" },
-  ];
+  const handleFilterApply = (filters) => {
+    setActiveFilters(filters);
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const loadEvents = async () => {
       try {
-        setEventsLoading(true);
-        setEventsError(null);
+        const params = {
+          page: currentPage,
+          size: pageSize,
+          keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
+          start_date: activeFilters.startDate || undefined,
+          end_date: activeFilters.endDate || undefined,
+          vendor_id: activeFilters.vendorIds.length > 0 ? activeFilters.vendorIds.join(",") : undefined,
+          status: activeFilters.selectedStatuses.includes("ALL")
+            ? undefined
+            : activeFilters.selectedStatuses.join(","),
+          category_id: activeFilters.categoryIds.length > 0 ? activeFilters.categoryIds.join(",") : undefined,
+        };
+        const res = await fetchEvents(params);
 
-        const res = await api.get("/api/v1/school_articles", {
-          params: {
-            page: currentPage,
-            category: selectedCategory !== "ALL" ? selectedCategory : undefined,
-            search: searchText.trim() !== "" ? searchText.trim() : undefined,
-            size: 20,
-          },
-        });
-
-        console.log("events list:", res.data);
-
-        setEvents(res.data.school_articles || []);
-        if (res.data.page_info) {
-          setPageInfo(res.data.page_info);
+        const apiData = res.data?.data;
+        setEvents(apiData?.school_articles || []);
+        if (apiData?.page_info) {
+          setPageInfo(apiData.page_info);
         } else {
-          // page_info가 없을 경우
           setPageInfo({
             current_page: currentPage,
             total_pages: 1,
-            total_articles: res.data.school_articles
-              ? res.data.school_articles.length
+            total_articles: apiData?.school_articles
+              ? apiData.school_articles.length
               : 0,
           });
         }
       } catch (error) {
         console.error("행사 목록 불러오기 실패:", error);
-        setEventsError("행사 목록을 불러오지 못했습니다.");
-      } finally {
-        setEventsLoading(false);
+        console.error("행사 목록을 불러오지 못했습니다.");
       }
     };
 
-    fetchEvents();
-  }, [currentPage, selectedCategory, searchText]);
+    loadEvents();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, searchText, activeFilters.startDate, activeFilters.endDate, activeFilters.vendorIds.join(","), activeFilters.selectedStatuses.join(","), activeFilters.categoryIds.join(",")]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, searchText]);
+  }, [searchText, pageSize]);
 
-  useEffect(() => {
-    const fetchImminentEvents = async () => {
-      try {
-        setImminentLoading(true);
-        setImminentError(null);
-
-        const res = await api.get("/api/v1/deadline/school_articles");
-
-        setImminentEvents(res.data.school_articles || []);
-      } catch (error) {
-        console.error("마감 임박 행사 불러오기 실패:", error);
-        setImminentError("마감 임박 행사를 불러오지 못했습니다.");
-      } finally {
-        setImminentLoading(false);
-      }
-    };
-
-    fetchImminentEvents();
-  }, []);
-
-  const currentEvents = events;
   const totalPages = pageInfo.total_pages || 1;
 
-
-
+  // 서버에서 status 필터링되어 오므로 정렬만 수행
   const sortedEvents = useMemo(() => {
     if (!events) return [];
 
-    return [...events].sort((a, b) => {
-      const statusA = getStatus(a.start_date, a.due_date);
-      const statusB = getStatus(b.start_date, b.due_date);
+    const score = (status) => {
+      if (status === "ENDING_SOON") return 4;
+      if (status === "OPEN")        return 3;
+      if (status === "UPCOMING")    return 2;
+      return 1;
+    };
 
-      const score = (status) => {
-        if (status === "진행중") return 3;
-        if (status === "예정") return 2;
-        return 1;
-      };
-      return score(statusB) - score(statusA);
-    });
+    return [...events].sort((a, b) => score(b.status) - score(a.status));
   }, [events]);
 
   const handleRowClick = (id) => {
@@ -136,69 +114,95 @@ const EVLPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+    <div
+      className={
+        isMobile
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          : "min-h-screen flex flex-col bg-[#f8f9fa]"
+      }
+    >
+      {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
-          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6">
+          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
             <MiniCalendarSet />
-            <ImminentSidebar
-              imminentLoading={imminentLoading}
-              imminentError={imminentError}
-              imminentEvents={imminentEvents}
-              onEventClick={handleRowClick}
-            />
           </aside>
 
           {/* 오른쪽 메인 컨텐츠 */}
-          <main className="flex-1 w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 min-h-[500px] flex flex-col justify-between">
+          <main
+            className={
+              isMobile
+                ? "flex-1 w-full bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] flex flex-col justify-between"
+                : "flex-1 w-full bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8 min-h-[500px] flex flex-col justify-between"
+            }
+          >
             <div>
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-xl font-bold text-gray-800 w-full sm:w-auto">
-                  이벤트/행사 목록
-                </h2>
-                <div className="w-full sm:w-64">
+              <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
+                {/* 왼쪽: 제목 */}
+                <SectionTitle KoreanTitle="공지사항" EnglishTitle="Notice list" />
+                {/* 오른쪽: 검색바 + 필터/페이지 선택 */}
+                <div className="w-full sm:w-64 flex flex-col gap-2">
                   <SearchBar
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="행사 제목 검색"
+                    placeholder="공지사항 검색..."
                   />
+                  <div className="flex items-center justify-between sm:justify-end sm:gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsFilterOpen(true)}
+                      className="flex items-center gap-1 bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
+                    >
+                      <FiFilter size={14} className="text-gray-800" />
+                      <span>필터</span>
+                    </button>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => setPageSize(Number(e.target.value))}
+                      className="bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
+                    >
+                      {[5, 10, 20].map((n) => (
+                        <option key={n} value={n}>{n}개씩 보기</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-
-              {/* 카테고리 탭 */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
-                    ${
-                      selectedCategory === cat.id
-                        ? "bg-blue-500 text-white shadow-md transform scale-105"
-                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
               </div>
 
               {/* 리스트 출력 */}
               <div className="space-y-1">
                 {sortedEvents.length > 0 ? (
                   sortedEvents.map((event) => {
-                    const statusObj = getStatus(event.start_date, event.due_date);
-                    return (
-                      <EventRow
-                        key={event.article_id}
-                        title={event.title}
-                        date={event.created_at}
-                        status={statusObj.text}
-                        onClick={() => handleRowClick(event.article_id)}
-                      />
-                    );
+                    const statusText = getStatus(event.status).text;
+                    if (isMobile) {
+                      return (
+                        <MobileEventRow
+                          key={event.article_id}
+                          status={statusText}
+                          category={event.categories.category_name}
+                          title={event.title}
+                          source={
+                            event.vendor_name ||
+                            event.vendors?.[0]?.vendor_name ||
+                            ""
+                          }
+                          date={event.start_date}
+                          bookmarkCount={event.bookmark_count || 0}
+                          onClick={() => handleRowClick(event.article_id)}
+                        />
+                      );
+                    } else {
+                      return (
+                        <EventRow
+                          key={event.article_id}
+                          title={event.title}
+                          date={event.created_at}
+                          status={statusText}
+                          onClick={() => handleRowClick(event.article_id)}
+                        />
+                      );
+                    }
                   })
                 ) : (
                   <div className="text-center py-20 text-gray-400 flex flex-col items-center">
@@ -222,21 +226,38 @@ const EVLPage = () => {
                   &lt;
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (number) => (
-                    <button
-                      key={number}
-                      onClick={() => handlePageChange(number)}
-                      className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                        currentPage === number
-                          ? "bg-blue-500 text-white shadow-sm"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {number}
-                    </button>
-                  )
-                )}
+                {(() => {
+                  const pages = [];
+                  const delta = 2;
+                  const left = currentPage - delta;
+                  const right = currentPage + delta;
+
+                  let prev = null;
+                  for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+                      if (prev !== null && i - prev > 1) {
+                        pages.push(
+                          <span key={`ellipsis-${i}`} className="px-1 text-gray-400 text-sm select-none">…</span>
+                        );
+                      }
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+                            currentPage === i
+                              ? "bg-blue-500 text-white shadow-sm"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                      prev = i;
+                    }
+                  }
+                  return pages;
+                })()}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
@@ -254,7 +275,14 @@ const EVLPage = () => {
           </main>
         </div>
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      <FilterBottomSheet
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApply={handleFilterApply}
+        totalCount={pageInfo.total_articles}
+        keyword={searchText}
+      />
     </div>
   );
 };

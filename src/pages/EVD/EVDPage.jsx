@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../../components/common/Header";
-import TabBar from "../../components/common/TabBar";
-import Footer from "../../components/common/Footer";
-import EventDetail from "../../components/EVD/EventDetail";
-import api from "../../api/axios";
+import TabBar from "../../components/desktop/common/TabBar";
+import Footer from "../../components/desktop/common/Footer";
+import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
+import { fetchEventDetail } from "../../api/schoolArticles";
+import { useDeviceStore } from "../../stores/deviceStore";
 
 const EVDPage = () => {
   const { id } = useParams();
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEventDetail = async () => {
+    const fetchEventDetailAsync = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const res = await api.get(`/api/v1/school_articles/${id}`);
-        console.log("event detail:", res.data);
-
-        setEvent(res.data);
+        const eventData = await fetchEventDetail(id);
+        setEvent(eventData);
       } catch (err) {
         console.error("행사 상세 불러오기 실패:", err);
         setError("행사 상세를 불러오지 못했습니다.");
@@ -31,7 +31,7 @@ const EVDPage = () => {
     };
 
     if (id) {
-      fetchEventDetail();
+      fetchEventDetailAsync();
     }
   }, [id]);
 
@@ -58,20 +58,25 @@ const EVDPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <TabBar />
+    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20" : "min-h-screen flex flex-col bg-gray-50"}>
+      {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <EventDetail
+          articleId={event.article_id}
+          status={event.status}
           title={event.title}
-          vendor={event.vendors.vendor_name}
+          vendors={event.vendors}
           startDate={event.start_date}
           dueDate={event.due_date}
           created_at={event.created_at}
           content={event.content}
-          linkUrl={event.original_url}
+          category_name={event.categories?.category_name}
+          is_bookmarked={event.is_bookmarked}
+          bookmark_count={event.bookmark_count}
+          attachments={event.attachments}
         />
       </div>
-      <Footer />
+      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
     </div>
   );
 };
