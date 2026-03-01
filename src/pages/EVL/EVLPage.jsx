@@ -14,6 +14,7 @@ import { fetchEvents } from "../../api/schoolArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import SectionTitle from "../../components/mobile/common/SectionTitle";
+import useEVLFilterStore from "../../stores/useEVLFilterStore";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -26,17 +27,11 @@ const EVLPage = () => {
     total_articles: 0,
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [searchText, setSearchText] = useState("");
-  const [activeFilters, setActiveFilters] = useState({
-    startDate: "",
-    endDate: "",
-    selectedStatuses: ["ALL"],
-    categoryIds: [],
-    vendorIds: [],
-  });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // 필터 상태를 스토어에서 가져와 페이지 이동 후 복귀 시에도 유지
+  const { currentPage, pageSize, searchText, activeFilters,
+          setCurrentPage, setPageSize, setSearchText, setActiveFilters } = useEVLFilterStore();
 
   const handleFilterApply = (filters) => {
     setActiveFilters(filters);
