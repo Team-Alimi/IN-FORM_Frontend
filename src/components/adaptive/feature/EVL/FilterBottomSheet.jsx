@@ -120,35 +120,33 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">
       {/* 일정 기간 */}
       <div className="mb-6">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          일정 기간 <span className="text-gray-500 font-normal">Schedule Period</span>
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[13px] font-semibold text-gray-800">
+            일정 기간 <span className="text-gray-500 font-normal">Schedule Period</span>
+          </p>
+          <button
+            onClick={onClose}
+            className="px-3 py-1 rounded-full bg-gray-200 text-gray-500 text-xs active:bg-gray-300"
+          >
+            닫기
+          </button>
+        </div>
         <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            {!startDate && (
-              <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
-                시작일 선택
-              </span>
-            )}
+          <div className="flex-1">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-[#F4F4F4] rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
             />
           </div>
           <span className="text-gray-400 text-sm">~</span>
-          <div className="relative flex-1">
-            {!endDate && (
-              <span className="absolute inset-0 flex items-center px-3 text-sm text-gray-400 pointer-events-none">
-                종료일 선택
-              </span>
-            )}
+          <div className="flex-1">
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full bg-[#F4F4F4] rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
             />
           </div>
         </div>

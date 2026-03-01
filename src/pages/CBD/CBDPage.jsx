@@ -4,6 +4,7 @@ import TabBar from "../../components/desktop/common/TabBar";
 import Footer from "../../components/desktop/common/Footer";
 import MobileHeader from "../../components/mobile/common/mobileHeader";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 import ClubDetail from "../../components/adaptive/feature/CBD/ClubDetail";
 import { fetchClubDetail } from "../../api/clubArticles";
 import { useDeviceStore } from "../../stores/deviceStore";
@@ -58,7 +59,7 @@ const CBDPage = () => {
   }
 
   return (
-    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20" : "min-h-screen flex flex-col bg-gray-50"}>
+    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]" : "min-h-screen flex flex-col bg-gray-50"}>
       {isMobile ? <MobileHeader /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
         <ClubDetail
@@ -72,7 +73,12 @@ const CBDPage = () => {
           attachments={club.attachments}
         />
       </div>
-      {isMobile ? <MobileTabBar activeIndex={2} /> : <Footer />}
+      {isMobile ? (
+        <>
+          <MobileFooter />
+          <MobileTabBar activeIndex={2} />
+        </>
+      ) : <Footer />}
     </div>
   );
 };

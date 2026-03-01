@@ -31,7 +31,7 @@ const BottomSheet = ({ isOpen, onClose, className = '', children }) => {
     if (!shouldRender && !isOpen) return null;
 
     const content = (
-        <div className="fixed inset-0 z-[9999] flex items-end justify-center">
+        <div className="fixed inset-0 z-9999 flex items-end justify-center">
             {/* Backdrop */}
             <div
                 className={`absolute inset-0 bg-black/40 cursor-pointer ${isOpen ? 'animate-fade-in' : 'animate-fade-out'
@@ -46,7 +46,9 @@ const BottomSheet = ({ isOpen, onClose, className = '', children }) => {
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Handle Bar */}
-                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
+                <div className="flex justify-center mb-4">
+                    <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+                </div>
 
                 {children}
             </div>

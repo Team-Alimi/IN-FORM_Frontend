@@ -15,6 +15,7 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import SectionTitle from "../../components/mobile/common/SectionTitle";
 import useEVLFilterStore from "../../stores/useEVLFilterStore";
+import MobileFooter from "../../components/mobile/common/MobileFooter";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -93,9 +94,6 @@ const EVLPage = () => {
     activeFilters.categoryIds.join(","),
   ]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchText, pageSize]);
 
   const totalPages = pageInfo.total_pages || 1;
 
@@ -127,7 +125,7 @@ const EVLPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA] pb-20"
+          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
@@ -158,7 +156,7 @@ const EVLPage = () => {
                 <div className="w-full sm:w-64 flex flex-col gap-2">
                   <SearchBar
                     value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+                    onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
                     placeholder="공지사항 검색..."
                   />
                   <div className="flex items-center justify-between sm:justify-end sm:gap-2">
@@ -172,7 +170,7 @@ const EVLPage = () => {
                     </button>
                     <select
                       value={pageSize}
-                      onChange={(e) => setPageSize(Number(e.target.value))}
+                      onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
                       className="bg-[#F7FAFC] rounded-[10px] px-3 h-8 text-[14px] font-medium text-gray-800 shadow-sm border border-[#f5f8fd] active:scale-97 cursor-pointer"
                     >
                       {[5, 10, 20].map((n) => (
@@ -299,7 +297,12 @@ const EVLPage = () => {
           </main>
         </div>
       </div>
-      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
+      {isMobile ? (
+        <>
+          <MobileFooter />
+          <MobileTabBar activeIndex={1} />
+        </>
+      ) : <Footer />}
       <FilterBottomSheet
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
