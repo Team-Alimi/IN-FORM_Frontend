@@ -106,7 +106,6 @@ const CalendarSection = () => {
         current.setDate(current.getDate() + 1);
       }
     });
-    console.log(eventMap);
     return eventMap;
   }, [data]); // data가 변경될 때만 재계산
 
