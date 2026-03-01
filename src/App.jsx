@@ -64,7 +64,6 @@ function App() {
             }
           />
         </Route>
-        <Route path="/test" element={<DeviceTestPage />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route
           path="/mypage"

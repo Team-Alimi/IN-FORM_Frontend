@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import urlIcon from "../../../../assets/icons/url.svg";
 
-const isHTML = (str) => str && /<[a-z][\s\S]*>/i.test(str);
+const isHTML = (str) => str && /<\/?(p|br|div|span|img|a|strong|b|i|u|em|table|thead|tbody|tr|td|th|ul|ol|li|h[1-6])(\s|>|\/)/i.test(str);
 
 const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, linkUrl, attachments }) => {
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(null);
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
 
 
@@ -72,12 +74,39 @@ const ClubDetail = ({ title, vendors, startDate, dueDate, created_at, content, l
                 key={a.file_id}
                 src={a.file_url}
                 alt={`첨부파일 ${a.file_id}`}
-                className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start"
+                className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setSelectedImage(a.file_url)}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* 이미지 확대 모달 */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
+            <button
+              className="absolute top-4 right-4 p-2 text-white/70 hover:text-white bg-black/30 hover:bg-black/50 rounded-full transition-all z-50"
+              onClick={() => setSelectedImage(null)}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={selectedImage}
+              alt="확대된 첨부파일"
+              className="max-w-full max-h-full object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
 
       {/* 원문 링크 */}
       {linkUrl && (
