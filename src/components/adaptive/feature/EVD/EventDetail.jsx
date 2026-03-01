@@ -25,7 +25,9 @@ const EventDetail = ({
 }) => {
   const navigate = useNavigate();
   const [bookmarkCount, setBookmarkCount] = useState(bookmark_count);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
 
   const handleBookmarkToggle = (bookmarked) => {
     setBookmarkCount((prev) => bookmarked ? prev + 1 : prev - 1);
@@ -58,6 +60,44 @@ const EventDetail = ({
   const imageAttachments = (attachments || []).filter((a) => IMAGE_EXTS.test(a.attachment_url));
   const fileAttachments = (attachments || []).filter((a) => !IMAGE_EXTS.test(a.attachment_url));
 
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    if (selectedIndex !== null && selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+    }
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    if (selectedIndex !== null && selectedIndex < imageAttachments.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && selectedIndex < imageAttachments.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+    }
+    if (isRightSwipe && selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
+
   return (
     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="px-6 md:px-8 pt-5">
@@ -87,6 +127,21 @@ const EventDetail = ({
       </div>
 
       <div className="p-6 md:p-8 min-h-[200px]">
+        {/* 첨부 이미지 */}
+        {imageAttachments.length > 0 && (
+          <div className="mb-6 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
+            {imageAttachments.map((a, idx) => (
+              <img
+                key={a.file_id}
+                src={a.attachment_url}
+                alt={`첨부파일 ${a.file_id}`}
+                className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setSelectedIndex(idx)}
+              />
+            ))}
+          </div>
+        )}
+
         {isHTML(content) ? (
           <div
             className="prose max-w-none text-gray-800 leading-relaxed"
@@ -95,21 +150,6 @@ const EventDetail = ({
         ) : (
           <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">
             {content}
-          </div>
-        )}
-
-        {/* 첨부 이미지 */}
-        {imageAttachments.length > 0 && (
-          <div className="mt-6 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
-            {imageAttachments.map((a) => (
-              <img
-                key={a.file_id}
-                src={a.attachment_url}
-                alt={`첨부파일 ${a.file_id}`}
-                className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => setSelectedImage(a.attachment_url)}
-              />
-            ))}
           </div>
         )}
 
@@ -140,27 +180,55 @@ const EventDetail = ({
       </div>
 
       {/* 이미지 확대 모달 */}
-      {selectedImage && (
+      {selectedIndex !== null && imageAttachments[selectedIndex] && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 transition-opacity"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedIndex(null)}
         >
-          <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
+          <div
+            className="relative max-w-5xl w-full h-full flex items-center justify-center"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <button
               className="absolute top-4 right-4 p-2 text-white/70 hover:text-white bg-black/30 hover:bg-black/50 rounded-full transition-all z-50"
-              onClick={() => setSelectedImage(null)}
+              onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
+
+            {selectedIndex > 0 && (
+              <button
+                className="hidden md:flex absolute left-4 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/50 rounded-full transition-all z-50"
+                onClick={handlePrevImage}
+              >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+            )}
+
             <img
-              src={selectedImage}
+              src={imageAttachments[selectedIndex].attachment_url}
               alt="확대된 첨부파일"
-              className="max-w-full max-h-full object-contain rounded-lg"
+              className="max-w-full max-h-full object-contain rounded-lg pointer-events-none select-none"
               onClick={(e) => e.stopPropagation()}
             />
+
+            {selectedIndex < imageAttachments.length - 1 && (
+              <button
+                className="hidden md:flex absolute right-4 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/50 rounded-full transition-all z-50"
+                onClick={handleNextImage}
+              >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       )}
