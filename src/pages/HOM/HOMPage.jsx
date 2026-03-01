@@ -54,7 +54,7 @@ const HOMPage = () => {
             <ServiceLinkList />
             {/* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */}
           </aside>
-          <main className="flex-1 w-full space-y-6">
+          <main className="flex-1 min-w-0 w-full space-y-6">
             <CalendarSection />
           </main>
         </div>
