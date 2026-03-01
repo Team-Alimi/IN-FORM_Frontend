@@ -182,7 +182,7 @@ const EVLPage = () => {
                             event.vendors?.[0]?.vendor_name ||
                             ""
                           }
-                          date={event.start_date}
+                          date={event.due_date}
                           bookmarkCount={event.bookmark_count || 0}
                           onClick={() => handleRowClick(event.article_id)}
                         />
@@ -192,7 +192,7 @@ const EVLPage = () => {
                         <EventRow
                           key={event.article_id}
                           title={event.title}
-                          date={event.created_at}
+                          date={event.due_date}
                           status={statusText}
                           onClick={() => handleRowClick(event.article_id)}
                         />
