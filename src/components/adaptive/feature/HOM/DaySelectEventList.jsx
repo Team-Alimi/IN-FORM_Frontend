@@ -6,7 +6,7 @@ import { useSwipeable } from "react-swipeable";
 
 const PAGE_SIZE = 8;
 
-const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
+const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
   const [page, setPage] = useState(0);
   const isMobile = useDeviceStore((state) => state.isMobile);
 
@@ -45,7 +45,7 @@ const DaySelectEventList = ({ events, currentDate, ref, onArticleClick }) => {
 
   return (
     <div
-      ref={ref}
+      id="event-list-section"
       {...swipeHandlers}
       className={
         isMobile

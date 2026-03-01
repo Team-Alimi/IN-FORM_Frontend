@@ -3,7 +3,7 @@ const ClubRow = ({ data, onClick }) => {
     data;
   return (
     <div
-      className="flex flex-col bg-white w-full rounded-3xl overflow-hidden"
+      className="flex flex-col bg-white w-full rounded-3xl overflow-hidden shadow-md"
       onClick={() => onClick(article_id)}
     >
       <div className="w-full aspect-4/5 bg-gray-200 relative">
@@ -20,11 +20,11 @@ const ClubRow = ({ data, onClick }) => {
           </div>
         )}
       </div>
-      <div className="flex flex-col p-2">
-        <div className="max-mobile:text-base text-lg max-mobile:font-medium font-bold text-gray-700">
+      <div className="flex flex-col p-4 max-mobile:p-3 gap-1">
+        <div className="max-mobile:text-sm text-lg max-mobile:font-base font-bold text-gray-700">
           {title}
         </div>
-        <div className="max-mobile:text-sm text-base font-medium text-gray-700">
+        <div className="max-mobile:text-xs text-base font-medium text-gray-700">
           {vendors[0]?.vendor_name}
         </div>
         <div className="max-mobile:text-xs text-sm font-medium text-gray-700">{`${start_date || "미정"} ~ ${due_date || "미정"}`}</div>

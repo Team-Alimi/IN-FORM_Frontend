@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -23,7 +23,6 @@ const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
-  const eventListRef = useRef(null);
 
   // 바텀시트 관련 상태
   const [selectedEventId, setSelectedEventId] = useState(null);
@@ -110,30 +109,24 @@ const CalendarSection = () => {
   }, [data]); // data가 변경될 때만 재계산
 
   /******핸들러 핸들러 핸들러*******/
+  const scrollToEventList = () => {
+    const el = document.getElementById("event-list-section");
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      window.scrollTo({ top: window.scrollY + rect.top - 16, behavior: "smooth" });
+    }
+  };
+
   //1. 날짜 클릭 핸들러 - CalendarCell에서 전달받은 날짜 처리
   const handleDateClick = (date) => {
     const dateKey = formatDateKey(date); // Date 객체 → "2025-11-16"
     setCurrentDate(dateKey);
-
-    if (eventListRef.current) {
-      eventListRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    scrollToEventList();
   };
   //2. Overflow 버튼 클릭 핸들러 (+n 클릭 시)
   const handleOverflowClick = (dateKey) => {
-    // 1. 날짜 선택
     setCurrentDate(dateKey);
-
-    // 2. 이벤트 리스트로 스크롤
-    if (eventListRef.current) {
-      eventListRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    scrollToEventList();
   };
 
   // 월 변경 핸들러
@@ -231,7 +224,6 @@ const CalendarSection = () => {
       </div>
       <div className="mb-2 p-1 min-w-0">
         <DaySelectEventList
-          ref={eventListRef}
           events={eventsByDate[currentDate]}
           currentDate={currentDate}
           onArticleClick={handleArticleClick}
