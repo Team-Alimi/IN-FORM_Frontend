@@ -21,7 +21,7 @@ const Footer = () => {
         {/* 하단 영역 */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
           <div className="space-y-1 text-center md:text-left">
-            <p>© 2025 Team Alimi. All rights reserved.</p>
+            <p>© 2026 Team Alimi. All rights reserved.</p>
             <p>
               문의 :{" "}
               <a
