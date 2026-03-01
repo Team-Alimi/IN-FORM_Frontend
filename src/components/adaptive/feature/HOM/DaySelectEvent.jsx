@@ -5,7 +5,9 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
     onArticleClick(event.article_id, event.category_name);
   };
 
-  const option = FILTER_OPTIONS.find((o) => o.key === event.category_name?.toUpperCase());
+  const option = FILTER_OPTIONS.find(
+    (o) => o.key === event.category_name?.toUpperCase(),
+  );
   const category = option?.label ?? "기타";
 
   if (isMini) {
@@ -33,13 +35,15 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
       >
         {/* 카테고리 태그 */}
         <div
-          className={`w-20 h-8 max-mobile:w-14 max-mobile:h-6 flex items-center justify-center rounded-md text-sm font-semibold max-mobile:text-[10px] ${option?.tagBg ?? "bg-gray-100"} ${option?.textColor ?? "text-gray-500"}`}
+          className={`w-20 h-8 shrink-0 max-mobile:w-14 max-mobile:h-6 flex items-center justify-center rounded-md text-sm font-semibold max-mobile:text-[10px] ${option?.tagBg ?? "bg-gray-100"} ${option?.textColor ?? "text-gray-500"}`}
         >
           {category}
         </div>
 
         {/* 이벤트 제목 */}
-        <div className="text-base font-medium max-mobile:text-[12px]">{event.title}</div>
+        <div className="flex-1 min-w-0 text-base font-medium text-left max-mobile:text-[12px]">
+          {event.title}
+        </div>
       </button>
     );
   }
