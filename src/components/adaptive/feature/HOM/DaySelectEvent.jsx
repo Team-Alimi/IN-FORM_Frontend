@@ -41,7 +41,7 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick }) => {
         </div>
 
         {/* 이벤트 제목 */}
-        <div className="flex-1 min-w-0 text-base font-medium text-left max-mobile:text-[12px]">
+        <div className="flex-1 min-w-0 text-base font-medium text-left max-mobile:text-[12px] wrap-break-word">
           {event.title}
         </div>
       </button>

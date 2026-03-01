@@ -205,7 +205,7 @@ const CalendarSection = () => {
       className={
         isMobile
           ? "flex flex-col gap-2 bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 min-h-[500px] justify-between"
-          : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between"
+          : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between overflow-hidden"
       }
     >
       <SectionTitle
@@ -229,7 +229,7 @@ const CalendarSection = () => {
           onOverflowClick={handleOverflowClick}
         />
       </div>
-      <div className="mb-2 p-1">
+      <div className="mb-2 p-1 min-w-0">
         <DaySelectEventList
           ref={eventListRef}
           events={eventsByDate[currentDate]}

@@ -107,8 +107,8 @@ const BookmarkSection = () => {
                         <div className="py-20 text-center text-gray-400">데이터를 불러오는 중입니다...</div>
                     ) : bookmarks.length > 0 ? (
                         <div className={`
-                            overflow-y-auto pr-1 custom-scrollbar
-                            ${isMobile ? "max-h-[450px] flex flex-col gap-2.5" : "max-h-[600px] flex flex-col gap-4"}
+                            pr-1
+                            ${isMobile ? "overflow-y-auto custom-scrollbar max-h-[450px] flex flex-col gap-2.5" : "flex flex-col gap-4"}
                         `}>
                             {bookmarks.map((bookmark) => (
                                 <BookmarkItem
