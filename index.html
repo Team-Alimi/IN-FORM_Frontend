@@ -1,13 +1,48 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/inform_icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IN:FORM</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/inform_icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IN:FORM</title>
+  <script>
+    (function () {
+      var userAgent = navigator.userAgent.toLowerCase();
+      var targetUrl = location.href;
+      var isAndroid = userAgent.match(/android/i);
+      var isIos = userAgent.match(/iphone|ipad|ipod/i);
+
+      // 카카오톡 인앱 브라우저 강제 이동
+      if (userAgent.match(/kakaotalk/i)) {
+        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
+        return;
+      }
+
+      // 라인 인앱 브라우저
+      if (userAgent.match(/line/i)) {
+        location.href = targetUrl.indexOf('?') !== -1 ? targetUrl + '&openExternalBrowser=1' : targetUrl + '?openExternalBrowser=1';
+        return;
+      }
+
+      // 기타 인앱 브라우저 (에브리타임, 인스타그램, 페이스북, 네이버 등)
+      if (userAgent.match(/inapp|naver|snapchat|everytimeapp|instagram|facebook/i)) {
+        if (isAndroid) {
+          // 안드로이드: 크롬 브라우저로 강제 이동 (intent URI)
+          var intentUrl = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+          location.href = intentUrl;
+        } else if (isIos) {
+          // iOS: 강제 이탈이 어려우므로 사용자에게 Safari 열기 안내
+          alert('인앱 브라우저에서는 구글 로그인이 불가능합니다.\n\n안전한 접속을 위해 우측 하단 🧭(나침반)을 누르거나,\n우측 상단 ⋯ 버튼을 눌러 [Safari로 열기]를 선택해주세요!');
+        }
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
