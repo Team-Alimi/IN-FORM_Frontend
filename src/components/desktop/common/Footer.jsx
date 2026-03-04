@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -22,6 +23,18 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
           <div className="space-y-1 text-center md:text-left">
             <p>© 2026 Team Alimi. All rights reserved.</p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4 py-1 font-medium text-gray-500">
+              <Link to="/privacy-policy" className="hover:text-gray-800 transition">개인정보처리방침</Link>
+              <Link to="/terms-of-service" className="hover:text-gray-800 transition">이용약관</Link>
+              <a
+                href="https://forms.gle/hTPpZsoi41kbyBC27"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-800 transition"
+              >
+                불편사항 접수
+              </a>
+            </div>
             <p>
               문의 :{" "}
               <a

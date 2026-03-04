@@ -14,6 +14,8 @@ import LGNPage from "./pages/LGN/LGNPage";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import MYPage from "./pages/MYP/MYPage";
 import ONBPage from "./pages/ONB/ONBPage";
+import PRIPage from "./pages/PRI/PRIPage";
+import TOSPage from "./pages/TOS/TOSPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<LGNPage />} />
         <Route path="/onboarding" element={<ONBPage />} />
+        <Route path="/privacy-policy" element={<PRIPage />} />
+        <Route path="/terms-of-service" element={<TOSPage />} />
         <Route path="/" element={<HOMPage />} />
         <Route path="clubs">
           <Route
