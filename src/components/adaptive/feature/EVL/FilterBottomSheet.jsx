@@ -132,7 +132,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <input
               type="date"
               value={startDate}
@@ -140,8 +140,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
               className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
             />
           </div>
-          <span className="text-gray-400 text-sm">~</span>
-          <div className="flex-1">
+          <span className="text-gray-400 text-sm shrink-0">~</span>
+          <div className="flex-1 min-w-0">
             <input
               type="date"
               value={endDate}
