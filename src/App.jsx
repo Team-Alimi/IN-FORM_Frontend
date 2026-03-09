@@ -2,22 +2,26 @@ import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { initDeviceListener } from "./stores/deviceStore";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import ReactGA from "react-ga4";
+import AnalyticsTracker from "./utils/AnalyticsTraker";
+/*페이지 목록*/
 import CBLPage from "./pages/CBL/CBLPage";
 import EVLPage from "./pages/EVL/EVLPage";
 import EVDPage from "./pages/EVD/EVDPage";
 import CBDPage from "./pages/CBD/CBDPage";
 import HOMPage from "./pages/HOM/HOMPage";
 import ErrorPage from "./pages/NOT/ErrorPage";
-import { initDeviceListener } from "./stores/deviceStore";
-import DeviceTestPage from "./pages/TEST/DeviceTestPage";
 import LGNPage from "./pages/LGN/LGNPage";
-import ProtectedRoute from "./components/common/ProtectedRoute";
 import MYPage from "./pages/MYP/MYPage";
 import ONBPage from "./pages/ONB/ONBPage";
 import PRIPage from "./pages/PRI/PRIPage";
 import TOSPage from "./pages/TOS/TOSPage";
 
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient(); //리액트 쿼리
+ReactGA.initialize('G-ERJHX4CVB5'); //GA4 세팅 
 
 function App() {
   useEffect(() => {
@@ -26,6 +30,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AnalyticsTracker />
       <Routes>
         <Route path="/login" element={<LGNPage />} />
         <Route path="/onboarding" element={<ONBPage />} />
