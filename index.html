@@ -13,10 +13,7 @@
 
       // 카카오톡 인앱 브라우저 강제 이동 시도
       if (userAgent.indexOf('kakaotalk') !== -1) {
-        // 카카오톡 내장 브라우저 우회 1번 방식 (특수 URI 스킴)
         location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
-
-        // 위 방법이 안드로이드에서 무시될 경우를 대비해 약간의 지연 후 인텐트로 다시 시도
         setTimeout(function () {
           if (userAgent.indexOf('android') !== -1) {
             location.href = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
@@ -32,45 +29,82 @@
       }
 
       // 에브리타임 (EverytimeApp), 인스타그램 등 기타 인앱 브라우저 체크
-      var isInApp = userAgent.match(/everytimeapp|inapp|naver|snapchat|instagram|facebook|wv/i);
+      // 아이폰 에타의 경우 구버전/신버전 userAgent 문자열이 다양하게 잡힐 수 있으므로 포괄적으로 잡음
+      var isInApp = userAgent.match(/everytimeapp|inapp|naver|snapchat|instagram|facebook|wv|kakaostory|band/i);
 
       if (isInApp) {
-        if (userAgent.indexOf('android') !== -1) {
-          // 안드로이드: 크롬 브라우저로 강제 이동 (intent URI)
-          var intentUrl = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-          location.href = intentUrl;
-        } else if (userAgent.match(/iphone|ipad|ipod/i)) {
-          // iOS: 강제 탈출이 막혀있어 사용자가 직접 열도록 유도하는 화면을 그립니다.
-          // 리액트가 렌더링을 덮어버리지 않게 DOMContentLoaded 이벤트를 기다림
-          document.addEventListener('DOMContentLoaded', function () {
-            var overlay = document.createElement('div');
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.width = '100vw';
-            overlay.style.height = '100vh';
-            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-            overlay.style.color = 'white';
-            overlay.style.zIndex = '999999';
-            overlay.style.display = 'flex';
-            overlay.style.flexDirection = 'column';
-            overlay.style.alignItems = 'center';
-            overlay.style.justifyContent = 'center';
-            overlay.style.padding = '30px';
-            overlay.style.textAlign = 'center';
-            overlay.style.lineHeight = '1.6';
-            overlay.innerHTML = `
+        // iOS/Android 상관없이 강제 탈출이 막혀있을 수 있으므로 사용자가 직접 열도록 유도하는 안내 화면을 그립니다.
+        // 리액트가 렌더링을 덮어버리지 않게 비동기로 약간 뒤에 그림
+        setTimeout(function () {
+          var overlay = document.createElement('div');
+          overlay.setAttribute('id', 'inapp-overlay');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+          overlay.style.color = 'white';
+          overlay.style.zIndex = '9999999';
+          overlay.style.display = 'flex';
+          overlay.style.flexDirection = 'column';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          overlay.style.padding = '30px';
+          overlay.style.textAlign = 'center';
+          overlay.style.lineHeight = '1.6';
+
+          // 만약 이미 동일한 오버레이가 있다면 제거
+          var existing = document.getElementById('inapp-overlay');
+          if (existing) existing.remove();
+
+          overlay.innerHTML = `
+            <div style="font-size: 50px; margin-bottom: 20px;">⚠️</div>
+            <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; word-break: keep-all;">인앱 브라우저에서는<br/>로그인이 제한됩니다.</h2>
+            <p style="font-size: 15px; color: #ccc; word-break: keep-all;">
+              안전한 접속을 위해 우측 하단 <b>🧭(나침반)</b> 또는 <b>⋯</b> 버튼을 눌러<br/><br/>
+              <b style="color: #4da6ff;">[다른 브라우저로 열기]</b> 또는<br/>
+              <b style="color: #4da6ff;">[Safari/기본 브라우저로 열기]</b>를<br/>선택해주세요!
+            </p>
+          `;
+          document.body.appendChild(overlay);
+        }, 300); // React 로드 후 덮도록 지연시간 300ms 부여
+      } else if (userAgent.indexOf('android') !== -1 && userAgent.indexOf('chrome') !== -1 && userAgent.indexOf('wv') !== -1) {
+        // 최후의 보루: 안드로이드 기본 웹뷰 컴포넌트로 구동되는 모든 앱 강제 차단 (에브리타임이 userAgent를 속일 때를 대비)
+        setTimeout(function () {
+          var overlay = document.createElement('div');
+          overlay.setAttribute('id', 'inapp-overlay');
+          overlay.style.position = 'fixed';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+          overlay.style.color = 'white';
+          overlay.style.zIndex = '9999999';
+          overlay.style.display = 'flex';
+          overlay.style.flexDirection = 'column';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          overlay.style.padding = '30px';
+          overlay.style.textAlign = 'center';
+          overlay.style.lineHeight = '1.6';
+
+          // 만약 이미 동일한 오버레이가 있다면 제거
+          var existing = document.getElementById('inapp-overlay');
+          if (existing) existing.remove();
+
+          overlay.innerHTML = `
               <div style="font-size: 50px; margin-bottom: 20px;">⚠️</div>
               <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; word-break: keep-all;">인앱 브라우저에서는<br/>로그인이 제한됩니다.</h2>
               <p style="font-size: 15px; color: #ccc; word-break: keep-all;">
-                안전한 접속을 위해 우측 하단 <b>🧭(나침반)</b>을 누르거나,<br/>
-                우측 상단 <b>⋯</b> 버튼을 눌러<br/>
-                <b style="color: #4da6ff;">[Safari로 열기]</b> 또는 <b style="color: #4da6ff;">[다른 브라우저로 열기]</b>를 선택해주세요!
+                안전한 접속을 위해 우측 하단 <b>🧭(나침반)</b> 또는 <b>⋯</b> 버튼을 눌러<br/><br/>
+                <b style="color: #4da6ff;">[다른 브라우저로 열기]</b> 또는<br/>
+                <b style="color: #4da6ff;">[Safari/기본 브라우저로 열기]</b>를<br/>선택해주세요!
               </p>
             `;
-            document.body.appendChild(overlay);
-          });
-        }
+          document.body.appendChild(overlay);
+        }, 300);
       }
     })();
   </script>
