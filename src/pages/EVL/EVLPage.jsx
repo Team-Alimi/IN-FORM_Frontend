@@ -16,6 +16,7 @@ import MobileTabBar from "../../components/mobile/common/mobileTabBar";
 import SectionTitle from "../../components/mobile/common/SectionTitle";
 import useEVLFilterStore from "../../stores/useEVLFilterStore";
 import MobileFooter from "../../components/mobile/common/MobileFooter";
+import useSearchHistory from "../../hooks/useSearchHistory";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -33,6 +34,23 @@ const EVLPage = () => {
   // 필터 상태를 스토어에서 가져와 페이지 이동 후 복귀 시에도 유지
   const { currentPage, pageSize, searchText, activeFilters,
           setCurrentPage, setPageSize, setSearchText, setActiveFilters } = useEVLFilterStore();
+
+  const { history, addHistory, removeHistory, clearHistory } = useSearchHistory();
+
+  const handleSearchSubmit = (keyword) => {
+    addHistory(keyword);
+  };
+
+  const handleSelectHistory = (keyword) => {
+    setSearchText(keyword);
+    setCurrentPage(1);
+    addHistory(keyword);
+  };
+
+  const handleRemoveHistory = (keyword) => {
+    if (keyword === "__all__") clearHistory();
+    else removeHistory(keyword);
+  };
 
   const handleFilterApply = (filters) => {
     setActiveFilters(filters);
@@ -157,7 +175,11 @@ const EVLPage = () => {
                   <SearchBar
                     value={searchText}
                     onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
+                    onSubmit={handleSearchSubmit}
                     placeholder="공지사항 검색..."
+                    searchHistory={history}
+                    onSelectHistory={handleSelectHistory}
+                    onRemoveHistory={handleRemoveHistory}
                   />
                   <div className="flex items-center justify-between sm:justify-end sm:gap-2">
                     <button
