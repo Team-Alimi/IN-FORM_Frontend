@@ -39,7 +39,7 @@ const HOMPage = () => {
       ) : (
         <div className="max-mobile:hidden">
           <TabBar />
-          <div className="w-full flex justify-center px-4 mt-2 ">
+          <div className="w-full flex justify-center px-4 ">
             <img
               src="/assets/header/header.png"
               alt="HOM 배너"

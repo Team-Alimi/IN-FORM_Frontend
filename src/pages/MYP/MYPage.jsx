@@ -21,7 +21,7 @@ const MYPage = () => {
         return (
             <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA]">
                 <MobileHeader />
-                <main className="flex-1 w-full px-4 py-6">
+                <main className="flex-1 w-full px-4 py-2">
                     <ProfileSection
                         onEditMajor={() => setIsEditOpen(true)}
                         onDeleteAccount={() => setIsDeleteOpen(true)}
@@ -47,7 +47,7 @@ const MYPage = () => {
         <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
             <TabBar />
 
-            <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-8 md:py-12 flex flex-col items-center">
+            <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-4 flex flex-col items-center">
                 <ProfileSection
                     onEditMajor={() => setIsEditOpen(true)}
                     onDeleteAccount={() => setIsDeleteOpen(true)}

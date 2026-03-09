@@ -41,9 +41,9 @@ const TabBar = () => {
   return (
     <>
     {/* 헤더 고정 */}
-    <div className="h-[88px]" />
+    <div className="py-10" />
     <div className="fixed top-0 left-0 right-0 z-50 bg-[#f8f9fa]">
-      <nav className="w-full pt-6 pb-4 max-w-6xl mx-auto px-4">
+      <nav className="w-full py-4 max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center">
           <div className="flex gap-20">
             {tabs.map((tab) => (

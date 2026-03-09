@@ -21,15 +21,17 @@ const HotEventRow = ({
   return (
     <div className="m-1 w-60 shrink-0">
       <div
-        className="bg-white p-4 rounded-xl  flex flex-col gap-1 shadow-sm h-24"
+        className="bg-white p-4 rounded-xl  flex flex-col gap-1 shadow-sm max-mobile:h-24 h-26 "
         onClick={() => HandleEventClick(article_id, category)}
       >
         <div
-          className={`self-start px-2 py-0.5 rounded text-sm font-medium text-black ${tagBg} mb-1`}
+          className={`self-start px-2 py-0.5 rounded text-sm max-mobile:text-xs font-medium text-black ${tagBg} mb-1`}
         >
           {label}
         </div>
-        <div className="font-medium text-gray-700 text-sm">{title}</div>
+        <div className="font-medium text-gray-700  line-clamp-2 text-sm">{
+        title
+       }</div>
         {/**
          *   <div className="text-xs">{vendor}</div>
         <div className="text-xs">

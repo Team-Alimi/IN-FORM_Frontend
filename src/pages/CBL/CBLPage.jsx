@@ -19,7 +19,7 @@ const CBLPage = () => {
       }
     >
       {isMobile ? <MobileHeader /> : <TabBar />}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-2 max-mobile:py-2">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">

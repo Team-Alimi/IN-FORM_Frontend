@@ -61,7 +61,7 @@ const CBDPage = () => {
   return (
     <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]" : "min-h-screen flex flex-col bg-gray-50"}>
       {isMobile ? <MobileHeader /> : <TabBar />}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
         <ClubDetail
           title={club.title}
           vendors={club.vendors}
