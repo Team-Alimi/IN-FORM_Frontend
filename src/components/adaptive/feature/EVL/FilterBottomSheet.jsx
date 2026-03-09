@@ -117,7 +117,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">
+    <BottomSheet isOpen={isOpen} onClose={onClose}>
       {/* 일정 기간 */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">

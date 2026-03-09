@@ -41,16 +41,18 @@ const BottomSheet = ({ isOpen, onClose, className = '', children }) => {
 
             {/* Sheet Content */}
             <div
-                className={`relative w-full max-w-[430px] bg-[#F4F4F4] rounded-t-[20px] p-6 pb-10 shadow-lg overflow-hidden ${isOpen ? 'animate-slide-up' : 'animate-slide-down'
+                className={`relative w-full max-w-[430px] max-h-[85vh] bg-[#F4F4F4] rounded-t-[20px] shadow-lg flex flex-col ${isOpen ? 'animate-slide-up' : 'animate-slide-down'
                     } ${className}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Handle Bar */}
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center pt-4 pb-2 shrink-0">
                     <div className="h-1.5 w-12 rounded-full bg-gray-300" />
                 </div>
 
-                {children}
+                <div className="overflow-y-auto px-6 pb-10">
+                    {children}
+                </div>
             </div>
         </div>
     );
