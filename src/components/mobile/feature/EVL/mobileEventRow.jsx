@@ -54,14 +54,15 @@ const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, 
       <div className="font-bold text-gray-900 text-[16px] mb-1 leading-snug">
         {title}
       </div>
-      {/* 출처, 날짜 */}
-      <div className="flex items-center text-gray-400 text-[14px] mb-1">
-        <span>{source}</span>
-        <span className="mx-1">•</span>
-        <span>{date}</span>
+      {/* 출처, 날짜, 북마크 */}
+      <div className="flex items-center justify-between text-gray-400 text-[14px]">
+        <div className="flex items-center">
+          <span>{source}</span>
+          <span className="mx-1">•</span>
+          <span>{date}</span>
+        </div>
+        <span className="text-[13px]">북마크 {bookmarkCount}</span>
       </div>
-      {/* 북마크 수 */}
-      <div className="text-gray-400 text-[13px]">북마크 {bookmarkCount}</div>
     </div>
   );
 };
