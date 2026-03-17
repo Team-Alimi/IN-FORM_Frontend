@@ -1,10 +1,10 @@
-import HotEventRow from "./HotEventRow";
+import HotEventRow from "@/components/mobile/feature/HOM/HotEventRow";
 import { useQuery } from "@tanstack/react-query";
-import { getHotEventList } from "../../../../api/getHotEventList";
+import { getHotEventList } from "@/api/getHotEventList";
 import { useNavigate } from "react-router-dom";
-import { useDeviceStore } from "../../../../stores/deviceStore";
-import backIcon from "../../../../assets/icons/back_simple.svg";
-import NextIcon from "../../../../assets/icons/next_simple.svg";
+import { useDeviceStore } from "@/stores/deviceStore";
+import backIcon from "@/assets/icons/back_simple.svg";
+import NextIcon from "@/assets/icons/next_simple.svg";
 import {useRef} from "react";
 const ITEMWIDTH = 250;
 const HotEventList = () => {

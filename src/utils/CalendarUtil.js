@@ -5,7 +5,7 @@ import {
   isDateAfter,
   isDateAfterOrEqual,
   isDateBeforeOrEqual,
-} from "./dateUtil";
+} from "@/utils/dateUtil";
 
 // 6주(42칸) 캘린더 그리드 생성
 export function generateWeeks(year, month) {

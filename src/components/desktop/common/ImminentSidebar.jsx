@@ -1,5 +1,5 @@
 import React from "react";
-import Imminent from "./Imminent";
+import Imminent from "@/components/desktop/common/Imminent";
 
 const ImminentSidebar = ({
   imminentLoading,

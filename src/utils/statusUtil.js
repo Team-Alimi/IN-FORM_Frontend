@@ -1,4 +1,4 @@
-import { STATE_OPTIONS } from "../constants/filterOption";
+import { STATE_OPTIONS } from "@/constants/filterOption";
 
 const API_STATUS_MAP = {
   OPEN: { key: "OnGoing", text: "진행중" },

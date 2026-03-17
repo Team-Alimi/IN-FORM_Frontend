@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useAuthStore from "../../../../stores/useAuthStore";
-import { deleteAccount } from "../../../../api/deleteAccount";
+import useAuthStore from "@/stores/useAuthStore";
+import { deleteAccount } from "@/api/deleteAccount";
 import { useNavigate } from "react-router-dom";
 
 /**

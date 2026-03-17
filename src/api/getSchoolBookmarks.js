@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 북마크한 학교 글 목록 조회

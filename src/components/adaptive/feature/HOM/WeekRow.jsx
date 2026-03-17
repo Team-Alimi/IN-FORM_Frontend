@@ -1,14 +1,14 @@
 import { useMemo } from "react";
-import CalendarCell from "./CalendarCell";
-import EventBar from "./EventBar";
-import OverflowButton from "./OverflowButton";
+import CalendarCell from "@/components/adaptive/feature/HOM/CalendarCell";
+import EventBar from "@/components/adaptive/feature/HOM/EventBar";
+import OverflowButton from "@/components/adaptive/feature/HOM/OverflowButton";
 import {
   collectUniqueEvents,
   buildBars,
   assignRows,
   filterByColumnLimit,
-} from "../../../../utils/calendarUtil";
-import { isSameDate, parseDate } from "../../../../utils/dateUtil";
+} from "@/utils/calendarUtil";
+import { isSameDate, parseDate } from "@/utils/dateUtil";
 
 const WeekRow = ({
   week,

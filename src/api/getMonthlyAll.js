@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 특정 연/월의 학교 공지사항 일정 요약 조회 (개편된 API 명세 반영)

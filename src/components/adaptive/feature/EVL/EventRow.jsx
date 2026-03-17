@@ -1,6 +1,6 @@
 import React from "react";
-import Badge from "../../common/Badge";
-import { STATE_OPTIONS } from "../../../../constants/filterOption";
+import Badge from "@/components/adaptive/common/Badge";
+import { STATE_OPTIONS } from "@/constants/filterOption";
 
 const STATUS_KEY_MAP = {
   진행중: "OnGoing",

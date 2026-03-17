@@ -1,8 +1,8 @@
 // 미니 캘린더와 거의 유사
 import React, { useMemo } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
-import WeekRow from "./WeekRow";
-import { generateWeeks } from "../../../../utils/calendarUtil";
+import WeekRow from "@/components/adaptive/feature/HOM/WeekRow";
+import { generateWeeks } from "@/utils/calendarUtil";
 
 const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
 

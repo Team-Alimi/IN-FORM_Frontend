@@ -1,5 +1,5 @@
-import Badge from "../../../adaptive/common/Badge";
-import { FILTER_OPTIONS, STATE_OPTIONS } from "../../../../constants/filterOption";
+import Badge from "@/components/adaptive/common/Badge";
+import { FILTER_OPTIONS, STATE_OPTIONS } from "@/constants/filterOption";
 
 const STATUS_KEY_MAP = {
   "진행중": "OnGoing",

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import useAuthStore from "../../../stores/useAuthStore";
-import { fetchUnreadCount } from "../../../api/notifications";
-import logoIcon from "../../../assets/icons/logo.svg";
-import bellIcon from "../../../assets/icons/notification.svg";
-import userIcon from "../../../assets/icons/user.svg";
-import NotificationModal from "../../adaptive/common/NotificationModal";
+import useAuthStore from "@/stores/useAuthStore";
+import { fetchUnreadCount } from "@/api/notifications";
+import logoIcon from "@/assets/icons/logo.svg";
+import bellIcon from "@/assets/icons/notification.svg";
+import userIcon from "@/assets/icons/user.svg";
+import NotificationModal from "@/components/adaptive/common/NotificationModal";
 
 export default function MobileHeader() {
 	const isLogIn = useAuthStore((state) => state.isLogIn);

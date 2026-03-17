@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 사용자 학과(major) 수정

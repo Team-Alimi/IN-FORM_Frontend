@@ -1,11 +1,11 @@
-import MiniCalendar from "./MiniCalendar";
-import { parseDate, formatDateKey, formatMonthKey } from "../../../utils/dateUtil";
+import MiniCalendar from "@/components/desktop/common/MiniCalendar";
+import { parseDate, formatDateKey, formatMonthKey } from "@/utils/dateUtil";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMonthlyAll } from "../../../api/getMonthlyAll";
-import MiniCalendarEventList from "./MiniCalendarEventList";
+import { getMonthlyAll } from "@/api/getMonthlyAll";
+import MiniCalendarEventList from "@/components/desktop/common/MiniCalendarEventList";
 import { useNavigate } from "react-router-dom";
-import { FILTER_OPTIONS } from "../../../constants/filterOption";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
 
 const ALL_CATEGORY_IDS = FILTER_OPTIONS
   .filter((opt) => opt.category_id !== null)

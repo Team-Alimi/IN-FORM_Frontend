@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import useAuthStore from "../../stores/useAuthStore";
-import { useDeviceStore } from "../../stores/deviceStore";
+import useAuthStore from "@/stores/useAuthStore";
+import { useDeviceStore } from "@/stores/deviceStore";
 import { GoogleLogin } from "@react-oauth/google";
-import { postGoogleLogin } from "../../api/postGoogleLogin";
+import { postGoogleLogin } from "@/api/postGoogleLogin";
 const LGNPage = () => {
   const login = useAuthStore((state) => state.login);
   const isMobile = useDeviceStore((state) => state.isMobile);

@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "@/api/axios";
 
 /**
  * 동아리 공지사항 목록 조회

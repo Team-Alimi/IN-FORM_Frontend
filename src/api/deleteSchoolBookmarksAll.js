@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 북마크한 학교글 전체 삭제

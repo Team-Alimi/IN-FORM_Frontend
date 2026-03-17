@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDeviceStore } from '../../../../stores/deviceStore';
-import Badge from '../../../adaptive/common/Badge';
-import { getStatus } from '../../../../utils/statusUtil';
-import { FILTER_OPTIONS } from '../../../../constants/filterOption';
+import { useDeviceStore } from '@/stores/deviceStore';
+import Badge from '@/components/adaptive/common/Badge';
+import { getStatus } from '@/utils/statusUtil';
+import { FILTER_OPTIONS } from '@/constants/filterOption';
 
 const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status, bookmarkCount, onDelete }) => {
     const isMobile = useDeviceStore((state) => state.isMobile);

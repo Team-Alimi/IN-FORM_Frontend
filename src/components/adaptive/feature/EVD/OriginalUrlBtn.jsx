@@ -1,5 +1,5 @@
 import React from "react";
-import urlIcon from "../../../../assets/icons/url.svg";
+import urlIcon from "@/assets/icons/url.svg";
 
 const OriginalUrlBtn = ({ vendor_name, original_url }) => {
   const handleClick = () => {

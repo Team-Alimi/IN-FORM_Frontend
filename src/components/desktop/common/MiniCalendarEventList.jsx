@@ -1,4 +1,4 @@
-import DaySelectEvent from "../../adaptive/feature/HOM/DaySelectEvent";
+import DaySelectEvent from "@/components/adaptive/feature/HOM/DaySelectEvent";
 
 const MiniCalendarEventList = ({
   events,

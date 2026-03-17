@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import bookmarkIcon from "../../../../assets/icons/bookmark.svg";
-import PressedBookmarkIcon from "../../../../assets/icons/bookmark_pressed.svg";
-import { postBookmark } from "../../../../api/postBookmark";
+import bookmarkIcon from "@/assets/icons/bookmark.svg";
+import PressedBookmarkIcon from "@/assets/icons/bookmark_pressed.svg";
+import { postBookmark } from "@/api/postBookmark";
 
 const BookmarkButton = ({ articleId, articleType = "SCHOOL", isBookmarked = false, onToggle }) => {
   const [bookmarked, setBookmarked] = useState(isBookmarked);

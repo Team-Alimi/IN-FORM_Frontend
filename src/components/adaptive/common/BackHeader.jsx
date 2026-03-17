@@ -1,5 +1,5 @@
 import React from "react";
-import backIcon from "../../../assets/icons/back.svg";
+import backIcon from "@/assets/icons/back.svg";
 
 const BackHeader = ({ title }) => {
   return (

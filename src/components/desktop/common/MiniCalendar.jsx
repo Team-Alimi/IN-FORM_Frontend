@@ -1,7 +1,7 @@
-import { generateWeeks } from "../../../utils/calendarUtil";
+import { generateWeeks } from "@/utils/calendarUtil";
 import { useMemo } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
-import MiniCalendarWeekRow from "./MiniCalendarWeekRow";
+import MiniCalendarWeekRow from "@/components/desktop/common/MiniCalendarWeekRow";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MiniCalendar = ({

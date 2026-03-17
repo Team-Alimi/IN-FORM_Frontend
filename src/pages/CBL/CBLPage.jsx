@@ -1,11 +1,11 @@
-import { useDeviceStore } from "../../stores/deviceStore";
-import MobileHeader from "../../components/mobile/common/mobileHeader";
-import MobileTabBar from "../../components/mobile/common/mobileTabBar";
-import MobileFooter from "../../components/mobile/common/MobileFooter";
-import TabBar from "../../components/desktop/common/TabBar";
-import Footer from "../../components/desktop/common/Footer";
-import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
-import ClubListContainer from "../../components/adaptive/feature/CBL/ClubListContainer";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileHeader from "@/components/mobile/common/mobileHeader";
+import MobileTabBar from "@/components/mobile/common/mobileTabBar";
+import MobileFooter from "@/components/mobile/common/MobileFooter";
+import TabBar from "@/components/desktop/common/TabBar";
+import Footer from "@/components/desktop/common/Footer";
+import MiniCalendarSet from "@/components/desktop/common/MiniCalendarSet";
+import ClubListContainer from "@/components/adaptive/feature/CBL/ClubListContainer";
 
 const CBLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);

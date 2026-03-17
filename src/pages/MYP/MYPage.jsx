@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import TabBar from "../../components/desktop/common/TabBar";
-import Footer from "../../components/desktop/common/Footer";
-import ProfileSection from "../../components/adaptive/feature/MYP/ProfileSection";
-import BookmarkSection from "../../components/adaptive/feature/MYP/BookmarkSection";
-import { useDeviceStore } from "../../stores/deviceStore";
-import MobileHeader from "../../components/mobile/common/mobileHeader";
-import MobileTabBar from "../../components/mobile/common/mobileTabBar";
-import MobileFooter from "../../components/mobile/common/MobileFooter";
-import DepartmentEditSheet from "../../components/adaptive/feature/MYP/DepartmentEditSheet";
-import DepartmentEditModal from "../../components/adaptive/feature/MYP/DepartmentEditModal";
-import AccountDeleteSheet from "../../components/adaptive/feature/MYP/AccountDeleteSheet";
-import AccountDeleteModal from "../../components/adaptive/feature/MYP/AccountDeleteModal";
+import TabBar from "@/components/desktop/common/TabBar";
+import Footer from "@/components/desktop/common/Footer";
+import ProfileSection from "@/components/adaptive/feature/MYP/ProfileSection";
+import BookmarkSection from "@/components/adaptive/feature/MYP/BookmarkSection";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileHeader from "@/components/mobile/common/mobileHeader";
+import MobileTabBar from "@/components/mobile/common/mobileTabBar";
+import MobileFooter from "@/components/mobile/common/MobileFooter";
+import DepartmentEditSheet from "@/components/adaptive/feature/MYP/DepartmentEditSheet";
+import DepartmentEditModal from "@/components/adaptive/feature/MYP/DepartmentEditModal";
+import AccountDeleteSheet from "@/components/adaptive/feature/MYP/AccountDeleteSheet";
+import AccountDeleteModal from "@/components/adaptive/feature/MYP/AccountDeleteModal";
 
 const MYPage = () => {
     const isMobile = useDeviceStore((state) => state.isMobile);

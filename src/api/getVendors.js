@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 전체 또는 타입별 제공처(Vendor) 조회

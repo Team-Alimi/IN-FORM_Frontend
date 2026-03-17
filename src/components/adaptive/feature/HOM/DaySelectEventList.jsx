@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5";
-import DaySelectEvent from "./DaySelectEvent";
-import { useDeviceStore } from "../../../../stores/deviceStore";
+import DaySelectEvent from "@/components/adaptive/feature/HOM/DaySelectEvent";
+import { useDeviceStore } from "@/stores/deviceStore";
 import { useSwipeable } from "react-swipeable";
 
 const PAGE_SIZE = 8;

@@ -35,15 +35,6 @@ const Footer = () => {
                 불편사항 접수
               </a>
             </div>
-            <p>
-              문의 :{" "}
-              <a
-                href="mailto:team.alimi.inform@gmail.com"
-                className="hover:text-gray-600 transition"
-              >
-                team.alimi.inform@gmail.com
-              </a>
-            </p>
           </div>
 
           <p className="text-center md:text-right">

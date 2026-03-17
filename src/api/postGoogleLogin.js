@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "@/api/axios";
 
 /**
  * 구글 로그인 ID 토큰을 백엔드로 전송하여 로그인/회원가입 처리

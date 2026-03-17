@@ -4,8 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "./global.css";
-import App from "./App.jsx";
-import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
+import App from "@/App.jsx";
+import ErrorBoundary from "@/components/common/ErrorBoundary.jsx";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 

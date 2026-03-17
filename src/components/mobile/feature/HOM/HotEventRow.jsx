@@ -1,4 +1,4 @@
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
 
 const HotEventRow = ({
   article_id = "",

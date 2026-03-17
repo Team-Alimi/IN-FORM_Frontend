@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import useAuthStore from "../../../stores/useAuthStore";
-import { fetchUnreadCount } from "../../../api/notifications";
-import bellIcon from "../../../assets/icons/notification.svg";
-import userIcon from "../../../assets/icons/user.svg";
-import NotificationModal from "../../adaptive/common/NotificationModal";
+import useAuthStore from "@/stores/useAuthStore";
+import { fetchUnreadCount } from "@/api/notifications";
+import bellIcon from "@/assets/icons/notification.svg";
+import userIcon from "@/assets/icons/user.svg";
+import NotificationModal from "@/components/adaptive/common/NotificationModal";
 
 const TabBar = () => {
   const navigate = useNavigate();

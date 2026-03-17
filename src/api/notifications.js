@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "@/api/axios";
 
 /**
  * 알림 목록 조회

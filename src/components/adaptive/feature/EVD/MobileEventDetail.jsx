@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getStatus } from "../../../../utils/statusUtil";
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
-import DetailInfoTitle from "./DetailInfoTitle";
-import BookmarkButton from "./BookmarkButton";
-import BottomSheet from "../../../mobile/common/BottomSheet";
+import { getStatus } from "@/utils/statusUtil";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
+import DetailInfoTitle from "@/components/adaptive/feature/EVD/DetailInfoTitle";
+import BookmarkButton from "@/components/adaptive/feature/EVD/BookmarkButton";
+import BottomSheet from "@/components/mobile/common/BottomSheet";
 
 const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count, isFetching }) => {
   const [bookmarkCount, setBookmarkCount] = useState(bookmark_count || 0);

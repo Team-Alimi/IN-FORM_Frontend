@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDeviceStore } from "../../stores/deviceStore";
-import bellIcon from "../../assets/icons/notification.svg";
-import calendarLogo from "../../assets/icons/calendarLogo.png";
+import { useDeviceStore } from "@/stores/deviceStore";
+import bellIcon from "@/assets/icons/notification.svg";
+import calendarLogo from "@/assets/icons/calendarLogo.png";
 
 /**
  * Onboarding Page Component

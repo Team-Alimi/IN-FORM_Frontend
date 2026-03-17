@@ -1,15 +1,15 @@
-import Footer from "../../components/desktop/common/Footer";
-import TabBar from "../../components/desktop/common/TabBar";
-import ServiceLinkList from "../../components/desktop/common/ServiceLinkList";
-import CalendarSection from "../../components/adaptive/feature/HOM/CalendarSection";
-import HotEventList from "../../components/mobile/feature/HOM/HotEventList";
-import { useDeviceStore } from "../../stores/deviceStore";
-import MobileHeader from "../../components/mobile/common/mobileHeader";
-import MobileTabBar from "../../components/mobile/common/mobileTabBar";
-import MobileFooter from "../../components/mobile/common/MobileFooter";
+import Footer from "@/components/desktop/common/Footer";
+import TabBar from "@/components/desktop/common/TabBar";
+import ServiceLinkList from "@/components/desktop/common/ServiceLinkList";
+import CalendarSection from "@/components/adaptive/feature/HOM/CalendarSection";
+import HotEventList from "@/components/mobile/feature/HOM/HotEventList";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileHeader from "@/components/mobile/common/mobileHeader";
+import MobileTabBar from "@/components/mobile/common/mobileTabBar";
+import MobileFooter from "@/components/mobile/common/MobileFooter";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchClubs } from "../../api/clubArticles";
+import { fetchClubs } from "@/api/clubArticles";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const queryClient = useQueryClient();

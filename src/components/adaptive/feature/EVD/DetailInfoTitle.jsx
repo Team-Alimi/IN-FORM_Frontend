@@ -1,7 +1,7 @@
 import React from "react";
-import Badge from "../../common/Badge";
-import OriginalUrlBtn from "./OriginalUrlBtn";
-import AddToCalendar from "./AddToCalendar";
+import Badge from "@/components/adaptive/common/Badge";
+import OriginalUrlBtn from "@/components/adaptive/feature/EVD/OriginalUrlBtn";
+import AddToCalendar from "@/components/adaptive/feature/EVD/AddToCalendar";
 
 const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategoryName, title, eventData, vendors, created_at, dueDate, bookmark }) => (
   <>

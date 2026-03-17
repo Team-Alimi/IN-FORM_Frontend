@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getStatus } from "../../../../utils/statusUtil";
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
-import DetailInfoTitle from "./DetailInfoTitle";
-import BookmarkButton from "./BookmarkButton";
+import { getStatus } from "@/utils/statusUtil";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
+import DetailInfoTitle from "@/components/adaptive/feature/EVD/DetailInfoTitle";
+import BookmarkButton from "@/components/adaptive/feature/EVD/BookmarkButton";
 
 const isHTML = (str) => str && /<\/?(p|br|div|span|img|a|strong|b|i|u|em|table|thead|tbody|tr|td|th|ul|ol|li|h[1-6])(\s|>|\/)/i.test(str);
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;

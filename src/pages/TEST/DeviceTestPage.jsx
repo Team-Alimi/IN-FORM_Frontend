@@ -1,6 +1,6 @@
-import { useDeviceStore } from "../../stores/deviceStore";
-import ClubListContainer from "../../components/adaptive/feature/CBL/ClubListContainer";
-import ErrorPage from "../NOT/ErrorPage";
+import { useDeviceStore } from "@/stores/deviceStore";
+import ClubListContainer from "@/components/adaptive/feature/CBL/ClubListContainer";
+import ErrorPage from "@/pages/NOT/ErrorPage";
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);

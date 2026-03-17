@@ -1,11 +1,11 @@
-import ClubRow from "./ClubRow";
+import ClubRow from "@/components/adaptive/feature/CBL/ClubRow";
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../../common/SearchBar";
+import SearchBar from "@/components/adaptive/common/SearchBar";
 import {
   fetchClubs /*, fetchImminentClubs */,
-} from "../../../../api/clubArticles";
+} from "@/api/clubArticles";
 import { useState, useEffect } from "react";
-import SectionTitle from "../../../mobile/common/SectionTitle";
+import SectionTitle from "@/components/mobile/common/SectionTitle";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 const CLUB_PAGE_COUNT = 4;
 const DEBOUNCE_DELAY = 400;

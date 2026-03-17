@@ -1,22 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
-import MobileHeader from "../../components/mobile/common/mobileHeader";
+import MobileHeader from "@/components/mobile/common/mobileHeader";
 import { useNavigate } from "react-router-dom";
-import { getStatus } from "../../utils/statusUtil";
-import TabBar from "../../components/desktop/common/TabBar";
-import Footer from "../../components/desktop/common/Footer";
-import MiniCalendarSet from "../../components/desktop/common/MiniCalendarSet";
-import EventRow from "../../components/adaptive/feature/EVL/EventRow";
-import MobileEventRow from "../../components/mobile/feature/EVL/mobileEventRow";
-import FilterBottomSheet from "../../components/adaptive/feature/EVL/FilterBottomSheet";
-import SearchBar from "../../components/adaptive/common/SearchBar";
+import { getStatus } from "@/utils/statusUtil";
+import TabBar from "@/components/desktop/common/TabBar";
+import Footer from "@/components/desktop/common/Footer";
+import MiniCalendarSet from "@/components/desktop/common/MiniCalendarSet";
+import EventRow from "@/components/adaptive/feature/EVL/EventRow";
+import MobileEventRow from "@/components/mobile/feature/EVL/mobileEventRow";
+import FilterBottomSheet from "@/components/adaptive/feature/EVL/FilterBottomSheet";
+import SearchBar from "@/components/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
-import { fetchEvents } from "../../api/schoolArticles";
-import { useDeviceStore } from "../../stores/deviceStore";
-import MobileTabBar from "../../components/mobile/common/mobileTabBar";
-import SectionTitle from "../../components/mobile/common/SectionTitle";
-import useEVLFilterStore from "../../stores/useEVLFilterStore";
-import MobileFooter from "../../components/mobile/common/MobileFooter";
-import useSearchHistory from "../../hooks/useSearchHistory";
+import { fetchEvents } from "@/api/schoolArticles";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileTabBar from "@/components/mobile/common/mobileTabBar";
+import SectionTitle from "@/components/mobile/common/SectionTitle";
+import useEVLFilterStore from "@/stores/useEVLFilterStore";
+import MobileFooter from "@/components/mobile/common/MobileFooter";
+import useSearchHistory from "@/hooks/useSearchHistory";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);

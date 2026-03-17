@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import useAuthStore from "../../../../stores/useAuthStore";
-import { getVendors } from "../../../../api/getVendors";
-import { useDeviceStore } from "../../../../stores/deviceStore";
+import useAuthStore from "@/stores/useAuthStore";
+import { getVendors } from "@/api/getVendors";
+import { useDeviceStore } from "@/stores/deviceStore";
 
 const ProfileSection = ({ onEditMajor, onDeleteAccount }) => {
     const { userInfo, logout } = useAuthStore();

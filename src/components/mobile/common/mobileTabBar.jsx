@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import homeIcon from "../../../assets/icons/home.svg";
-import eventIcon from "../../../assets/icons/event.svg";
-import clubIcon from "../../../assets/icons/club.svg";
-import mypageIcon from "../../../assets/icons/mypage.svg";
-import homePressedIcon from "../../../assets/icons/home_pressed.svg";
-import eventPressedIcon from "../../../assets/icons/event_pressed.svg";
-import clubPressedIcon from "../../../assets/icons/club_pressed.svg";
-import mypagePressedIcon from "../../../assets/icons/mypage_pressed.svg";
+import homeIcon from "@/assets/icons/home.svg";
+import eventIcon from "@/assets/icons/event.svg";
+import clubIcon from "@/assets/icons/club.svg";
+import mypageIcon from "@/assets/icons/mypage.svg";
+import homePressedIcon from "@/assets/icons/home_pressed.svg";
+import eventPressedIcon from "@/assets/icons/event_pressed.svg";
+import clubPressedIcon from "@/assets/icons/club_pressed.svg";
+import mypagePressedIcon from "@/assets/icons/mypage_pressed.svg";
 
 const navItems = [
 	{ icon: homeIcon, pressedIcon: homePressedIcon, label: "홈", path: "/" },

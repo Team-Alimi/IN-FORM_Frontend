@@ -5,19 +5,19 @@ import {
   parseDate,
   formatDateKey,
   formatMonthKey,
-} from "../../../../utils/dateUtil";
-import DaySelectEventList from "./DaySelectEventList";
-import { getMonthlyAll } from "../../../../api/getMonthlyAll";
-import { fetchEventDetail } from "../../../../api/schoolArticles";
-import { fetchClubDetail } from "../../../../api/clubArticles";
+} from "@/utils/dateUtil";
+import DaySelectEventList from "@/components/adaptive/feature/HOM/DaySelectEventList";
+import { getMonthlyAll } from "@/api/getMonthlyAll";
+import { fetchEventDetail } from "@/api/schoolArticles";
+import { fetchClubDetail } from "@/api/clubArticles";
 
-import MainCalendar from "./MainCalendar";
-import CalendarFilterBar from "./CalendarFilterBar";
-import { useDeviceStore } from "../../../../stores/deviceStore";
-import MobileEventDetail from "../EVD/MobileEventDetail";
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
-import { useCalendarPrefetch } from "../../../../hooks/useCalendarPrefetch";
-import SectionTitle from "../../../mobile/common/SectionTitle";
+import MainCalendar from "@/components/adaptive/feature/HOM/MainCalendar";
+import CalendarFilterBar from "@/components/adaptive/feature/HOM/CalendarFilterBar";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileEventDetail from "@/components/adaptive/feature/EVD/MobileEventDetail";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
+import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
+import SectionTitle from "@/components/mobile/common/SectionTitle";
 
 const CalendarSection = () => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);

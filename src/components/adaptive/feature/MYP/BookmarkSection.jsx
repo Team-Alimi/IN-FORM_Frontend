@@ -1,12 +1,12 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import BookmarkItem from "./BookmarkItem";
-import { deleteSchoolBookmarksAll } from "../../../../api/deleteSchoolBookmarksAll";
-import { deleteSchoolBookmark } from "../../../../api/deleteSchoolBookmark";
-import { getSchoolBookmarks } from "../../../../api/getSchoolBookmarks";
-import { useDeviceStore } from "../../../../stores/deviceStore";
-import useAuthStore from "../../../../stores/useAuthStore";
+import BookmarkItem from "@/components/adaptive/feature/MYP/BookmarkItem";
+import { deleteSchoolBookmarksAll } from "@/api/deleteSchoolBookmarksAll";
+import { deleteSchoolBookmark } from "@/api/deleteSchoolBookmark";
+import { getSchoolBookmarks } from "@/api/getSchoolBookmarks";
+import { useDeviceStore } from "@/stores/deviceStore";
+import useAuthStore from "@/stores/useAuthStore";
 
 const BookmarkSection = () => {
     const queryClient = useQueryClient();

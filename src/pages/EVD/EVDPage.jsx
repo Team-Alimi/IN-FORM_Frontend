@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import TabBar from "../../components/desktop/common/TabBar";
-import Footer from "../../components/desktop/common/Footer";
-import MobileHeader from "../../components/mobile/common/mobileHeader";
-import MobileTabBar from "../../components/mobile/common/mobileTabBar";
-import MobileFooter from "../../components/mobile/common/MobileFooter";
-import EventDetail from "../../components/adaptive/feature/EVD/EventDetail";
-import { fetchEventDetail } from "../../api/schoolArticles";
-import { useDeviceStore } from "../../stores/deviceStore";
+import TabBar from "@/components/desktop/common/TabBar";
+import Footer from "@/components/desktop/common/Footer";
+import MobileHeader from "@/components/mobile/common/mobileHeader";
+import MobileTabBar from "@/components/mobile/common/mobileTabBar";
+import MobileFooter from "@/components/mobile/common/MobileFooter";
+import EventDetail from "@/components/adaptive/feature/EVD/EventDetail";
+import { fetchEventDetail } from "@/api/schoolArticles";
+import { useDeviceStore } from "@/stores/deviceStore";
 
 const EVDPage = () => {
   const { id } = useParams();

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getMonthlyAll } from "../api/getMonthlyAll";
-import { FILTER_OPTIONS } from "../constants/filterOption";
+import { getMonthlyAll } from "@/api/getMonthlyAll";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
 
 const STALE_TIME = 60 * 1000 * 10; // 10분
 

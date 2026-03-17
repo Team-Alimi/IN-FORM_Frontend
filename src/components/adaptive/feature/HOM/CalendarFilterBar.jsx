@@ -1,4 +1,4 @@
-import { FILTER_OPTIONS } from "../../../../constants/filterOption";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
 
 const CalendarFilterBar = ({ selectedFilter, onClick }) => {
   return (

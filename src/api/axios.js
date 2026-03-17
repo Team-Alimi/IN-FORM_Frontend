@@ -1,6 +1,6 @@
 //axios instance를 정의하는 파일
 import axios from "axios";
-import useAuthStore from "../stores/useAuthStore";
+import useAuthStore from "@/stores/useAuthStore";
 
 const instance = axios.create({
   baseURL: "https://inha-inform.today/",
