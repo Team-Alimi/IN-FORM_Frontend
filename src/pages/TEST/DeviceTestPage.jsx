@@ -1,5 +1,5 @@
 import { useDeviceStore } from "@/stores/deviceStore";
-import ClubListContainer from "@/components/adaptive/feature/CBL/ClubListContainer";
+import ClubListContainer from "@/components/main/adaptive/feature/CBL/ClubListContainer";
 import ErrorPage from "@/pages/NOT/ErrorPage";
 
 const DeviceTestPage = () => {

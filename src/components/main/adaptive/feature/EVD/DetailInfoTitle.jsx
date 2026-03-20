@@ -1,0 +1,41 @@
+import React from "react";
+import Badge from "@/components/main/adaptive/common/Badge";
+import OriginalUrlBtn from "@/components/main/adaptive/feature/EVD/OriginalUrlBtn";
+import AddToCalendar from "@/components/main/adaptive/feature/EVD/AddToCalendar";
+
+const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategoryName, title, eventData, vendors, created_at, dueDate, bookmark }) => (
+  <>
+    <div className="flex items-center gap-2 mb-4">
+      {category_name && (
+        <Badge color={categoryColor} text={displayCategoryName} />
+      )}
+      <Badge color={status.color} text={status.text} />
+    </div>
+    <div className="flex justify-between items-start gap-4 mb-2">
+      <h1 className="text-l md:text-2xl font-bold text-gray-900 leading-tight">
+        {title}
+      </h1>
+      <div className="shrink-0">
+        <AddToCalendar event={eventData} />
+      </div>
+    </div>
+    {Array.isArray(vendors) && vendors.length > 0 && (
+      <div className="flex flex-row flex-wrap gap-2 mb-4">
+        {vendors.map((vendor) => (
+          <OriginalUrlBtn
+            key={vendor.vendor_id}
+            vendor_name={vendor.vendor_name}
+            original_url={vendor.original_url}
+          />
+        ))}
+      </div>
+    )}
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 rounded-xl">
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">게시일:</span><span>{created_at}</span></div>
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">마감일:</span><span>{dueDate}</span></div>
+      <div className="flex items-center gap-1.5"><span className="font-medium text-gray-600">북마크</span><span>{bookmark}</span></div>
+    </div>
+  </>
+);
+
+export default DetailInfoTitle;

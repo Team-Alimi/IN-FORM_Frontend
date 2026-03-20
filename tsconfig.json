@@ -1,37 +1,20 @@
 {
   "compilerOptions": {
-    // Environment Settings
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ESNext",
-
-    // JS/TS 공존 설정
     "allowJs": true,
     "checkJs": false,
-
-    // JSX
     "jsx": "react-jsx",
-
-    // Path Alias (@/ → src/)
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    // Library
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": [],
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
+    "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
-    // Recommended Options
     "strict": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
