@@ -124,12 +124,6 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           <p className="text-[13px] font-semibold text-gray-800">
             일정 기간 <span className="text-gray-500 font-normal">Schedule Period</span>
           </p>
-          <button
-            onClick={onClose}
-            className="px-3 py-1 rounded-full bg-gray-200 text-gray-500 text-xs active:bg-gray-300"
-          >
-            닫기
-          </button>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex-1 min-w-0">
@@ -138,6 +132,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              style={{ colorScheme: "light" }}
             />
           </div>
           <span className="text-gray-400 text-sm shrink-0">~</span>
@@ -147,6 +142,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
+              style={{ colorScheme: "light" }}
             />
           </div>
         </div>
@@ -203,7 +199,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         <p className="text-[13px] font-semibold text-gray-800 mb-2">
           학과 <span className="text-gray-500 font-normal">Department</span>
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
           {vendors.map((v) => {
             const isSelected = selectedVendorIds.includes(v.vendor_id);
             return (
