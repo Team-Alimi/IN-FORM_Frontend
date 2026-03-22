@@ -126,23 +126,33 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex-1 min-w-0">
+          <div className="relative flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
+              <span className="text-sm">📅</span>
+              <span className={`text-sm ${startDate ? "text-gray-800" : "text-gray-400"}`}>
+                {startDate || "시작일"}
+              </span>
+            </div>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
-              style={{ colorScheme: "light" }}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full"
             />
           </div>
           <span className="text-gray-400 text-sm shrink-0">~</span>
-          <div className="flex-1 min-w-0">
+          <div className="relative flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
+              <span className="text-sm">📅</span>
+              <span className={`text-sm ${endDate ? "text-gray-800" : "text-gray-400"}`}>
+                {endDate || "종료일"}
+              </span>
+            </div>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full bg-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
-              style={{ colorScheme: "light" }}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full"
             />
           </div>
         </div>
@@ -195,11 +205,11 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       </div>
 
       {/* 학과 */}
-      <div className="mb-8">
+      <div className="mb-4">
         <p className="text-[13px] font-semibold text-gray-800 mb-2">
           학과 <span className="text-gray-500 font-normal">Department</span>
         </p>
-        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+        <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto">
           {vendors.map((v) => {
             const isSelected = selectedVendorIds.includes(v.vendor_id);
             return (

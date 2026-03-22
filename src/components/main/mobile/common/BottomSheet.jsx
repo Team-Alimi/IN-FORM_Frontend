@@ -50,7 +50,7 @@ const BottomSheet = ({ isOpen, onClose, className = '', children }) => {
                     <div className="h-1.5 w-12 rounded-full bg-gray-300" />
                 </div>
 
-                <div className="overflow-y-auto px-6 pb-10">
+                <div className="overflow-y-auto px-6 pb-5">
                     {children}
                 </div>
             </div>
