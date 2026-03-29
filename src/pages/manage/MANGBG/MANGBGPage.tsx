@@ -1,5 +1,6 @@
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
+import TableList from '../../../components/manage/common/TableList';
 
 const MANGBGPage = () => {
   return (
@@ -7,10 +8,30 @@ const MANGBGPage = () => {
       <ManageHeader />
       <div className="flex flex-1 overflow-hidden">
         <Menu />
-        <main className="flex-1 overflow-auto p-6">
-          <h1 style={{ color: '#4068f7' }}>MANGBG 페이지</h1>
-          <p>✅ MANGBGPage 정상 렌더링</p>
-          <p style={{ color: '#888', fontSize: '0.875rem' }}>manage/MANGBG/MANGBGPage.tsx</p>
+        <main className="flex-1 overflow-auto p-6 bg-gray-50">
+          <h2 className="text-lg font-bold text-gray-800 mb-2">휴지통</h2>
+
+          {/* 미검수 상태에서 휴지통으로 이동된 게시글 */}
+          <TableList
+            status="GARBAGE"
+            title="미검수 게시글"
+            previousStatusFilter="INSPECTED_YET"
+            actions={[
+              { label: '복구', color: 'text-main-component', onClick: (ids) => console.log('미검수 복구', ids) },
+              { label: '삭제', color: 'text-red-400', onClick: (ids) => console.log('영구삭제', ids) },
+            ]}
+          />
+
+          {/* 반영대기 상태에서 휴지통으로 이동된 게시글 */}
+          <TableList
+            status="GARBAGE"
+            title="반영 대기 게시글"
+            previousStatusFilter="REFLECTION_WAITING"
+            actions={[
+              { label: '복구', color: 'text-main-component', onClick: (ids) => console.log('반영대기 복원', ids) },
+              { label: '삭제', color: 'text-red-400', onClick: (ids) => console.log('영구삭제', ids) },
+            ]}
+          />
         </main>
       </div>
     </div>

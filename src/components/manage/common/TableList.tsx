@@ -16,11 +16,12 @@ interface TableListProps {
   status: AdminStatus;
   title: string;
   actions?: ActionItem[];
+  previousStatusFilter?: string | null; // 설정 시 해당 previous_status인 게시글만 표시
 }
 
 const COLUMNS = ['선택', '게시글 ID', '카테고리', '게시글 제목', '행사기간', '출처', '게시글 최종 수정일'];
 
-const TableList = ({ status, title, actions = [] }: TableListProps) => {
+const TableList = ({ status, title, actions = [], previousStatusFilter }: TableListProps) => {
   const [page, setPage] = useState(1);
   const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -30,8 +31,14 @@ const TableList = ({ status, title, actions = [] }: TableListProps) => {
     queryFn: () => getAdminArticles(status, page),
   });
 
-  const articles = data?.articles ?? [];
+  const allArticles = data?.articles ?? [];
   const totalPages = data?.page_info.total_pages ?? 1;
+
+  // previousStatusFilter가 있으면 해당 previous_status로 필터링
+  const articles =
+    previousStatusFilter !== undefined
+      ? allArticles.filter((a) => a.previous_status === previousStatusFilter)
+      : allArticles;
 
   // 전체선택 체크박스 상태
   const allChecked = articles.length > 0 && articles.every((a) => checkedIds.has(a.article_id));
