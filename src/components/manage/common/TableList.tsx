@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAdminArticles } from '@/api/manage/adminArticles';
+// TODO: API 연동 시 아래 두 줄로 교체
+// import { getAdminArticles } from '@/api/manage/adminArticles';
+import { getMockAdminArticles } from '@/mocks/adminArticlesMock';
 import type { AdminStatus } from '@/api/manage/adminArticles';
 import TableListRecord from './TableListRecord';
 import ActionBtn from './ActionBtn';
@@ -28,7 +30,7 @@ const TableList = ({ status, title, actions = [], previousStatusFilter }: TableL
 
   const { data } = useQuery({
     queryKey: ['adminArticles', status, page],
-    queryFn: () => getAdminArticles(status, page),
+    queryFn: getMockAdminArticles, // TODO: API 연동 시 → () => getAdminArticles(status, page)
   });
 
   const allArticles = data?.articles ?? [];
