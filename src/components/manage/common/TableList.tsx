@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 // TODO: API 연동 시 아래 두 줄로 교체
 // import { getAdminArticles } from '@/api/manage/adminArticles';
@@ -24,6 +25,7 @@ interface TableListProps {
 const COLUMNS = ['선택', '게시글 ID', '카테고리', '게시글 제목', '행사기간', '출처', '게시글 최종 수정일'];
 
 const TableList = ({ status, title, actions = [], previousStatusFilter }: TableListProps) => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -110,7 +112,10 @@ const TableList = ({ status, title, actions = [], previousStatusFilter }: TableL
                 checked={checkedIds.has(article.article_id)}
                 onCheck={(checked) => handleCheck(article.article_id, checked)}
                 selected={selectedId === article.article_id}
-                onClick={() => setSelectedId(article.article_id)}
+                onClick={() => {
+                  setSelectedId(article.article_id);
+                  navigate(`/manage/detail/${article.article_id}`);
+                }}
               />
             ))}
           </tbody>

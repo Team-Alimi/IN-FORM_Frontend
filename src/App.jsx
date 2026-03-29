@@ -87,7 +87,7 @@ function App() {
         <Route path="/manage">
           <Route index element={<MANHOMPage />} />
           <Route path="login" element={<MANLGNPage />} />
-          <Route path="detail" element={<MANDTRPage />} />
+          <Route path="detail/:id" element={<MANDTRPage />} />
           <Route path="edit" element={<MANDTEPage />} />
           <Route path="staged" element={<MANSTGPage />} />
           <Route path="garbage" element={<MANGBGPage />} />
