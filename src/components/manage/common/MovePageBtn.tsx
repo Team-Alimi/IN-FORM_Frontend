@@ -31,7 +31,7 @@ const MovePageBtn = ({ page, totalPages, onChange }: MovePageBtnProps) => {
             key={p}
             onClick={() => onChange(p)}
             className={`w-7 h-7 rounded text-sm ${
-              page === p ? 'bg-main-component text-white' : 'text-gray-600 hover:bg-gray-100'
+              page === p ? 'bg-[#4068f7] text-white' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             {p}
