@@ -4,7 +4,7 @@ const mockArticles: Article[] = [
   {
     article_id: 101,
     title: '[학부] 2026년 상반기 SW전공 역량강화 프로그램 참가자 모집',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.03.24',
     due_date: '2026.04.10',
@@ -18,7 +18,7 @@ const mockArticles: Article[] = [
   {
     article_id: 102,
     title: '[대학원] 2026학년도 후기 일반대학원 입학전형 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.03.25',
     due_date: '2026.05.15',
@@ -32,7 +32,7 @@ const mockArticles: Article[] = [
   {
     article_id: 103,
     title: '[공모전] 제14회 인하 창의설계경진대회 참가팀 모집',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.04.01',
     due_date: '2026.04.30',
@@ -49,7 +49,7 @@ const mockArticles: Article[] = [
   {
     article_id: 104,
     title: '[장학] 2026년 1학기 국가장학금 신청 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.03.20',
     due_date: '2026.04.05',
@@ -63,7 +63,7 @@ const mockArticles: Article[] = [
   {
     article_id: 105,
     title: '[취업] 삼성전자 DS부문 상반기 신입공채 설명회',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.04.05',
     due_date: '2026.04.05',
@@ -77,7 +77,7 @@ const mockArticles: Article[] = [
   {
     article_id: 106,
     title: '[학부] 소프트웨어융합대학 2026년 1학기 학술제 일정 공지',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.05.10',
     due_date: '2026.05.12',
@@ -91,7 +91,7 @@ const mockArticles: Article[] = [
   {
     article_id: 107,
     title: '[글로벌] 2026-2학기 해외 교환학생 파견 신청 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.04.08',
     due_date: '2026.04.25',
@@ -105,7 +105,7 @@ const mockArticles: Article[] = [
   {
     article_id: 108,
     title: '[인턴] 카카오 Tech 겨울 인턴십 모집 공고',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.04.10',
     due_date: '2026.04.20',
@@ -119,7 +119,7 @@ const mockArticles: Article[] = [
   {
     article_id: 109,
     title: '[공지] 2026학년도 1학기 수강신청 변경 기간 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.03.28',
     due_date: '2026.03.30',
@@ -133,7 +133,7 @@ const mockArticles: Article[] = [
   {
     article_id: 110,
     title: '[봉사] 2026년 상반기 교내 봉사활동 프로그램 참가 모집',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'INSPECTED_YET',
     previous_status: null,
     start_date: '2026.04.01',
     due_date: '2026.04.15',
@@ -147,7 +147,7 @@ const mockArticles: Article[] = [
   {
     article_id: 111,
     title: '[연구] 2026년 학부생 연구참여(URP) 프로그램 신청 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'SUSPECTED_DUPLICATE',
     previous_status: null,
     start_date: '2026.04.01',
     due_date: '2026.04.22',
@@ -161,7 +161,7 @@ const mockArticles: Article[] = [
   {
     article_id: 112,
     title: '[대회] 제6회 인하 AI 해커톤 참가팀 모집 (상금 총 500만원)',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'SUSPECTED_DUPLICATE',
     previous_status: null,
     start_date: '2026.05.01',
     due_date: '2026.05.03',
@@ -178,7 +178,7 @@ const mockArticles: Article[] = [
   {
     article_id: 113,
     title: '[시설] 중앙도서관 열람실 좌석 예약 시스템 개편 안내',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'SUSPECTED_DUPLICATE',
     previous_status: null,
     start_date: '2026.04.01',
     due_date: '2026.12.31',
@@ -192,7 +192,7 @@ const mockArticles: Article[] = [
   {
     article_id: 114,
     title: '[장학] 인하대학교 성적우수장학금 지급 대상자 발표',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'SUSPECTED_DUPLICATE',
     previous_status: null,
     start_date: '2026.03.29',
     due_date: '2026.04.02',
@@ -206,7 +206,7 @@ const mockArticles: Article[] = [
   {
     article_id: 115,
     title: '[특강] 현업 개발자 초청 클라우드 아키텍처 특강',
-    admin_status: 'REFLECTION_WAITING',
+    admin_status: 'SUSPECTED_DUPLICATE',
     previous_status: null,
     start_date: '2026.04.15',
     due_date: '2026.04.15',
@@ -435,16 +435,25 @@ const mockArticles: Article[] = [
   },
 ];
 
-export const mockArticleListData: ArticleListData = {
-  page_info: {
-    current_page: 1,
-    total_pages: 3,
-    total_articles: 30,
-    has_next: true,
-  },
-  articles: mockArticles,
-};
+const PAGE_SIZE = 10;
 
-export const getMockAdminArticles = async (): Promise<ArticleListData> => {
-  return mockArticleListData;
+export const getMockAdminArticles = async (
+  status: string,
+  page = 1,
+): Promise<ArticleListData> => {
+  const filtered = mockArticles.filter((a) => a.admin_status === status);
+  const total_articles = filtered.length;
+  const total_pages = Math.max(1, Math.ceil(total_articles / PAGE_SIZE));
+  const current_page = Math.min(page, total_pages);
+  const articles = filtered.slice((current_page - 1) * PAGE_SIZE, current_page * PAGE_SIZE);
+
+  return {
+    page_info: {
+      current_page,
+      total_pages,
+      total_articles,
+      has_next: current_page < total_pages,
+    },
+    articles,
+  };
 };

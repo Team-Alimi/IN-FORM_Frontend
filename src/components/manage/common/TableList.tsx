@@ -30,7 +30,7 @@ const TableList = ({ status, title, actions = [], previousStatusFilter }: TableL
 
   const { data } = useQuery({
     queryKey: ['adminArticles', status, page],
-    queryFn: getMockAdminArticles, // TODO: API 연동 시 → () => getAdminArticles(status, page)
+    queryFn: () => getMockAdminArticles(status, page), // TODO: API 연동 시 → () => getAdminArticles(status, page)
   });
 
   const allArticles = data?.articles ?? [];
