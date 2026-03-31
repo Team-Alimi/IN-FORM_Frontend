@@ -10,7 +10,9 @@ const MANDTEPage = () => {
         <main className="flex-1 overflow-auto p-6">
           <h1 style={{ color: '#4068f7' }}>MANDTE 페이지</h1>
           <p>✅ MANDTEPage 정상 렌더링</p>
-          <p style={{ color: '#888', fontSize: '0.875rem' }}>manage/MANDTE/MANDTEPage.tsx</p>
+          <p style={{ color: '#888', fontSize: '0.875rem' }}>
+            manage/MANDTE/MANDTEPage.tsx
+          </p>
         </main>
       </div>
     </div>

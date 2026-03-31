@@ -4,6 +4,8 @@ import ErrorPage from '@/pages/NOT/ErrorPage';
 import AlertModal from '@/components/manage/common/AlertModal';
 import ActionBtn from '@/components/manage/common/ActionBtn';
 import useAlertModal from '@/hooks/useAlertModal';
+import CategoryFilter from '@/components/manage/feature/MANDTE/CategoryFilter';
+import ArticleEditorSection from '@/components/manage/feature/MANDTE/ArticleEditorSection';
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -32,10 +34,7 @@ const DeviceTestPage = () => {
      */
 
     <div>
-      <button onClick={() => OpenModal('밥은 먹고 다니냐', modalTest)}>
-        모달 띄우기
-      </button>
-      {ModalComponent}
+      <ArticleEditorSection />
     </div>
   );
 };

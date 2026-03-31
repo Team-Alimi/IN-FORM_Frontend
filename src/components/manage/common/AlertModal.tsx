@@ -6,8 +6,12 @@ interface AlertModalProps {
 
 const AlertModal = ({ title, onConfirm, onCancel }: AlertModalProps) => {
   return (
-    <div className="w-70 h-32 flex flex-col justify-center gap-3 items-center rounded-md bg-white shadow-sm">
-      <div className="text-lg font-semibold">{title}</div>
+    <div className="flex flex-col justify-center gap-3 items-center rounded-md bg-white shadow-sm p-8">
+      <div className="text-lg text-center">
+        {title.split(/(?<=[.?])\s*/).map((line, i) => (
+          <p key={i}>{line}</p>
+        ))}
+      </div>
       <div className="flex flex-row justify-between gap-8">
         <button
           className="px-8 py-2 bg-gray-200 rounded-md text-sm"
