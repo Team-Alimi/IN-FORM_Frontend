@@ -46,14 +46,11 @@ const TableListRecord = ({
       }`}
     >
       {/* 선택 */}
-      <td className="px-3 py-3 text-center">
+      <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={checked}
-          onChange={(e) => {
-            e.stopPropagation();
-            onCheck(e.target.checked);
-          }}
+          onChange={(e) => onCheck(e.target.checked)}
           className="w-4 h-4 accent-blue-500"
         />
       </td>
