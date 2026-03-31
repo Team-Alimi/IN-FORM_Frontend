@@ -25,3 +25,4 @@ dist-ssr
 *.sw?
 
 .env
+src/pages/TEST/DeviceTestPage.jsx

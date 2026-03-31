@@ -1,64 +1,72 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/inform_icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IN:FORM</title>
+    <script>
+      (function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        var targetUrl = location.href;
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/inform_icon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IN:FORM</title>
-  <script>
-    (function () {
-      var userAgent = navigator.userAgent.toLowerCase();
-      var targetUrl = location.href;
+        // 카카오톡 인앱 브라우저 강제 이동 시도
+        if (userAgent.indexOf('kakaotalk') !== -1) {
+          location.href =
+            'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
+          setTimeout(function () {
+            if (userAgent.indexOf('android') !== -1) {
+              location.href =
+                'intent://' +
+                targetUrl.replace(/https?:\/\//i, '') +
+                '#Intent;scheme=https;package=com.android.chrome;end';
+            }
+          }, 100);
+          return;
+        }
 
-      // 카카오톡 인앱 브라우저 강제 이동 시도
-      if (userAgent.indexOf('kakaotalk') !== -1) {
-        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
-        setTimeout(function () {
-          if (userAgent.indexOf('android') !== -1) {
-            location.href = 'intent://' + targetUrl.replace(/https?:\/\//i, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-          }
-        }, 100);
-        return;
-      }
+        // 라인 인앱 브라우저
+        if (userAgent.indexOf('line') !== -1) {
+          location.href =
+            targetUrl.indexOf('?') !== -1
+              ? targetUrl + '&openExternalBrowser=1'
+              : targetUrl + '?openExternalBrowser=1';
+          return;
+        }
 
-      // 라인 인앱 브라우저
-      if (userAgent.indexOf('line') !== -1) {
-        location.href = targetUrl.indexOf('?') !== -1 ? targetUrl + '&openExternalBrowser=1' : targetUrl + '?openExternalBrowser=1';
-        return;
-      }
+        // 에브리타임 (EverytimeApp), 인스타그램 등 기타 인앱 브라우저 체크
+        // 아이폰 에타의 경우 구버전/신버전 userAgent 문자열이 다양하게 잡힐 수 있으므로 포괄적으로 잡음
+        var isInApp = userAgent.match(
+          /everytimeapp|inapp|naver|snapchat|instagram|facebook|wv|kakaostory|band/i
+        );
 
-      // 에브리타임 (EverytimeApp), 인스타그램 등 기타 인앱 브라우저 체크
-      // 아이폰 에타의 경우 구버전/신버전 userAgent 문자열이 다양하게 잡힐 수 있으므로 포괄적으로 잡음
-      var isInApp = userAgent.match(/everytimeapp|inapp|naver|snapchat|instagram|facebook|wv|kakaostory|band/i);
+        if (isInApp) {
+          // iOS/Android 상관없이 강제 탈출이 막혀있을 수 있으므로 사용자가 직접 열도록 유도하는 안내 화면을 그립니다.
+          // 리액트가 렌더링을 덮어버리지 않게 비동기로 약간 뒤에 그림
+          setTimeout(function () {
+            var overlay = document.createElement('div');
+            overlay.setAttribute('id', 'inapp-overlay');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            overlay.style.color = 'white';
+            overlay.style.zIndex = '9999999';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.padding = '30px';
+            overlay.style.textAlign = 'center';
+            overlay.style.lineHeight = '1.6';
 
-      if (isInApp) {
-        // iOS/Android 상관없이 강제 탈출이 막혀있을 수 있으므로 사용자가 직접 열도록 유도하는 안내 화면을 그립니다.
-        // 리액트가 렌더링을 덮어버리지 않게 비동기로 약간 뒤에 그림
-        setTimeout(function () {
-          var overlay = document.createElement('div');
-          overlay.setAttribute('id', 'inapp-overlay');
-          overlay.style.position = 'fixed';
-          overlay.style.top = '0';
-          overlay.style.left = '0';
-          overlay.style.width = '100vw';
-          overlay.style.height = '100vh';
-          overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-          overlay.style.color = 'white';
-          overlay.style.zIndex = '9999999';
-          overlay.style.display = 'flex';
-          overlay.style.flexDirection = 'column';
-          overlay.style.alignItems = 'center';
-          overlay.style.justifyContent = 'center';
-          overlay.style.padding = '30px';
-          overlay.style.textAlign = 'center';
-          overlay.style.lineHeight = '1.6';
+            // 만약 이미 동일한 오버레이가 있다면 제거
+            var existing = document.getElementById('inapp-overlay');
+            if (existing) existing.remove();
 
-          // 만약 이미 동일한 오버레이가 있다면 제거
-          var existing = document.getElementById('inapp-overlay');
-          if (existing) existing.remove();
-
-          overlay.innerHTML = `
+            overlay.innerHTML = `
             <div style="font-size: 50px; margin-bottom: 20px;">⚠️</div>
             <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; word-break: keep-all;">인앱 브라우저에서는<br/>로그인이 제한됩니다.</h2>
             <p style="font-size: 15px; color: #ccc; word-break: keep-all;">
@@ -67,34 +75,38 @@
               <b style="color: #4da6ff;">[Safari/기본 브라우저로 열기]</b>를<br/>선택해주세요!
             </p>
           `;
-          document.body.appendChild(overlay);
-        }, 300); // React 로드 후 덮도록 지연시간 300ms 부여
-      } else if (userAgent.indexOf('android') !== -1 && userAgent.indexOf('chrome') !== -1 && userAgent.indexOf('wv') !== -1) {
-        // 최후의 보루: 안드로이드 기본 웹뷰 컴포넌트로 구동되는 모든 앱 강제 차단 (에브리타임이 userAgent를 속일 때를 대비)
-        setTimeout(function () {
-          var overlay = document.createElement('div');
-          overlay.setAttribute('id', 'inapp-overlay');
-          overlay.style.position = 'fixed';
-          overlay.style.top = '0';
-          overlay.style.left = '0';
-          overlay.style.width = '100vw';
-          overlay.style.height = '100vh';
-          overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-          overlay.style.color = 'white';
-          overlay.style.zIndex = '9999999';
-          overlay.style.display = 'flex';
-          overlay.style.flexDirection = 'column';
-          overlay.style.alignItems = 'center';
-          overlay.style.justifyContent = 'center';
-          overlay.style.padding = '30px';
-          overlay.style.textAlign = 'center';
-          overlay.style.lineHeight = '1.6';
+            document.body.appendChild(overlay);
+          }, 300); // React 로드 후 덮도록 지연시간 300ms 부여
+        } else if (
+          userAgent.indexOf('android') !== -1 &&
+          userAgent.indexOf('chrome') !== -1 &&
+          userAgent.indexOf('wv') !== -1
+        ) {
+          // 최후의 보루: 안드로이드 기본 웹뷰 컴포넌트로 구동되는 모든 앱 강제 차단 (에브리타임이 userAgent를 속일 때를 대비)
+          setTimeout(function () {
+            var overlay = document.createElement('div');
+            overlay.setAttribute('id', 'inapp-overlay');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            overlay.style.color = 'white';
+            overlay.style.zIndex = '9999999';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.padding = '30px';
+            overlay.style.textAlign = 'center';
+            overlay.style.lineHeight = '1.6';
 
-          // 만약 이미 동일한 오버레이가 있다면 제거
-          var existing = document.getElementById('inapp-overlay');
-          if (existing) existing.remove();
+            // 만약 이미 동일한 오버레이가 있다면 제거
+            var existing = document.getElementById('inapp-overlay');
+            if (existing) existing.remove();
 
-          overlay.innerHTML = `
+            overlay.innerHTML = `
               <div style="font-size: 50px; margin-bottom: 20px;">⚠️</div>
               <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; word-break: keep-all;">인앱 브라우저에서는<br/>로그인이 제한됩니다.</h2>
               <p style="font-size: 15px; color: #ccc; word-break: keep-all;">
@@ -103,16 +115,16 @@
                 <b style="color: #4da6ff;">[Safari/기본 브라우저로 열기]</b>를<br/>선택해주세요!
               </p>
             `;
-          document.body.appendChild(overlay);
-        }, 300);
-      }
-    })();
-  </script>
-</head>
+            document.body.appendChild(overlay);
+          }, 300);
+        }
+      })();
+    </script>
+  </head>
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <div id="modal-root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

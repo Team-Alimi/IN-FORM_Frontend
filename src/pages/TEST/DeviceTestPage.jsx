@@ -1,14 +1,23 @@
-import { useDeviceStore } from "@/stores/deviceStore";
-import ClubListContainer from "@/components/main/adaptive/feature/CBL/ClubListContainer";
-import ErrorPage from "@/pages/NOT/ErrorPage";
+import { useDeviceStore } from '@/stores/deviceStore';
+import ClubListContainer from '@/components/main/adaptive/feature/CBL/ClubListContainer';
+import ErrorPage from '@/pages/NOT/ErrorPage';
+import AlertModal from '@/components/manage/common/AlertModal';
+import ActionBtn from '@/components/manage/common/ActionBtn';
+import useAlertModal from '@/hooks/useAlertModal';
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const { OpenModal, ModalComponent } = useAlertModal();
+
+  const modalTest = () => {
+    console.log('모달을 테스트 하는 나는 멋진 고양이');
+  };
   return (
-    <div className="flex flex-col gap-4">
+    /**
+     *    <div className="flex flex-col gap-4">
       <div className="bg-red-700 max-mobile:bg-blue-400">
         {" "}
-        {/** 단순 스타일 변경 */}
+        
         <div className="p-4">테일윈드 브레이크 포인트 기반 반응형 테스트</div>
         <div>파란색 : 모바일 빨간색 : 데스크탑</div>
       </div>
@@ -19,7 +28,14 @@ const DeviceTestPage = () => {
         <div className="bg-blue-400">데스크탑임</div>
       )}
 
-      <ErrorPage />
+    </div>
+     */
+
+    <div>
+      <button onClick={() => OpenModal('밥은 먹고 다니냐', modalTest)}>
+        모달 띄우기
+      </button>
+      {ModalComponent}
     </div>
   );
 };

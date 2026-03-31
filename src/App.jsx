@@ -26,6 +26,7 @@ import MANDTRPage from '@/pages/manage/MANDTR/MANDTRPage';
 import MANGBGPage from '@/pages/manage/MANGBG/MANGBGPage';
 import MANSTGPage from '@/pages/manage/MANSTG/MANSTGPage';
 import MANURVPage from '@/pages/manage/MANURV/MANURVPage';
+import DeviceTestPage from './pages/TEST/DeviceTestPage';
 
 const queryClient = new QueryClient(); //리액트 쿼리
 ReactGA.initialize('G-ERJHX4CVB5'); //GA4 세팅
@@ -93,8 +94,9 @@ function App() {
           <Route path="garbage" element={<MANGBGPage />} />
           <Route path="unreviewed" element={<MANURVPage />} />
         </Route>
-          {/**공통 에러처리 */}
+        {/**공통 에러처리 */}
         <Route path="/error" element={<ErrorPage />} />
+        <Route path="testpage" element={<DeviceTestPage />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
 
