@@ -6,6 +6,7 @@ import ActionBtn from '@/components/manage/common/ActionBtn';
 import useAlertModal from '@/hooks/useAlertModal';
 import CategoryFilter from '@/components/manage/feature/MANDTE/CategoryFilter';
 import ArticleEditorSection from '@/components/manage/feature/MANDTE/ArticleEditorSection';
+import VendorAddModal from '@/components/manage/feature/MANDTE/VendorAddModal';
 
 const DeviceTestPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);

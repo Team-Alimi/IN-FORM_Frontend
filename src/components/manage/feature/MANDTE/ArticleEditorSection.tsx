@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ArticleDetail } from '@/api/manage/adminArticles';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
+import VendorAddModal from './VendorAddModal';
 
 const ArticleEditorSection = () => {
   const mockArticleDetail: ArticleDetail = {
@@ -18,7 +19,7 @@ const ArticleEditorSection = () => {
     vendors: [
       {
         vendor_id: 1,
-        vendor_name: '컴퓨터공학과',
+        vendor_name: '컴퓨터공학과컴퓨터공학과',
         vendor_initial: '컴',
         vendor_type: 'DEPARTMENT',
         original_url: null,
@@ -28,13 +29,14 @@ const ArticleEditorSection = () => {
     last_modified_admin: null,
     admin_modified_at: null,
   };
-
+  const [venderModalOpen, setVendorModalOpen] = useState(false);
   const [form, setForm] = useState({
     category: mockArticleDetail.categories?.category_name ?? '',
     title: mockArticleDetail.title,
     article_id: mockArticleDetail.id,
     start_date: mockArticleDetail.start_date.replace(/\./g, '-'),
     due_date: mockArticleDetail.due_date.replace(/\./g, '-'),
+    vendors: mockArticleDetail.vendors,
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,6 +44,24 @@ const ArticleEditorSection = () => {
     alert(
       `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}`
     );
+  };
+
+  const handleVendorDelete = (name: string) => {
+    setForm((prev) => ({
+      ...prev,
+      vendors: prev.vendors.filter((item) => item.vendor_name !== name),
+    }));
+  };
+
+  const handleVendorAdd = (name: string, url: string) => {
+    const NewVendor = {
+      vendor_name: name,
+      vendor_url: url,
+    };
+  };
+
+  const handleVendorModalToggle = () => {
+    setVendorModalOpen((prev) => !prev);
   };
 
   return (
@@ -82,9 +102,38 @@ const ArticleEditorSection = () => {
             className="text-lg w-4/5"
           />
         </div>
+        {/**1. 출처 배열 정보를 모두 나열한다. */}
+        <div className="flex flex-row gap-2">
+          {form.vendors.map((item) => {
+            {
+              return (
+                <div key={item.vendor_id}>
+                  <div className="p-l px-2 bg-gray-100 w-54 rounded-md no-shrink">
+                    <button
+                      type="button"
+                      className="text-lg font-bold p-2 cursor-pointer"
+                      onClick={() => handleVendorDelete(item.vendor_name)}
+                    >
+                      -
+                    </button>
+                    {item.vendor_name}
+                  </div>
+                </div>
+              );
+            }
+          })}
+          {/**2. 출처 배열의 끝에 +버튼을 구현한다. */}
+          <div
+            className="text-3xl p-1 px-3 bg-gray-100 rounded-md"
+            onClick={handleVendorModalToggle}
+          >
+            +
+          </div>
+        </div>
+        {/**3. + 버튼을 누르면 모달이 노출되며 사용자는 출처명과 출처 url을 입력한다. */}
+        {venderModalOpen && <VendorAddModal />}
+        {/**4. 입력을 통해 받은 정보를 기존 배열에 추가한다. */}
 
-        {/**1. 드롭다운을 통해 새로운 출처명과 출처 url을 입력 받는다.*/}
-        {/**2. 입력을 통해 받은 출처 정보를 기존 vendors 배열에 추가한다.*/}
         <div>
           <label>
             ID :{' '}
