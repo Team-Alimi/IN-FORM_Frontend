@@ -3,7 +3,12 @@ import type { ArticleDetail } from '@/api/manage/adminArticles';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
 
-const ArticleEditorSection = () => {
+const ArticleEditorSection = ({
+  articleId,
+}: {
+  articleId?: number | undefined;
+}) => {
+  const isEditing = articleId !== undefined;
   const mockArticleDetail: ArticleDetail = {
     id: 101,
     title: '[학부] 2026년 상반기 SW전공 역량강화 프로그램 참가자 모집',
@@ -30,34 +35,54 @@ const ArticleEditorSection = () => {
     admin_modified_at: null,
   };
   const [venderModalOpen, setVendorModalOpen] = useState(false);
-  const [form, setForm] = useState({
-    category: mockArticleDetail.categories?.category_name ?? '',
-    title: mockArticleDetail.title,
-    article_id: mockArticleDetail.id,
-    start_date: mockArticleDetail.start_date.replace(/\./g, '-'),
-    due_date: mockArticleDetail.due_date.replace(/\./g, '-'),
-    vendors: mockArticleDetail.vendors,
-  });
+  const [form, setForm] = useState(
+    isEditing
+      ? {
+          category: mockArticleDetail.categories?.category_name ?? '',
+          title: mockArticleDetail.title,
+          article_id: mockArticleDetail.id,
+          start_date: mockArticleDetail.start_date.replace(/\./g, '-'),
+          due_date: mockArticleDetail.due_date.replace(/\./g, '-'),
+          vendors: mockArticleDetail.vendors.map(
+            ({ vendor_id, vendor_name, original_url }) => ({
+              vendor_id,
+              vendor_name,
+              original_url,
+            })
+          ),
+        }
+      : {
+          category: '',
+          title: '게시글 제목을 작성하세요',
+          article_id: 0,
+          start_date: '',
+          due_date: '',
+          vendors: [],
+        }
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     alert(
-      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}`
+      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}`
     );
   };
 
-  const handleVendorDelete = (name: string) => {
+  const handleVendorDelete = (id: number) => {
     setForm((prev) => ({
       ...prev,
-      vendors: prev.vendors.filter((item) => item.vendor_name !== name),
+      vendors: prev.vendors.filter((item) => item.vendor_id !== id),
     }));
   };
 
-  const handleVendorAdd = (name: string, url: string) => {
+  const handleVendorAdd = (id: number, name: string, url: string) => {
     const NewVendor = {
+      vendor_id: id,
       vendor_name: name,
-      vendor_url: url,
+      original_url: url,
     };
+    setForm((prev) => ({ ...prev, vendors: [...prev.vendors, NewVendor] }));
+    setVendorModalOpen(false);
   };
 
   const handleVendorModalToggle = () => {
@@ -107,17 +132,18 @@ const ArticleEditorSection = () => {
           {form.vendors.map((item) => {
             {
               return (
-                <div key={item.vendor_id}>
-                  <div className="p-l px-2 bg-gray-100 w-54 rounded-md no-shrink">
-                    <button
-                      type="button"
-                      className="text-lg font-bold p-2 cursor-pointer"
-                      onClick={() => handleVendorDelete(item.vendor_name)}
-                    >
-                      -
-                    </button>
-                    {item.vendor_name}
-                  </div>
+                <div
+                  key={item.vendor_id}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+                >
+                  {item.vendor_name}
+                  <button
+                    type="button"
+                    className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
+                    onClick={() => handleVendorDelete(item.vendor_id)}
+                  >
+                    ×
+                  </button>
                 </div>
               );
             }
@@ -131,9 +157,7 @@ const ArticleEditorSection = () => {
           </div>
         </div>
         {/**3. + 버튼을 누르면 모달이 노출되며 사용자는 출처명과 출처 url을 입력한다. */}
-        {venderModalOpen && <VendorAddModal />}
-        {/**4. 입력을 통해 받은 정보를 기존 배열에 추가한다. */}
-
+        {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
         <div>
           <label>
             ID :{' '}
@@ -169,7 +193,7 @@ const ArticleEditorSection = () => {
           </label>
         </div>
 
-        <button type="submit">검색</button>
+        <button type="submit">제출</button>
       </form>
     </div>
   );

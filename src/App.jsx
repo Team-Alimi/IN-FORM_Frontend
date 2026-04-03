@@ -90,6 +90,7 @@ function App() {
           <Route path="login" element={<MANLGNPage />} />
           <Route path="detail/:id" element={<MANDTRPage />} />
           <Route path="edit" element={<MANDTEPage />} />
+          <Route path="edit/:id" element={<MANDTEPage />} />
           <Route path="staged" element={<MANSTGPage />} />
           <Route path="garbage" element={<MANGBGPage />} />
           <Route path="unreviewed" element={<MANURVPage />} />

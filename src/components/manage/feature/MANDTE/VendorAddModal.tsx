@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getVendors } from '@/api/getVendors';
 
-const VendorAddModal = () => {
+const VendorAddModal = ({
+  onConfirm,
+}: {
+  onConfirm: (id: number, name: string, url: string) => void;
+}) => {
   const [form, setForm] = useState({
+    vendor_id: 0,
     vendor_name: '',
     vendor_url: '',
   });
@@ -22,7 +27,10 @@ const VendorAddModal = () => {
   };
 
   const handleSubmit = () => {
-    alert(`출처학과 : ${form.vendor_name}\n출처URL : ${form.vendor_url}`);
+    alert(
+      `출처학과 : ${form.vendor_name}\n출처 ID : ${form.vendor_id}\n출처URL : ${form.vendor_url}`
+    );
+    onConfirm(form.vendor_id, form.vendor_name, form.vendor_url);
   };
   return (
     <div className="border-1 p-4 flex flex-col gap-1 px-6">
@@ -36,11 +44,15 @@ const VendorAddModal = () => {
                 className="flex items-center gap-1 cursor-pointer"
               >
                 <input
-                  name="vendor_name"
-                  value={item.vendor_name}
                   type="radio"
-                  checked={form.vendor_name === item.vendor_name}
-                  onChange={handleChange}
+                  checked={form.vendor_id === item.vendor_id}
+                  onChange={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      vendor_id: item.vendor_id,
+                      vendor_name: item.vendor_name,
+                    }))
+                  }
                 />
                 {item.vendor_name}
               </label>
@@ -57,7 +69,11 @@ const VendorAddModal = () => {
           />
         </label>
         <div className="flex justify-end">
-          <button type="button" onClick={handleSubmit} className="p-1 bg-blue-200 px-4 rounded-md m-2">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="p-1 bg-blue-200 px-4 rounded-md m-2"
+          >
             확인
           </button>
         </div>
