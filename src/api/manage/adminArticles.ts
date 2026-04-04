@@ -92,3 +92,14 @@ export const getAdminArticleDetail = async (id: number): Promise<ArticleDetail> 
   const response = await api.get(`/api/v1/admin/articles/${id}`);
   return response.data.data;
 };
+
+// [PATCH] /api/v1/admin/articles/status
+// 샌드박스 게시글 상태 일괄 변경
+export const patchAdminArticleStatus = async (
+  ids: number[],
+  status: AdminStatus,
+): Promise<void> => {
+  await api.patch('/api/v1/admin/articles/status', null, {
+    params: { ids: ids.join(','), status },
+  });
+};
