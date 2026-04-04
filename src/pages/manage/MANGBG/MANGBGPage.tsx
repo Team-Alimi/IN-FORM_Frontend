@@ -1,6 +1,7 @@
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
 import TableList from '../../../components/manage/common/TableList';
+import { patchRestoreArticles, deleteArticles } from '@/api/manage/adminArticles';
 
 const MANGBGPage = () => {
   return (
@@ -17,8 +18,8 @@ const MANGBGPage = () => {
             title="미검수 게시글"
             previousStatusFilter="INSPECTED_YET"
             actions={[
-              { label: '복구', color: 'text-main-component', onClick: (ids) => console.log('미검수 복구', ids) },
-              { label: '삭제', color: 'text-red-400', onClick: (ids) => console.log('영구삭제', ids) },
+              { label: '복구', color: 'text-main-component', onClick: (ids) => patchRestoreArticles(ids) },
+              { label: '삭제', color: 'text-red-400', onClick: (ids) => deleteArticles(ids) },
             ]}
           />
 
@@ -28,8 +29,8 @@ const MANGBGPage = () => {
             title="반영 대기 게시글"
             previousStatusFilter="REFLECTION_WAITING"
             actions={[
-              { label: '복구', color: 'text-main-component', onClick: (ids) => console.log('반영대기 복원', ids) },
-              { label: '삭제', color: 'text-red-400', onClick: (ids) => console.log('영구삭제', ids) },
+              { label: '복구', color: 'text-main-component', onClick: (ids) => patchRestoreArticles(ids) },
+              { label: '삭제', color: 'text-red-400', onClick: (ids) => deleteArticles(ids) },
             ]}
           />
         </main>
