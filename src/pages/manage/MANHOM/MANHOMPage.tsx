@@ -4,7 +4,7 @@ import Menu from '../../../components/manage/common/Menu';
 import DashBoardCard from '../../../components/manage/feature/MANHOM/DashBoardCard';
 import TableList from '../../../components/manage/common/TableList';
 import { RiEyeOffLine, RiTimeLine, RiFileCopyLine } from 'react-icons/ri';
-import { getAdminArticleCounts } from '../../../api/manage/adminArticles';
+import { getAdminArticleCounts, postDeployArticles, patchAdminArticleStatus } from '../../../api/manage/adminArticles';
 
 const MANHOMPage = () => {
   const { data } = useQuery({
@@ -27,8 +27,8 @@ const MANHOMPage = () => {
             status="REFLECTION_WAITING"
             title="반영대기 게시글"
             actions={[
-              { label: '반영', color: 'text-main-component', onClick: (ids) => console.log('반영', ids) },
-              { label: '삭제', color: 'text-red-400', onClick: (ids) => console.log('삭제', ids) },
+              { label: '반영', color: 'text-main-component', onClick: (ids) => postDeployArticles(ids) },
+              { label: '삭제', color: 'text-red-400', onClick: (ids) => patchAdminArticleStatus(ids, 'GARBAGE') },
             ]}
           />
         </main>

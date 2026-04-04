@@ -103,3 +103,12 @@ export const patchAdminArticleStatus = async (
     params: { ids: ids.join(','), status },
   });
 };
+
+// [POST] /api/v1/admin/articles/deploy
+// 게시글 서비스 배포 (is_published = true)
+export const postDeployArticles = async (ids: number[]): Promise<number[]> => {
+  const response = await api.post('/api/v1/admin/articles/deploy', null, {
+    params: { ids: ids.join(',') },
+  });
+  return response.data.data;
+};
