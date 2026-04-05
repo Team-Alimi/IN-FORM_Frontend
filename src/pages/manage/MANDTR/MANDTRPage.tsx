@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 // TODO: API 연동 시 아래 줄로 교체
 // import { getAdminArticleDetail } from '@/api/manage/adminArticles';
 import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
+import { patchAdminArticleStatus } from '@/api/manage/adminArticles';
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
 import BackBtn from '../../../components/manage/common/BackBtn';
@@ -12,6 +13,12 @@ const MANDTRPage = () => {
   const { id } = useParams<{ id: string }>();
   const articleId = Number(id);
   const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    if (!confirm('이 게시글을 휴지통으로 이동하시겠습니까?')) return;
+    await patchAdminArticleStatus([articleId], 'GARBAGE');
+    navigate(-1);
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminArticleDetail', articleId],
@@ -102,7 +109,10 @@ const MANDTRPage = () => {
                   수정하기
                   <RiPencilLine size={15} />
                 </button>
-                <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-sm text-red-400 hover:bg-red-200">
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-sm text-red-400 hover:bg-red-200"
+                >
                   삭제하기
                   <RiDeleteBin6Line size={15} />
                 </button>
