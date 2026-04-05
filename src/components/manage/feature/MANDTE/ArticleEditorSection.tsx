@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import type { ArticleDetail } from '@/api/manage/adminArticles';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
-import Editor from '@toast-ui/editor';
-import '@toast-ui/editor/dist/toastui-editor.css';
+import TipTapEditor from './TipTapEditor';
+import type { TipTapEditorHandle } from './TipTapEditor';
+import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
+
 const ArticleEditorSection = ({
   articleId,
 }: {
@@ -36,6 +38,10 @@ const ArticleEditorSection = ({
     admin_modified_at: null,
   };
   const [venderModalOpen, setVendorModalOpen] = useState(false);
+  const [idStatus, setIdStatus] = useState<
+    'idle' | 'available' | 'taken' | 'unvalid'
+  >('idle');
+  const editorRef = useRef<TipTapEditorHandle>(null);
   const [form, setForm] = useState(
     isEditing
       ? {
@@ -66,10 +72,11 @@ const ArticleEditorSection = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const content = editorInstanceRef.current?.getHTML();
+    const content = editorRef.current?.getHTML();
 
     alert(
-      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠${content}`
+      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n
+선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠: ${content}`
     );
   };
 
@@ -94,20 +101,16 @@ const ArticleEditorSection = ({
     setVendorModalOpen((prev) => !prev);
   };
 
-  const editorRef = useRef<HTMLDivElement>(null);
-  const editorInstanceRef = useRef<Editor | null>(null);
-  useEffect(() => {
-    if (!editorRef.current) return;
-    const editor = new Editor({
-      el: editorRef.current,
-      height: '500px',
-      initialEditType: 'wysiwyg',
-      previewStyle: 'vertical',
-    });
-    editorInstanceRef.current = editor;
-    return () => editor.destroy();
-  }, []);
-
+  const handleAlreadyCheck = async () => {
+    // TODO: 실제 API 연결 시 아래 주석 해제
+    if (typeof form.article_id !== 'number') {
+      setIdStatus('unvalid');
+      return;
+    }
+    const res = await checkArticleIdDuplicate(form.article_id);
+    console.log(res);
+    setIdStatus(res.data ? 'taken' : 'available');
+  };
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -177,20 +180,50 @@ const ArticleEditorSection = ({
         </div>
         {/**3. + 버튼을 누르면 모달이 노출되며 사용자는 출처명과 출처 url을 입력한다. */}
         {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
-        <div>
+        <div className="flex flex-row gap-2">
           <label>
             ID :{' '}
             <input
               name="article_id"
               value={form.article_id}
-              onChange={(e) =>
+              onChange={(e) => {
                 setForm((prev) => ({
                   ...prev,
                   article_id: Number(e.target.value),
-                }))
-              }
+                }));
+                setIdStatus('idle');
+              }}
+              className={`border rounded px-2 py-1 ${
+                idStatus === 'taken'
+                  ? 'border-red-500'
+                  : idStatus === 'available'
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+              }`}
             />
           </label>
+          {idStatus === 'taken' && (
+            <p className="text-red-500 text-xs mt-0.5">
+              이미 사용 중인 ID입니다.
+            </p>
+          )}
+          {idStatus === 'unvalid' && (
+            <p className="text-red-500 text-xs mt-0.5">
+              적절하지 않은 입력입니다.
+            </p>
+          )}
+          {idStatus === 'available' && (
+            <p className="text-green-500 text-xs mt-0.5">
+              사용 가능한 ID입니다.
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={handleAlreadyCheck}
+            className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+          >
+            중복검사
+          </button>
           <label>
             행사기간 :{' '}
             <input
@@ -211,8 +244,15 @@ const ArticleEditorSection = ({
             />
           </label>
         </div>
-        <div ref={editorRef}></div>
-        <button type="submit">제출</button>
+
+        <TipTapEditor ref={editorRef} initialValue={form.content} />
+        <button
+          type="submit"
+          disabled={idStatus !== 'available'}
+          className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          제출
+        </button>
       </form>
     </div>
   );

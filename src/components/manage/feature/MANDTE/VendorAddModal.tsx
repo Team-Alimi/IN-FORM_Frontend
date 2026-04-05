@@ -33,7 +33,7 @@ const VendorAddModal = ({
     onConfirm(form.vendor_id, form.vendor_name, form.vendor_url);
   };
   return (
-    <div className="border-1 p-4 flex flex-col gap-1 px-6">
+    <div className="border p-4 flex flex-col gap-1 px-6">
       <div>
         <div className="mb-2">
           <span>출처명</span>

@@ -21,4 +21,5 @@ const CategoryFilter = ({ selectedCategory, onChange }: CategoryFilterProp) => {
     </>
   );
 };
+
 export default CategoryFilter;
