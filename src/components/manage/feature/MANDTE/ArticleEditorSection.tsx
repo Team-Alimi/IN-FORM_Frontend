@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ArticleDetail } from '@/api/manage/adminArticles';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
-
+import Editor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
 const ArticleEditorSection = ({
   articleId,
 }: {
@@ -50,6 +51,7 @@ const ArticleEditorSection = ({
               original_url,
             })
           ),
+          content: mockArticleDetail.content,
         }
       : {
           category: '',
@@ -58,13 +60,16 @@ const ArticleEditorSection = ({
           start_date: '',
           due_date: '',
           vendors: [],
+          content: '',
         }
   );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const content = editorInstanceRef.current?.getHTML();
+
     alert(
-      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}`
+      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠${content}`
     );
   };
 
@@ -88,6 +93,20 @@ const ArticleEditorSection = ({
   const handleVendorModalToggle = () => {
     setVendorModalOpen((prev) => !prev);
   };
+
+  const editorRef = useRef<HTMLDivElement>(null);
+  const editorInstanceRef = useRef<Editor | null>(null);
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const editor = new Editor({
+      el: editorRef.current,
+      height: '500px',
+      initialEditType: 'wysiwyg',
+      previewStyle: 'vertical',
+    });
+    editorInstanceRef.current = editor;
+    return () => editor.destroy();
+  }, []);
 
   return (
     <div>
@@ -192,7 +211,7 @@ const ArticleEditorSection = ({
             />
           </label>
         </div>
-
+        <div ref={editorRef}></div>
         <button type="submit">제출</button>
       </form>
     </div>
