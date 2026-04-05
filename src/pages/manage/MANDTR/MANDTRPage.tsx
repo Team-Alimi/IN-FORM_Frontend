@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 // TODO: API 연동 시 아래 줄로 교체
 // import { getAdminArticleDetail } from '@/api/manage/adminArticles';
@@ -11,6 +11,7 @@ import { RiPencilLine, RiDeleteBin6Line, RiExternalLinkLine } from 'react-icons/
 const MANDTRPage = () => {
   const { id } = useParams<{ id: string }>();
   const articleId = Number(id);
+  const navigate = useNavigate();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminArticleDetail', articleId],
@@ -94,7 +95,10 @@ const MANDTRPage = () => {
 
               {/* 하단 버튼 */}
               <div className="flex justify-end gap-3 mt-8">
-                <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-sm text-gray-600 hover:bg-gray-200">
+                <button
+                  onClick={() => navigate(`/manage/edit/${articleId}`)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-sm text-gray-600 hover:bg-gray-200"
+                >
                   수정하기
                   <RiPencilLine size={15} />
                 </button>

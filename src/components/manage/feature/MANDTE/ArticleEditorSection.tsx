@@ -1,5 +1,8 @@
-import { useState, useRef } from 'react';
-import type { ArticleDetail } from '@/api/manage/adminArticles';
+import { useState, useRef, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+// TODO: API 연동 시 아래 줄로 교체
+// import { getAdminArticleDetail } from '@/api/manage/adminArticles';
+import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
 import TipTapEditor from './TipTapEditor';
@@ -12,63 +15,46 @@ const ArticleEditorSection = ({
   articleId?: number | undefined;
 }) => {
   const isEditing = articleId !== undefined;
-  const mockArticleDetail: ArticleDetail = {
-    id: 101,
-    title: '[학부] 2026년 상반기 SW전공 역량강화 프로그램 참가자 모집',
-    content: '<p>2026년 상반기 SW전공 역량강화 프로그램...</p>',
-    is_published: false,
-    admin_status: 'INSPECTED_YET',
-    previous_status: null,
-    start_date: '2026.03.24',
-    due_date: '2026.04.10',
-    created_at: '2026-03-20T09:00:00',
-    updated_at: '2026-03-20T09:00:00',
-    categories: { category_id: 1, category_name: '대회/공모전' },
-    vendors: [
-      {
-        vendor_id: 1,
-        vendor_name: '컴퓨터공학과컴퓨터공학과',
-        vendor_initial: '컴',
-        vendor_type: 'DEPARTMENT',
-        original_url: null,
-      },
-    ],
-    attachments: [],
-    last_modified_admin: null,
-    admin_modified_at: null,
-  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['adminArticleDetail', articleId],
+    queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
+    enabled: isEditing,
+  });
+
   const [venderModalOpen, setVendorModalOpen] = useState(false);
   const [idStatus, setIdStatus] = useState<
     'idle' | 'available' | 'taken' | 'unvalid'
   >('idle');
   const editorRef = useRef<TipTapEditorHandle>(null);
-  const [form, setForm] = useState(
-    isEditing
-      ? {
-          category: mockArticleDetail.categories?.category_name ?? '',
-          title: mockArticleDetail.title,
-          article_id: mockArticleDetail.id,
-          start_date: mockArticleDetail.start_date.replace(/\./g, '-'),
-          due_date: mockArticleDetail.due_date.replace(/\./g, '-'),
-          vendors: mockArticleDetail.vendors.map(
-            ({ vendor_id, vendor_name, original_url }) => ({
-              vendor_id,
-              vendor_name,
-              original_url,
-            })
-          ),
-          content: mockArticleDetail.content,
-        }
-      : {
-          category: '',
-          title: '게시글 제목을 작성하세요',
-          article_id: 0,
-          start_date: '',
-          due_date: '',
-          vendors: [],
-          content: '',
-        }
-  );
+  const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
+  const [form, setForm] = useState({
+    category: '',
+    title: '게시글 제목을 작성하세요',
+    article_id: 0,
+    start_date: '',
+    due_date: '',
+    vendors: [] as { vendor_id: number; vendor_name: string; original_url: string | null }[],
+    content: '',
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    setForm({
+      category: data.categories?.category_name ?? '',
+      title: data.title,
+      article_id: data.id,
+      start_date: data.start_date.replace(/\./g, '-'),
+      due_date: data.due_date.replace(/\./g, '-'),
+      vendors: data.vendors.map(({ vendor_id, vendor_name, original_url }) => ({
+        vendor_id,
+        vendor_name,
+        original_url,
+      })),
+      content: data.content,
+    });
+    setEditorKey(`loaded-${data.id}`);
+  }, [data]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,6 +86,10 @@ const ArticleEditorSection = ({
   const handleVendorModalToggle = () => {
     setVendorModalOpen((prev) => !prev);
   };
+
+  if (isEditing && isLoading) {
+    return <div className="mt-8 text-center text-gray-400 text-sm">불러오는 중...</div>;
+  }
 
   const handleAlreadyCheck = async () => {
     // TODO: 실제 API 연결 시 아래 주석 해제
@@ -245,7 +235,7 @@ const ArticleEditorSection = ({
           </label>
         </div>
 
-        <TipTapEditor ref={editorRef} initialValue={form.content} />
+        <TipTapEditor key={editorKey} ref={editorRef} initialValue={form.content} />
         <button
           type="submit"
           disabled={idStatus !== 'available'}
