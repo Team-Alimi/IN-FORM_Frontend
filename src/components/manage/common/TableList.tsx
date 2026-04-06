@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-// TODO: API 연동 시 아래 두 줄로 교체
-// import { getAdminArticles } from '@/api/manage/adminArticles';
-import { getMockAdminArticles } from '@/mocks/adminArticlesMock';
+import { getAdminArticles } from '@/api/manage/adminArticles';
 import type { AdminStatus } from '@/api/manage/adminArticles';
 import TableListRecord from './TableListRecord';
 import ActionBtn from './ActionBtn';
@@ -32,10 +30,10 @@ const TableList = ({ status, title, actions = [], previousStatusFilter }: TableL
 
   const { data } = useQuery({
     queryKey: ['adminArticles', status, page],
-    queryFn: () => getMockAdminArticles(status, page), // TODO: API 연동 시 → () => getAdminArticles(status, page)
+    queryFn: () => getAdminArticles(status, page), // TODO: API 연동 시 → () => getAdminArticles(status, page)
   });
 
-  const allArticles = data?.articles ?? [];
+  const allArticles = data?.school_articles ?? [];
   const totalPages = data?.page_info.total_pages ?? 1;
 
   // previousStatusFilter가 있으면 해당 previous_status로 필터링

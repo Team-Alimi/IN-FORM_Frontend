@@ -38,7 +38,7 @@ export interface PageInfo {
 // 게시글 목록 응답 타입
 export interface ArticleListData {
   page_info: PageInfo;
-  articles: Article[];
+  school_articles: Article[];
 }
 
 // 대시보드 카운트 응답 타입

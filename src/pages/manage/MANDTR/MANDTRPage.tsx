@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 // TODO: API 연동 시 아래 줄로 교체
-// import { getAdminArticleDetail } from '@/api/manage/adminArticles';
-import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
+import { getAdminArticleDetail } from '@/api/manage/adminArticles';
 import { patchAdminArticleStatus } from '@/api/manage/adminArticles';
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
@@ -22,7 +21,7 @@ const MANDTRPage = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminArticleDetail', articleId],
-    queryFn: () => getMockAdminArticleDetail(articleId), // TODO: API 연동 시 → () => getAdminArticleDetail(articleId)
+    queryFn: () => getAdminArticleDetail(articleId), // TODO: API 연동 시 → () => getAdminArticleDetail(articleId)
     enabled: !!articleId,
   });
 
