@@ -124,7 +124,7 @@ export const postDeployArticles = async (ids: number[]): Promise<number[]> => {
 // [PATCH] /api/v1/admin/sandbox/articles/restore
 // GARBAGE 상태 게시글을 이전 상태로 복구
 export const patchRestoreArticles = async (ids: number[]): Promise<void> => {
-  await api.patch('/api/v1/admin/sandbox/articles/restore', null, {
+  await api.patch('/api/v1/admin/articles/restore', null, {
     params: { ids: ids.join(',') },
   });
 };
