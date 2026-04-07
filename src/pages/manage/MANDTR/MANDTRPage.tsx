@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getAdminArticleDetail } from '@/api/manage/adminArticles';
@@ -5,16 +6,18 @@ import { patchAdminArticleStatus } from '@/api/manage/adminArticles';
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
 import BackBtn from '../../../components/manage/common/BackBtn';
+import AlertModal from '../../../components/manage/common/AlertModal';
 import { RiPencilLine, RiDeleteBin6Line, RiExternalLinkLine } from 'react-icons/ri';
 
 const MANDTRPage = () => {
   const { id } = useParams<{ id: string }>();
   const articleId = Number(id);
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleDelete = async () => {
-    if (!confirm('이 게시글을 휴지통으로 이동하시겠습니까?')) return;
+  const handleDeleteConfirm = async () => {
     await patchAdminArticleStatus([articleId], 'GARBAGE');
+    setShowDeleteModal(false);
     navigate(-1);
   };
 
@@ -108,13 +111,23 @@ const MANDTRPage = () => {
                   <RiPencilLine size={15} />
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={() => setShowDeleteModal(true)}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-sm text-red-400 hover:bg-red-200"
                 >
                   삭제하기
                   <RiDeleteBin6Line size={15} />
                 </button>
               </div>
+
+              {showDeleteModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+                  <AlertModal
+                    title="해당 게시글을 삭제하시겠습니까?"
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={() => setShowDeleteModal(false)}
+                  />
+                </div>
+              )}
             </div>
           )}
         </main>

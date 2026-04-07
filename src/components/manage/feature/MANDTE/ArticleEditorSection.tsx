@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
+import AlertModal from '@/components/manage/common/AlertModal';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
 import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
@@ -23,6 +24,7 @@ const ArticleEditorSection = ({
   });
 
   const [venderModalOpen, setVendorModalOpen] = useState(false);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [idStatus, setIdStatus] = useState<
     'idle' | 'available' | 'taken' | 'unvalid'
   >('idle');
@@ -58,12 +60,13 @@ const ArticleEditorSection = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const content = editorRef.current?.getHTML();
+    setShowSubmitModal(true);
+  };
 
-    alert(
-      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n
-선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠: ${content}`
-    );
+  const handleSubmitConfirm = () => {
+    const content = editorRef.current?.getHTML();
+    console.log({ ...form, content }); // TODO: API 연동 시 실제 제출 로직으로 교체
+    setShowSubmitModal(false);
   };
 
   const handleVendorDelete = (id: number) => {
@@ -244,6 +247,16 @@ const ArticleEditorSection = ({
           제출
         </button>
       </form>
+
+      {showSubmitModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <AlertModal
+            title="이 내용으로 게시글을 등록하시겠습니까?"
+            onConfirm={handleSubmitConfirm}
+            onCancel={() => setShowSubmitModal(false)}
+          />
+        </div>
+      )}
     </div>
   );
 };
