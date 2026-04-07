@@ -73,7 +73,7 @@ const LGNPage = () => {
           <div className="flex flex-col items-center justify-center pt-28 pb-10 flex-none">
             {/* Logo Image */}
             <img
-              src="/inform-logo.png"
+              src="/inform_icon.png"
               alt="InForm Logo"
               className="w-24 h-auto mb-4"
             />
@@ -133,7 +133,7 @@ const LGNPage = () => {
 
         <div className="relative z-10 flex flex-col items-center animate-content-fade-up">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
-            <img src="/inform-logo.png" alt="InForm Logo" className="w-16 h-auto" />
+            <img src="/inform_icon.png" alt="InForm Logo" className="w-16 h-auto" />
           </div>
           <h1 className="text-white text-5xl font-black mb-4 tracking-tight">IN:FORM</h1>
           <p className="text-white/90 text-lg font-medium text-center leading-relaxed">
