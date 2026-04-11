@@ -1,20 +1,29 @@
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-// TODO: API 연동 시 아래 줄로 교체
-// import { getAdminArticleDetail } from '@/api/manage/adminArticles';
-import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
+import { getAdminArticleDetail } from '@/api/manage/adminArticles';
+import { patchAdminArticleStatus } from '@/api/manage/adminArticles';
 import ManageHeader from '../../../components/manage/common/ManageHeader';
 import Menu from '../../../components/manage/common/Menu';
 import BackBtn from '../../../components/manage/common/BackBtn';
+import AlertModal from '../../../components/manage/common/AlertModal';
 import { RiPencilLine, RiDeleteBin6Line, RiExternalLinkLine } from 'react-icons/ri';
 
 const MANDTRPage = () => {
   const { id } = useParams<{ id: string }>();
   const articleId = Number(id);
+  const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    await patchAdminArticleStatus([articleId], 'GARBAGE');
+    setShowDeleteModal(false);
+    navigate(-1);
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminArticleDetail', articleId],
-    queryFn: () => getMockAdminArticleDetail(articleId), // TODO: API 연동 시 → () => getAdminArticleDetail(articleId)
+    queryFn: () => getAdminArticleDetail(articleId), // TODO: API 연동 시 → () => getAdminArticleDetail(articleId)
     enabled: !!articleId,
   });
 
@@ -94,15 +103,31 @@ const MANDTRPage = () => {
 
               {/* 하단 버튼 */}
               <div className="flex justify-end gap-3 mt-8">
-                <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-sm text-gray-600 hover:bg-gray-200">
+                <button
+                  onClick={() => navigate(`/manage/edit/${articleId}`)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-sm text-gray-600 hover:bg-gray-200"
+                >
                   수정하기
                   <RiPencilLine size={15} />
                 </button>
-                <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-sm text-red-400 hover:bg-red-200">
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-sm text-red-400 hover:bg-red-200"
+                >
                   삭제하기
                   <RiDeleteBin6Line size={15} />
                 </button>
               </div>
+
+              {showDeleteModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+                  <AlertModal
+                    title="해당 게시글을 삭제하시겠습니까?"
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={() => setShowDeleteModal(false)}
+                  />
+                </div>
+              )}
             </div>
           )}
         </main>

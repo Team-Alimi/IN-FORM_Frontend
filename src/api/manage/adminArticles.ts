@@ -38,7 +38,7 @@ export interface PageInfo {
 // 게시글 목록 응답 타입
 export interface ArticleListData {
   page_info: PageInfo;
-  articles: Article[];
+  school_articles: Article[];
 }
 
 // 대시보드 카운트 응답 타입
@@ -124,7 +124,7 @@ export const postDeployArticles = async (ids: number[]): Promise<number[]> => {
 // [PATCH] /api/v1/admin/sandbox/articles/restore
 // GARBAGE 상태 게시글을 이전 상태로 복구
 export const patchRestoreArticles = async (ids: number[]): Promise<void> => {
-  await api.patch('/api/v1/admin/sandbox/articles/restore', null, {
+  await api.patch('/api/v1/admin/articles/restore', null, {
     params: { ids: ids.join(',') },
   });
 };

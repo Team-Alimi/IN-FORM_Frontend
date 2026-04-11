@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+<<<<<<< HEAD
+=======
+import { useQuery } from '@tanstack/react-query';
+// TODO: API 연동 시 아래 줄로 교체
+// import { getAdminArticleDetail } from '@/api/manage/adminArticles';
+import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
+>>>>>>> e91d94c8808644a756f5a4532993e4426a810910
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
+import AlertModal from '@/components/manage/common/AlertModal';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
 import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
@@ -11,6 +19,7 @@ const ArticleEditorSection = ({
 }: {
   articleId?: number | undefined;
 }) => {
+<<<<<<< HEAD
   const defaultForm = {
     article_id: 0,
     category_id: 0,
@@ -27,11 +36,23 @@ const ArticleEditorSection = ({
   };
   const isEditing = articleId !== undefined;
   const [isLoading, setIsLoading] = useState(isEditing);
+=======
+  const isEditing = articleId !== undefined;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['adminArticleDetail', articleId],
+    queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
+    enabled: isEditing,
+  });
+
+>>>>>>> e91d94c8808644a756f5a4532993e4426a810910
   const [venderModalOpen, setVendorModalOpen] = useState(false);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [idStatus, setIdStatus] = useState<
     'idle' | 'available' | 'taken' | 'unvalid'
   >('idle');
   const editorRef = useRef<TipTapEditorHandle>(null);
+<<<<<<< HEAD
   const [form, setForm] = useState(defaultForm);
 
   useEffect(() => {
@@ -60,17 +81,55 @@ const ArticleEditorSection = ({
 
     fetchDetail(); // 호출 추가
   }, [articleId]);
+=======
+  const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
+  const [form, setForm] = useState({
+    category: '',
+    title: '게시글 제목을 작성하세요',
+    article_id: 0,
+    start_date: '',
+    due_date: '',
+    vendors: [] as { vendor_id: number; vendor_name: string; original_url: string | null }[],
+    content: '',
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    setForm({
+      category: data.categories?.category_name ?? '',
+      title: data.title,
+      article_id: data.id,
+      start_date: data.start_date.replace(/\./g, '-'),
+      due_date: data.due_date.replace(/\./g, '-'),
+      vendors: data.vendors.map(({ vendor_id, vendor_name, original_url }) => ({
+        vendor_id,
+        vendor_name,
+        original_url,
+      })),
+      content: data.content,
+    });
+    setEditorKey(`loaded-${data.id}`);
+  }, [data]);
+>>>>>>> e91d94c8808644a756f5a4532993e4426a810910
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const content = editorRef.current?.getHTML();
+    setShowSubmitModal(true);
+  };
 
+<<<<<<< HEAD
     const categoryName =
       FILTER_OPTIONS.find((o) => o.category_id === form.category_id)?.label ??
       '미선택';
     alert(
       `카테고리 : ${categoryName} (id: ${form.category_id})\n제목 : ${form.title}\n행사기간 : ${form.start_date} ~ ${form.due_date}\n출처 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠 : ${content}`
     );
+=======
+  const handleSubmitConfirm = () => {
+    const content = editorRef.current?.getHTML();
+    console.log({ ...form, content }); // TODO: API 연동 시 실제 제출 로직으로 교체
+    setShowSubmitModal(false);
+>>>>>>> e91d94c8808644a756f5a4532993e4426a810910
   };
 
   const handleVendorDelete = (id: number) => {
@@ -93,6 +152,10 @@ const ArticleEditorSection = ({
   const handleVendorModalToggle = () => {
     setVendorModalOpen((prev) => !prev);
   };
+
+  if (isEditing && isLoading) {
+    return <div className="mt-8 text-center text-gray-400 text-sm">불러오는 중...</div>;
+  }
 
   const handleAlreadyCheck = async () => {
     if (typeof form.article_id !== 'number') {
@@ -240,6 +303,7 @@ const ArticleEditorSection = ({
           </label>
         </div>
 
+<<<<<<< HEAD
         {isLoading ? (
           <div className="h-[400px] border border-gray-300 rounded-md flex items-center justify-center text-gray-400">
             불러오는 중...
@@ -247,6 +311,9 @@ const ArticleEditorSection = ({
         ) : (
           <TipTapEditor ref={editorRef} initialValue={form.content} />
         )}
+=======
+        <TipTapEditor key={editorKey} ref={editorRef} initialValue={form.content} />
+>>>>>>> e91d94c8808644a756f5a4532993e4426a810910
         <button
           type="submit"
           // disabled={idStatus !== 'available'}
@@ -255,6 +322,16 @@ const ArticleEditorSection = ({
           제출
         </button>
       </form>
+
+      {showSubmitModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <AlertModal
+            title="이 내용으로 게시글을 등록하시겠습니까?"
+            onConfirm={handleSubmitConfirm}
+            onCancel={() => setShowSubmitModal(false)}
+          />
+        </div>
+      )}
     </div>
   );
 };
