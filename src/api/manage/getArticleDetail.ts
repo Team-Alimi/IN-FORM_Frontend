@@ -1,8 +1,8 @@
 import instance from '@/api/axios';
 
-export async function checkArticleIdDuplicate(article_id: number) {
+export async function getArticleDetail(article_id: number) {
   try {
-    const res = await instance.get('/api/v1/admin/articles/check-id', {
+    const res = await instance.get(`/api/v1/admin/articles`, {
       params: {
         article_id,
       },

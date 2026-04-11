@@ -1,82 +1,75 @@
-import { useState, useRef } from 'react';
-import type { ArticleDetail } from '@/api/manage/adminArticles';
+import { useState, useRef, useEffect } from 'react';
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
 import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
+import { getAdminArticleDetail } from '@/api/manage/adminArticles';
 
 const ArticleEditorSection = ({
   articleId,
 }: {
   articleId?: number | undefined;
 }) => {
-  const isEditing = articleId !== undefined;
-  const mockArticleDetail: ArticleDetail = {
-    id: 101,
-    title: '[학부] 2026년 상반기 SW전공 역량강화 프로그램 참가자 모집',
-    content: '<p>2026년 상반기 SW전공 역량강화 프로그램...</p>',
-    is_published: false,
-    admin_status: 'INSPECTED_YET',
-    previous_status: null,
-    start_date: '2026.03.24',
-    due_date: '2026.04.10',
-    created_at: '2026-03-20T09:00:00',
-    updated_at: '2026-03-20T09:00:00',
-    categories: { category_id: 1, category_name: '대회/공모전' },
-    vendors: [
-      {
-        vendor_id: 1,
-        vendor_name: '컴퓨터공학과컴퓨터공학과',
-        vendor_initial: '컴',
-        vendor_type: 'DEPARTMENT',
-        original_url: null,
-      },
-    ],
+  const defaultForm = {
+    article_id: 0,
+    category_id: 0,
+    title: '게시글 제목을 입력하세요.',
+    start_date: '',
+    due_date: '',
+    vendors: [] as {
+      vendor_id: number;
+      vendor_name: string;
+      original_url: string | null;
+    }[],
+    content: '',
     attachments: [],
-    last_modified_admin: null,
-    admin_modified_at: null,
   };
+  const isEditing = articleId !== undefined;
+  const [isLoading, setIsLoading] = useState(isEditing);
   const [venderModalOpen, setVendorModalOpen] = useState(false);
   const [idStatus, setIdStatus] = useState<
     'idle' | 'available' | 'taken' | 'unvalid'
   >('idle');
   const editorRef = useRef<TipTapEditorHandle>(null);
-  const [form, setForm] = useState(
-    isEditing
-      ? {
-          category: mockArticleDetail.categories?.category_name ?? '',
-          title: mockArticleDetail.title,
-          article_id: mockArticleDetail.id,
-          start_date: mockArticleDetail.start_date.replace(/\./g, '-'),
-          due_date: mockArticleDetail.due_date.replace(/\./g, '-'),
-          vendors: mockArticleDetail.vendors.map(
-            ({ vendor_id, vendor_name, original_url }) => ({
-              vendor_id,
-              vendor_name,
-              original_url,
-            })
-          ),
-          content: mockArticleDetail.content,
-        }
-      : {
-          category: '',
-          title: '게시글 제목을 작성하세요',
-          article_id: 0,
-          start_date: '',
-          due_date: '',
-          vendors: [],
-          content: '',
-        }
-  );
+  const [form, setForm] = useState(defaultForm);
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const fetchDetail = async () => {
+      const res = await getAdminArticleDetail(1138);
+      setForm({
+        article_id: res.id,
+        title: res.title,
+        content: res.content,
+        start_date: res.start_date,
+        due_date: res.due_date,
+        category_id: res.categories?.category_id ?? 0,
+        vendors: res.vendors.map(
+          ({ vendor_id, vendor_name, original_url }) => ({
+            vendor_id,
+            vendor_name,
+            original_url,
+          })
+        ),
+        attachments: res.attachments,
+      });
+      setIsLoading(false);
+    };
+
+    fetchDetail(); // 호출 추가
+  }, [articleId]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const content = editorRef.current?.getHTML();
 
+    const categoryName =
+      FILTER_OPTIONS.find((o) => o.category_id === form.category_id)?.label ??
+      '미선택';
     alert(
-      `선택된 카테고리 : ${form.category}\n작성한 타이틀 : ${form.title}\n
-선택된 시작일 : ${form.start_date} 종료일 : ${form.due_date}\n출처목록 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠: ${content}`
+      `카테고리 : ${categoryName} (id: ${form.category_id})\n제목 : ${form.title}\n행사기간 : ${form.start_date} ~ ${form.due_date}\n출처 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠 : ${content}`
     );
   };
 
@@ -102,7 +95,6 @@ const ArticleEditorSection = ({
   };
 
   const handleAlreadyCheck = async () => {
-    // TODO: 실제 API 연결 시 아래 주석 해제
     if (typeof form.article_id !== 'number') {
       setIdStatus('unvalid');
       return;
@@ -117,16 +109,19 @@ const ArticleEditorSection = ({
         <div>
           {FILTER_OPTIONS.map((option) => {
             if (option.label === '북마크') return null;
-            const isSelected = option.label === form.category;
+            const isSelected = option.category_id === form.category_id;
             return (
               <label key={option.key}>
                 <input
                   type="radio"
                   name="category"
-                  value={option.label}
+                  value={option.category_id ?? ''}
                   checked={isSelected}
                   onChange={() =>
-                    setForm((prev) => ({ ...prev, category: option.label }))
+                    setForm((prev) => ({
+                      ...prev,
+                      category_id: option.category_id ?? 0,
+                    }))
                   }
                   className="hidden"
                 />
@@ -245,10 +240,16 @@ const ArticleEditorSection = ({
           </label>
         </div>
 
-        <TipTapEditor ref={editorRef} initialValue={form.content} />
+        {isLoading ? (
+          <div className="h-[400px] border border-gray-300 rounded-md flex items-center justify-center text-gray-400">
+            불러오는 중...
+          </div>
+        ) : (
+          <TipTapEditor ref={editorRef} initialValue={form.content} />
+        )}
         <button
           type="submit"
-          disabled={idStatus !== 'available'}
+          // disabled={idStatus !== 'available'}
           className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
         >
           제출
