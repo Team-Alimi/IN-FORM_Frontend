@@ -1,29 +1,54 @@
 import { useState, useRef, useEffect } from 'react';
-<<<<<<< HEAD
-=======
 import { useQuery } from '@tanstack/react-query';
-// TODO: API 연동 시 아래 줄로 교체
-// import { getAdminArticleDetail } from '@/api/manage/adminArticles';
+import { useNavigate } from 'react-router-dom';
 import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
->>>>>>> e91d94c8808644a756f5a4532993e4426a810910
 import { FILTER_OPTIONS } from '@/constants/filterOption';
 import VendorAddModal from './VendorAddModal';
+import AttachmentAddModal from './AttachmentAddModal';
 import AlertModal from '@/components/manage/common/AlertModal';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
 import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
-import { getAdminArticleDetail } from '@/api/manage/adminArticles';
+import {
+  createArticle,
+  updateArticle,
+  deleteArticles,
+} from '@/api/manage/adminArticles';
+import type {
+  CreateArticlePayload,
+  UpdateArticlePayload,
+  AdminStatus,
+} from '@/api/manage/adminArticles';
 
 const ArticleEditorSection = ({
   articleId,
 }: {
-  articleId?: number | undefined;
+  articleId?: number | undefined; //articleId 값이 있다 : 게시글 수정하기 articleId값이 없다 : 게시글 등록하기
 }) => {
-<<<<<<< HEAD
-  const defaultForm = {
-    article_id: 0,
+  const isEditing = articleId !== undefined; //articleId 의 값이 있다면 isEditing : true, 수정중이 맞다.
+  const navigate = useNavigate();
+
+  const { data, isLoading } = useQuery({
+    //articleId를 기반으로
+    queryKey: ['adminArticleDetail', articleId],
+    queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
+    enabled: isEditing, //isEditing이 true일때만 내용을 실행하라.
+  });
+
+  const [venderModalOpen, setVendorModalOpen] = useState(false); //vendor모달 토글 상태 관리
+  const [attachmentModalOpen, setAttachmentModalOpen] = useState(false); //attachment모달 토글 상태 관리
+  const [showSubmitModal, setShowSubmitModal] = useState(false); //제출 모달 노출 상태 관리
+  const [showDeleteModal, setShowDeleteModal] = useState(false); //삭제 모달 노출 상태 관리
+  const [idStatus, setIdStatus] = useState<
+    'idle' | 'available' | 'taken' | 'unvalid'
+  >('idle'); //id 중복 확인 및 유효성 검사 state
+  const editorRef = useRef<TipTapEditorHandle>(null);
+  const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
+  const [form, setForm] = useState({
     category_id: 0,
-    title: '게시글 제목을 입력하세요.',
+    title: '게시글 제목을 작성하세요',
+    article_id: 0,
+    admin_status: 'REFLECTION_WAITING' as AdminStatus,
     start_date: '',
     due_date: '',
     vendors: [] as {
@@ -32,107 +57,95 @@ const ArticleEditorSection = ({
       original_url: string | null;
     }[],
     content: '',
-    attachments: [],
-  };
-  const isEditing = articleId !== undefined;
-  const [isLoading, setIsLoading] = useState(isEditing);
-=======
-  const isEditing = articleId !== undefined;
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['adminArticleDetail', articleId],
-    queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
-    enabled: isEditing,
-  });
-
->>>>>>> e91d94c8808644a756f5a4532993e4426a810910
-  const [venderModalOpen, setVendorModalOpen] = useState(false);
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [idStatus, setIdStatus] = useState<
-    'idle' | 'available' | 'taken' | 'unvalid'
-  >('idle');
-  const editorRef = useRef<TipTapEditorHandle>(null);
-<<<<<<< HEAD
-  const [form, setForm] = useState(defaultForm);
-
-  useEffect(() => {
-    if (!isEditing) return;
-
-    const fetchDetail = async () => {
-      const res = await getAdminArticleDetail(1138);
-      setForm({
-        article_id: res.id,
-        title: res.title,
-        content: res.content,
-        start_date: res.start_date,
-        due_date: res.due_date,
-        category_id: res.categories?.category_id ?? 0,
-        vendors: res.vendors.map(
-          ({ vendor_id, vendor_name, original_url }) => ({
-            vendor_id,
-            vendor_name,
-            original_url,
-          })
-        ),
-        attachments: res.attachments,
-      });
-      setIsLoading(false);
-    };
-
-    fetchDetail(); // 호출 추가
-  }, [articleId]);
-=======
-  const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
-  const [form, setForm] = useState({
-    category: '',
-    title: '게시글 제목을 작성하세요',
-    article_id: 0,
-    start_date: '',
-    due_date: '',
-    vendors: [] as { vendor_id: number; vendor_name: string; original_url: string | null }[],
-    content: '',
+    attachment_urls: [] as string[],
   });
 
   useEffect(() => {
     if (!data) return;
     setForm({
-      category: data.categories?.category_name ?? '',
+      category_id: data.categories?.category_id ?? 0,
       title: data.title,
       article_id: data.id,
-      start_date: data.start_date.replace(/\./g, '-'),
-      due_date: data.due_date.replace(/\./g, '-'),
+      admin_status: (data.admin_status ?? 'REFLECTION_WAITING') as AdminStatus,
+      start_date: data.start_date,
+      due_date: data.due_date,
       vendors: data.vendors.map(({ vendor_id, vendor_name, original_url }) => ({
         vendor_id,
         vendor_name,
         original_url,
       })),
       content: data.content,
+      attachment_urls: data.attachments.map((a) => a.attachment_url),
     });
     setEditorKey(`loaded-${data.id}`);
   }, [data]);
->>>>>>> e91d94c8808644a756f5a4532993e4426a810910
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    //제출 확인 모달 제어
     e.preventDefault();
     setShowSubmitModal(true);
   };
 
-<<<<<<< HEAD
-    const categoryName =
-      FILTER_OPTIONS.find((o) => o.category_id === form.category_id)?.label ??
-      '미선택';
-    alert(
-      `카테고리 : ${categoryName} (id: ${form.category_id})\n제목 : ${form.title}\n행사기간 : ${form.start_date} ~ ${form.due_date}\n출처 : ${form.vendors.map((v) => `${v.vendor_name}(${v.original_url ?? '없음'})`).join(', ')}\n콘텐츠 : ${content}`
-    );
-=======
-  const handleSubmitConfirm = () => {
-    const content = editorRef.current?.getHTML();
-    console.log({ ...form, content }); // TODO: API 연동 시 실제 제출 로직으로 교체
-    setShowSubmitModal(false);
->>>>>>> e91d94c8808644a756f5a4532993e4426a810910
+  const handleSubmitConfirm = async () => {
+    const content = editorRef.current?.getHTML() ?? '';
+
+    try {
+      if (isEditing) {
+        const payload: UpdateArticlePayload = {
+          title: form.title,
+          content,
+          category_id: form.category_id,
+          admin_status: form.admin_status,
+          start_date: form.start_date,
+          due_date: form.due_date,
+          vendors: form.vendors.map(({ vendor_id, original_url }) => ({
+            vendor_id,
+            original_url: original_url ?? '',
+          })),
+          attachment_urls: form.attachment_urls,
+        };
+        await updateArticle(articleId!, payload);
+      } else {
+        const payload: CreateArticlePayload = {
+          article_id: form.article_id,
+          title: form.title,
+          content,
+          category_id: form.category_id,
+          start_date: form.start_date,
+          due_date: form.due_date,
+          vendors: form.vendors.map(({ vendor_id, original_url }) => ({
+            vendor_id,
+            original_url: original_url ?? '',
+          })),
+          attachment_urls: form.attachment_urls,
+        };
+        await createArticle(payload);
+      }
+      navigate('/manage');
+    } catch {
+      alert(
+        isEditing
+          ? '게시글 수정에 실패했습니다. 다시 시도해주세요.'
+          : '게시글 등록에 실패했습니다. 다시 시도해주세요.'
+      );
+    } finally {
+      setShowSubmitModal(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteArticles([articleId!]);
+      navigate('/manage');
+    } catch {
+      alert('게시글 삭제에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
   const handleVendorDelete = (id: number) => {
+    //선택된 vendor를 삭제 하는 핸들러
     setForm((prev) => ({
       ...prev,
       vendors: prev.vendors.filter((item) => item.vendor_id !== id),
@@ -153,8 +166,27 @@ const ArticleEditorSection = ({
     setVendorModalOpen((prev) => !prev);
   };
 
+  const handleAttachmentAdd = (url: string) => {
+    setForm((prev) => ({
+      ...prev,
+      attachment_urls: [...prev.attachment_urls, url],
+    }));
+    setAttachmentModalOpen(false);
+  };
+
+  const handleAttachmentDelete = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      attachment_urls: prev.attachment_urls.filter((_, i) => i !== index),
+    }));
+  };
+
   if (isEditing && isLoading) {
-    return <div className="mt-8 text-center text-gray-400 text-sm">불러오는 중...</div>;
+    return (
+      <div className="mt-8 text-center text-gray-400 text-sm">
+        불러오는 중...
+      </div>
+    );
   }
 
   const handleAlreadyCheck = async () => {
@@ -166,6 +198,7 @@ const ArticleEditorSection = ({
     console.log(res);
     setIdStatus(res.data ? 'taken' : 'available');
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -207,81 +240,112 @@ const ArticleEditorSection = ({
             className="text-lg w-4/5"
           />
         </div>
-        {/**1. 출처 배열 정보를 모두 나열한다. */}
-        <div className="flex flex-row gap-2">
-          {form.vendors.map((item) => {
-            {
-              return (
-                <div
-                  key={item.vendor_id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
-                >
-                  {item.vendor_name}
-                  <button
-                    type="button"
-                    className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
-                    onClick={() => handleVendorDelete(item.vendor_id)}
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            }
-          })}
-          {/**2. 출처 배열의 끝에 +버튼을 구현한다. */}
+
+        {/* 출처 섹션 */}
+        <div className="flex flex-row gap-2 flex-wrap">
+          {form.vendors.map((item) => (
+            <div
+              key={item.vendor_id}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+            >
+              {item.vendor_name}
+              <button
+                type="button"
+                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
+                onClick={() => handleVendorDelete(item.vendor_id)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
           <div
-            className="text-3xl p-1 px-3 bg-gray-100 rounded-md"
+            className="text-3xl p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
             onClick={handleVendorModalToggle}
           >
             +
           </div>
         </div>
-        {/**3. + 버튼을 누르면 모달이 노출되며 사용자는 출처명과 출처 url을 입력한다. */}
         {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
-        <div className="flex flex-row gap-2">
-          <label>
-            ID :{' '}
-            <input
-              name="article_id"
-              value={form.article_id}
-              onChange={(e) => {
-                setForm((prev) => ({
-                  ...prev,
-                  article_id: Number(e.target.value),
-                }));
-                setIdStatus('idle');
-              }}
-              className={`border rounded px-2 py-1 ${
-                idStatus === 'taken'
-                  ? 'border-red-500'
-                  : idStatus === 'available'
-                    ? 'border-green-500'
-                    : 'border-gray-300'
-              }`}
-            />
-          </label>
-          {idStatus === 'taken' && (
-            <p className="text-red-500 text-xs mt-0.5">
-              이미 사용 중인 ID입니다.
-            </p>
-          )}
-          {idStatus === 'unvalid' && (
-            <p className="text-red-500 text-xs mt-0.5">
-              적절하지 않은 입력입니다.
-            </p>
-          )}
-          {idStatus === 'available' && (
-            <p className="text-green-500 text-xs mt-0.5">
-              사용 가능한 ID입니다.
-            </p>
-          )}
-          <button
-            type="button"
-            onClick={handleAlreadyCheck}
-            className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+
+        {/* 첨부파일 섹션 */}
+        <div className="flex flex-row gap-2 flex-wrap">
+          {form.attachment_urls.map((url, index) => (
+            <div
+              key={index}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+            >
+              {url.split('/').pop() || url}
+              <button
+                type="button"
+                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
+                onClick={() => handleAttachmentDelete(index)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <div
+            className="text-sm p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
+            onClick={() => setAttachmentModalOpen(true)}
           >
-            중복검사
-          </button>
+            첨부파일 추가하기 +
+          </div>
+        </div>
+        {attachmentModalOpen && (
+          <AttachmentAddModal
+            onConfirm={handleAttachmentAdd}
+            onCancel={() => setAttachmentModalOpen(false)}
+          />
+        )}
+
+        <div className="flex flex-row gap-2">
+          {!isEditing && (
+            <>
+              <label>
+                ID :{' '}
+                <input
+                  name="article_id"
+                  value={form.article_id}
+                  onChange={(e) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      article_id: Number(e.target.value),
+                    }));
+                    setIdStatus('idle');
+                  }}
+                  className={`border rounded px-2 py-1 ${
+                    idStatus === 'taken'
+                      ? 'border-red-500'
+                      : idStatus === 'available'
+                        ? 'border-green-500'
+                        : 'border-gray-300'
+                  }`}
+                />
+              </label>
+              {idStatus === 'taken' && (
+                <p className="text-red-500 text-xs mt-0.5">
+                  이미 사용 중인 ID입니다.
+                </p>
+              )}
+              {idStatus === 'unvalid' && (
+                <p className="text-red-500 text-xs mt-0.5">
+                  적절하지 않은 입력입니다.
+                </p>
+              )}
+              {idStatus === 'available' && (
+                <p className="text-green-500 text-xs mt-0.5">
+                  사용 가능한 ID입니다.
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleAlreadyCheck}
+                className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+              >
+                중복검사
+              </button>
+            </>
+          )}
           <label>
             행사기간 :{' '}
             <input
@@ -303,32 +367,49 @@ const ArticleEditorSection = ({
           </label>
         </div>
 
-<<<<<<< HEAD
-        {isLoading ? (
-          <div className="h-[400px] border border-gray-300 rounded-md flex items-center justify-center text-gray-400">
-            불러오는 중...
-          </div>
-        ) : (
-          <TipTapEditor ref={editorRef} initialValue={form.content} />
-        )}
-=======
-        <TipTapEditor key={editorKey} ref={editorRef} initialValue={form.content} />
->>>>>>> e91d94c8808644a756f5a4532993e4426a810910
+        <TipTapEditor
+          key={editorKey}
+          ref={editorRef}
+          initialValue={form.content}
+        />
         <button
           type="submit"
           // disabled={idStatus !== 'available'}
           className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          제출
+          {isEditing ? '반영하기' : '추가하기'}
         </button>
+        {isEditing && (
+          <button
+            type="button"
+            onClick={() => setShowDeleteModal(true)}
+            className="px-4 py-2 bg-red-100 text-red-400 rounded hover:bg-red-200 m-4"
+          >
+            삭제하기
+          </button>
+        )}
       </form>
 
       {showSubmitModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
           <AlertModal
-            title="이 내용으로 게시글을 등록하시겠습니까?"
+            title={
+              isEditing
+                ? '이 내용으로 게시글을 수정하시겠습니까?'
+                : '이 내용으로 게시글을 등록하시겠습니까?'
+            }
             onConfirm={handleSubmitConfirm}
             onCancel={() => setShowSubmitModal(false)}
+          />
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <AlertModal
+            title="해당 게시글을 삭제하시겠습니까?"
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setShowDeleteModal(false)}
           />
         </div>
       )}

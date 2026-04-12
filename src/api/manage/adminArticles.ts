@@ -5,6 +5,7 @@
  * - 게시글 상태 일괄 변경 (반영대기, 삭제 등)
  * - 게시글 서비스 배포
  * - 휴지통 게시글 복구 / 영구 삭제
+ * - 게시글 직접 등록
  */
 import api from '@/api/axios';
 
@@ -17,10 +18,10 @@ export interface Article {
   title: string;
   admin_status: string;          // 현재 검수 상태
   previous_status: string | null; // 이전 상태
-  start_date: string;            
-  due_date: string;              
-  created_at: string;           
-  updated_at: string;           
+  start_date: string;
+  due_date: string;
+  created_at: string;
+  updated_at: string;
   categories: { category_id: number; category_name: string } | null; // 카테고리 (nullable)
   vendors: { vendor_id: number; vendor_name: string; vendor_initial: string; vendor_type: string }[]; // 제공처 목록
   last_modified_admin_name: string | null; // 마지막 수정 관리자 이름 (nullable)
@@ -29,10 +30,10 @@ export interface Article {
 
 // 페이지네이션 정보 타입
 export interface PageInfo {
-  current_page: number;  
-  total_pages: number;   
-  total_articles: number; 
-  has_next: boolean;    
+  current_page: number;
+  total_pages: number;
+  total_articles: number;
+  has_next: boolean;
 }
 
 // 게시글 목록 응답 타입
@@ -43,10 +44,10 @@ export interface ArticleListData {
 
 // 대시보드 카운트 응답 타입
 export interface ArticleCountsData {
-  inspected_yet: number;       
-  reflection_waiting: number;  
-  suspected_duplicate: number; 
-  garbage: number;         
+  inspected_yet: number;
+  reflection_waiting: number;
+  suspected_duplicate: number;
+  garbage: number;
 }
 
 // 게시글 상세 타입
@@ -74,6 +75,36 @@ export interface ArticleDetail {
   admin_modified_at: string | null;
 }
 
+// 게시글 직접 등록 요청 타입
+export interface CreateArticlePayload {
+  article_id: number;
+  title: string;
+  content: string;
+  category_id: number;
+  start_date: string;
+  due_date: string;
+  vendors: {
+    vendor_id: number;
+    original_url: string;
+  }[];
+  attachment_urls: string[];
+}
+
+// 게시글 수정 요청 타입
+export interface UpdateArticlePayload {
+  title: string;
+  content: string;
+  category_id: number;
+  admin_status: AdminStatus;
+  start_date: string;
+  due_date: string;
+  vendors: {
+    vendor_id: number;
+    original_url: string;
+  }[];
+  attachment_urls: string[];
+}
+
 // [GET] api/v1/admin/articles/counts
 // 샌드박스 상태별 통계 조회
 export const getAdminArticleCounts = async (): Promise<ArticleCountsData> => {
@@ -99,6 +130,24 @@ export const getAdminArticles = async (
 export const getAdminArticleDetail = async (id: number): Promise<ArticleDetail> => {
   const response = await api.get(`/api/v1/admin/articles/${id}`);
   return response.data.data;
+};
+
+// [POST] /api/v1/admin/articles/create
+// 게시글 직접 등록
+export const createArticle = async (
+  payload: CreateArticlePayload,
+): Promise<number> => {
+  const response = await api.post('/api/v1/admin/articles/create', payload);
+  return response.data.data; // 등록된 article_id 반환
+};
+
+// [PATCH] /api/v1/admin/articles/:id
+// 게시글 수정
+export const updateArticle = async (
+  id: number,
+  payload: UpdateArticlePayload,
+): Promise<void> => {
+  await api.patch(`/api/v1/admin/articles/${id}`, payload);
 };
 
 // [PATCH] /api/v1/admin/articles/status

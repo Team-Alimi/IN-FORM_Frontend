@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import ErrorImage from "@/assets/error/ErrorImage.png";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ErrorImage from '@/assets/error/ErrorImage.png';
 
 const ErrorPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/", { replace: true });
+      navigate('/', { replace: true });
     }, 1000);
 
     return () => clearTimeout(timer);
