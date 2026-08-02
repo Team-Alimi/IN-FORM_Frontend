@@ -1,4 +1,3 @@
-import { CATEGORY_COLORS } from "@/constants/tagColors";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
 // 이벤트 카테고리에 따른 색상 반환
 const getEventColor = (event) => {

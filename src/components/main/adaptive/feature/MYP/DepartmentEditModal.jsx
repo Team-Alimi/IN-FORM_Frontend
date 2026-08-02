@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
-import { getVendors } from "@/api/getVendors";
-import { patchUserMajor } from "@/api/patchUserMajor";
+import { fetchVendors } from "@/api/main/vendors";
+import { patchUserMajor } from "@/api/main/user";
 
 /**
  * DepartmentEditModal - Desktop 전용 중앙 모달
@@ -15,7 +15,7 @@ const DepartmentEditModal = ({ isOpen, onClose }) => {
 
     const { data: vendorsData, isLoading: isVendorsLoading } = useQuery({
         queryKey: ["vendors", "SCHOOL"],
-        queryFn: () => getVendors("SCHOOL"),
+        queryFn: () => fetchVendors("SCHOOL"),
         staleTime: 1000 * 60 * 60,
         enabled: isOpen,
     });

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
-import { getVendors } from "@/api/getVendors";
-import { patchUserMajor } from "@/api/patchUserMajor";
+import { fetchVendors } from "@/api/main/vendors";
+import { patchUserMajor } from "@/api/main/user";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 
 /**
@@ -19,7 +19,7 @@ const DepartmentEditSheet = ({ isOpen, onClose }) => {
     // 1. 학과(SCHOOL) 벤더 목록 조회
     const { data: vendorsData, isLoading: isVendorsLoading } = useQuery({
         queryKey: ["vendors", "SCHOOL"],
-        queryFn: () => getVendors("SCHOOL"),
+        queryFn: () => fetchVendors("SCHOOL"),
         staleTime: 1000 * 60 * 60, // 1시간 캐싱
         enabled: isOpen, // 시트가 열릴 때만 조회
     });

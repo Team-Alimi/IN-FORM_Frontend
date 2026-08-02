@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Claude 행동 지침
 
 1. **CLAUDE.md 자동 업데이트**: 큰 기능이 구현되거나 프로젝트 구조/컨벤션이 변경되면 이 파일도 함께 수정한다.
-2. **학습 설명 포함**: 코드 구현 시 사용자의 웹 프론트엔드 학습을 위해 구현한 코드에 대한 이론적 설명을 함께 제공한다.
+2. **학습 설명 포함**: 코드 구현 시 사용자의 학습을 위해 구현한 코드에 대한 구체적인 설명을 함께 제공한다.
 3. **단계별 구현**: 코드 구현 시 과정을 단계별로 나누고 한 단계가 끝나면 사용자에게 다음 단계 진행을 허가받은 후 다음 단계로 넘어간다.
 
 ---
@@ -66,16 +66,16 @@ This project uses **3-letter uppercase codes** for all features:
 
 ```
 src/
-├── api/                    # API 함수 (도메인별 파일)
-│   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리)
-│   ├── schoolArticles.js   # 공지사항 목록/상세/마감임박
-│   ├── clubArticles.js     # 동아리 목록/상세
-│   ├── getMonthlyAll.js    # 월별 캘린더 데이터
-│   ├── getHotEventList.js  # 인기 행사
-│   ├── getSchoolBookmarks.js / postBookmark.js / deleteSchoolBookmark.js / deleteSchoolBookmarksAll.js
-│   ├── getVendors.js       # 학과/제공처 목록
-│   ├── notifications.js    # 알림 목록/읽음 처리
-│   ├── patchUserMajor.js / deleteAccount.js / postGoogleLogin.js
+├── api/                    # API 함수
+│   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리) - 공용
+│   ├── main/               # 사용자 API (도메인별 파일)
+│   │   ├── articles.js     # 학교/동아리 공지사항 (fetchEvents, fetchClubs 등)
+│   │   ├── calendar.js     # 월별 캘린더 데이터 (fetchMonthlyAll)
+│   │   ├── bookmarks.js    # 북마크 CRUD
+│   │   ├── notifications.js# 알림 목록/읽음 처리
+│   │   ├── user.js         # 사용자 정보 수정/탈퇴
+│   │   ├── auth.js         # 구글 로그인 (postGoogleLogin)
+│   │   └── vendors.js      # 학과/제공처 목록 (fetchVendors)
 │   └── manage/             # 관리자 API (TypeScript)
 │
 ├── components/
@@ -110,8 +110,7 @@ src/
 │   └── AnalyticsTraker.js  # GA4 페이지뷰 추적
 │
 ├── constants/
-│   ├── filterOption.js     # FILTER_OPTIONS (카테고리), STATE_OPTIONS (상태)
-│   └── tagColors.js        # CATEGORY_COLORS (배지 색상)
+│   └── filterOption.js     # FILTER_OPTIONS (카테고리), STATE_OPTIONS (상태)
 │
 └── assets/
 ```
@@ -153,7 +152,7 @@ import { useQuery } from "@tanstack/react-query";
 // 3. 내부 컴포넌트
 import DaySelectEventList from "@/components/...";
 // 4. API
-import { fetchEvents } from "@/api/schoolArticles";
+import { fetchEvents } from "@/api/main/articles";
 // 5. 유틸 / 상수 / 스토어
 import { formatDateKey } from "@/utils/dateUtil";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
@@ -256,7 +255,7 @@ export const fetchEvents = async (params) => { ... };
 // useQuery
 const { data, isLoading, error } = useQuery({
   queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 종속성 배열
-  queryFn: () => getMonthlyAll({ calendarMonth }),
+  queryFn: () => fetchMonthlyAll({ calendarMonth }), // from "@/api/main/calendar"
   staleTime: 60 * 1000 * 10,   // 10분
   gcTime: 60 * 1000 * 20,      // 20분
   placeholderData: keepPreviousData,
@@ -266,7 +265,7 @@ const { data, isLoading, error } = useQuery({
 // useMutation
 const deleteMutation = useMutation({
   mutationFn: (id) => deleteSchoolBookmark(id),
-  onSuccess: () => queryClient.invalidateQueries(["schoolBookmarks"]),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["schoolBookmarks"] }),
   onError: (error) => console.error(error),
 });
 ```
@@ -382,5 +381,5 @@ type: 간단한 설명
 절대 경로 `@/` 사용:
 ```js
 import EventRow from "@/components/main/adaptive/feature/EVL/EventRow";
-import { fetchEvents } from "@/api/schoolArticles";
+import { fetchEvents } from "@/api/main/articles";
 ```

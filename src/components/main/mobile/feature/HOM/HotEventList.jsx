@@ -1,6 +1,6 @@
 import HotEventRow from "@/components/main/mobile/feature/HOM/HotEventRow";
 import { useQuery } from "@tanstack/react-query";
-import { getHotEventList } from "@/api/getHotEventList";
+import { fetchHotEvents } from "@/api/main/articles";
 import { useNavigate } from "react-router-dom";
 import { useDeviceStore } from "@/stores/deviceStore";
 import backIcon from "@/assets/icons/back_simple.svg";
@@ -10,8 +10,8 @@ const ITEMWIDTH = 250;
 const HotEventList = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["getHotEventList"],
-    queryFn: () => getHotEventList(),
+    queryKey: ["hotEvents"],
+    queryFn: () => fetchHotEvents(),
     staleTime: 60 * 1000 * 10,
     gcTime: 60 * 1000 * 20,
   });

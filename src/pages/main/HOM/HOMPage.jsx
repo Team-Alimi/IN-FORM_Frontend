@@ -4,12 +4,12 @@ import ServiceLinkList from "@/components/main/desktop/common/ServiceLinkList";
 import CalendarSection from "@/components/main/adaptive/feature/HOM/CalendarSection";
 import HotEventList from "@/components/main/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "@/stores/deviceStore";
-import MobileHeader from "@/components/main/mobile/common/mobileHeader";
-import MobileTabBar from "@/components/main/mobile/common/mobileTabBar";
+import MobileHeader from "@/components/main/mobile/common/MobileHeader";
+import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchClubs } from "@/api/clubArticles";
+import { fetchClubs } from "@/api/main/articles";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const queryClient = useQueryClient();

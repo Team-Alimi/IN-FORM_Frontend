@@ -2,9 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import BookmarkItem from "@/components/main/adaptive/feature/MYP/BookmarkItem";
-import { deleteSchoolBookmarksAll } from "@/api/deleteSchoolBookmarksAll";
-import { deleteSchoolBookmark } from "@/api/deleteSchoolBookmark";
-import { getSchoolBookmarks } from "@/api/getSchoolBookmarks";
+import { deleteSchoolBookmarksAll, deleteSchoolBookmark, fetchSchoolBookmarks } from "@/api/main/bookmarks";
 import { useDeviceStore } from "@/stores/deviceStore";
 import useAuthStore from "@/stores/useAuthStore";
 
@@ -17,7 +15,7 @@ const BookmarkSection = () => {
     // 실제 데이터 페칭
     const { data: bookmarkData, isLoading } = useQuery({
         queryKey: ["schoolBookmarks"],
-        queryFn: () => getSchoolBookmarks({ page: 1, size: 50 }),
+        queryFn: () => fetchSchoolBookmarks({ page: 1, size: 50 }),
         enabled: isLoggedIn,
     });
 

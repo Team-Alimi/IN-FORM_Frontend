@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getVendors } from '@/api/getVendors';
+import { fetchVendors } from '@/api/main/vendors';
 
 const VendorAddModal = ({
   onConfirm,
@@ -16,7 +16,7 @@ const VendorAddModal = ({
   >([]);
 
   useEffect(() => {
-    getVendors('SCHOOL')
+    fetchVendors('SCHOOL')
       .then((res) => setVendors(res.data || []))
       .catch(() => {});
   }, []);

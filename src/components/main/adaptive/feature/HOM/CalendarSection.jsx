@@ -7,9 +7,8 @@ import {
   formatMonthKey,
 } from "@/utils/dateUtil";
 import DaySelectEventList from "@/components/main/adaptive/feature/HOM/DaySelectEventList";
-import { getMonthlyAll } from "@/api/getMonthlyAll";
-import { fetchEventDetail } from "@/api/schoolArticles";
-import { fetchClubDetail } from "@/api/clubArticles";
+import { fetchMonthlyAll } from "@/api/main/calendar";
+import { fetchEventDetail, fetchClubDetail } from "@/api/main/articles";
 
 import MainCalendar from "@/components/main/adaptive/feature/HOM/MainCalendar";
 import CalendarFilterBar from "@/components/main/adaptive/feature/HOM/CalendarFilterBar";
@@ -50,7 +49,7 @@ const CalendarSection = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 필터 변경 시 재요청
     queryFn: () =>
-      getMonthlyAll({
+      fetchMonthlyAll({
         calendarMonth,
         category_id: categoryIds,
         is_my_only: isMyOnly,
