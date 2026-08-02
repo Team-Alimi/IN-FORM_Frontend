@@ -8,7 +8,7 @@ import api from "@/api/axios";
  * @param {boolean} params.is_my_only - 내 학과만 보기 여부 (옵션)
  * @returns {Promise<{articles: Array}>}
  */
-export async function getMonthlyAll({ calendarMonth, category_id, is_my_only }) {
+export async function fetchMonthlyAll({ calendarMonth, category_id, is_my_only }) {
   const [yearStr, monthStr] = calendarMonth.split("-");
   const year = parseInt(yearStr);
   const month = parseInt(monthStr);

@@ -5,12 +5,12 @@ import api from "@/api/axios";
  * @param {Object} params - page, size, category_id, keyword
  * @returns {Promise}
  */
-export async function getSchoolBookmarks(params) {
+export async function fetchSchoolBookmarks(params) {
   try {
     const res = await api.get("/api/v1/bookmarks/school", { params });
     return res.data;
   } catch (error) {
-    console.error("[API] getSchoolBookmarks 에러 발생:", error);
+    console.error("[API] fetchSchoolBookmarks 에러 발생:", error);
     throw error;
   }
 }

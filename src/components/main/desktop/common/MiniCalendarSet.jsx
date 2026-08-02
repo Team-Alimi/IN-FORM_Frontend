@@ -2,7 +2,7 @@ import MiniCalendar from "@/components/main/desktop/common/MiniCalendar";
 import { parseDate, formatDateKey, formatMonthKey } from "@/utils/dateUtil";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMonthlyAll } from "@/api/calendar";
+import { fetchMonthlyAll } from "@/api/calendar";
 import MiniCalendarEventList from "@/components/main/desktop/common/MiniCalendarEventList";
 import { useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
@@ -34,7 +34,7 @@ const MiniCalendarSet = () => {
   // React Query로 API 데이터 가져오기 (전체 카테고리 명시 요청)
   const { data, isLoading, error } = useQuery({
     queryKey: ["monthlyAll", calendarMonth, "ALL"],
-    queryFn: () => getMonthlyAll({ calendarMonth, category_id: ALL_CATEGORY_IDS }),
+    queryFn: () => fetchMonthlyAll({ calendarMonth, category_id: ALL_CATEGORY_IDS }),
   });
 
   const events = useMemo(() => data || { articles: [] }, [data]);

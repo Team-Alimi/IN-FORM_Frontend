@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getMonthlyAll } from "@/api/calendar";
+import { fetchMonthlyAll } from "@/api/calendar";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
 
 const STALE_TIME = 60 * 1000 * 10; // 10분
@@ -22,7 +22,7 @@ export function useCalendarPrefetch(calendarMonth) {
       queryClient.prefetchQuery({
         queryKey: ["monthlyAll", calendarMonth, filterKey],
         queryFn: () =>
-          getMonthlyAll({ calendarMonth, category_id, is_my_only }),
+          fetchMonthlyAll({ calendarMonth, category_id, is_my_only }),
         staleTime: STALE_TIME,
       });
     });

@@ -5,14 +5,14 @@ import api from "@/api/axios";
  * @param {string} type - "SCHOOL" | "CLUB" (옵션)
  * @returns {Promise}
  */
-export async function getVendors(type) {
+export async function fetchVendors(type) {
   try {
     const res = await api.get("/api/v1/vendors", {
       params: type ? { type } : undefined,
     });
     return res.data;
   } catch (error) {
-    console.error("[API] getVendors 에러 발생:", error);
+    console.error("[API] fetchVendors 에러 발생:", error);
     throw error;
   }
 }

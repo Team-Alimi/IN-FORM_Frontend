@@ -50,7 +50,7 @@ export const fetchImminentEvents = async () => {
  * 인기 학교 공지사항 목록 조회
  * @returns {Promise}
  */
-export const getHotEventList = async () => {
+export const fetchHotEvents = async () => {
   try {
     const res = await api.get("/api/v1/school_articles/hot");
     return res.data;

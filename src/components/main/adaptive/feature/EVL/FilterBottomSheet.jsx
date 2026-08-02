@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
-import { getVendors } from "@/api/vendors";
+import { fetchVendors } from "@/api/vendors";
 import { fetchEvents } from "@/api/articles";
 import { STATE_OPTIONS, FILTER_OPTIONS } from "@/constants/filterOption";
 
@@ -45,7 +45,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const timerRef = useRef(null);
 
   useEffect(() => {
-    getVendors("SCHOOL")
+    fetchVendors("SCHOOL")
       .then((res) => setVendors(res.data || []))
       .catch(() => {});
   }, []);
