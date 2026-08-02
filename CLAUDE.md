@@ -68,14 +68,13 @@ This project uses **3-letter uppercase codes** for all features:
 src/
 ├── api/                    # API 함수 (도메인별 파일)
 │   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리)
-│   ├── schoolArticles.js   # 공지사항 목록/상세/마감임박
-│   ├── clubArticles.js     # 동아리 목록/상세
-│   ├── getMonthlyAll.js    # 월별 캘린더 데이터
-│   ├── getHotEventList.js  # 인기 행사
-│   ├── getSchoolBookmarks.js / postBookmark.js / deleteSchoolBookmark.js / deleteSchoolBookmarksAll.js
-│   ├── getVendors.js       # 학과/제공처 목록
+│   ├── articles.js         # 학교/동아리 공지사항 (fetchEvents, fetchClubs 등)
+│   ├── calendar.js         # 월별 캘린더 데이터 (fetchMonthlyAll)
+│   ├── bookmarks.js        # 북마크 CRUD
 │   ├── notifications.js    # 알림 목록/읽음 처리
-│   ├── patchUserMajor.js / deleteAccount.js / postGoogleLogin.js
+│   ├── user.js             # 사용자 정보 수정/탈퇴
+│   ├── auth.js             # 구글 로그인 (postGoogleLogin)
+│   ├── vendors.js          # 학과/제공처 목록 (fetchVendors)
 │   └── manage/             # 관리자 API (TypeScript)
 │
 ├── components/
@@ -110,8 +109,7 @@ src/
 │   └── AnalyticsTraker.js  # GA4 페이지뷰 추적
 │
 ├── constants/
-│   ├── filterOption.js     # FILTER_OPTIONS (카테고리), STATE_OPTIONS (상태)
-│   └── tagColors.js        # CATEGORY_COLORS (배지 색상)
+│   └── filterOption.js     # FILTER_OPTIONS (카테고리), STATE_OPTIONS (상태)
 │
 └── assets/
 ```
@@ -153,7 +151,7 @@ import { useQuery } from "@tanstack/react-query";
 // 3. 내부 컴포넌트
 import DaySelectEventList from "@/components/...";
 // 4. API
-import { fetchEvents } from "@/api/schoolArticles";
+import { fetchEvents } from "@/api/articles";
 // 5. 유틸 / 상수 / 스토어
 import { formatDateKey } from "@/utils/dateUtil";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
@@ -256,7 +254,7 @@ export const fetchEvents = async (params) => { ... };
 // useQuery
 const { data, isLoading, error } = useQuery({
   queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 종속성 배열
-  queryFn: () => getMonthlyAll({ calendarMonth }),
+  queryFn: () => fetchMonthlyAll({ calendarMonth }),
   staleTime: 60 * 1000 * 10,   // 10분
   gcTime: 60 * 1000 * 20,      // 20분
   placeholderData: keepPreviousData,
@@ -266,7 +264,7 @@ const { data, isLoading, error } = useQuery({
 // useMutation
 const deleteMutation = useMutation({
   mutationFn: (id) => deleteSchoolBookmark(id),
-  onSuccess: () => queryClient.invalidateQueries(["schoolBookmarks"]),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["schoolBookmarks"] }),
   onError: (error) => console.error(error),
 });
 ```
@@ -382,5 +380,5 @@ type: 간단한 설명
 절대 경로 `@/` 사용:
 ```js
 import EventRow from "@/components/main/adaptive/feature/EVL/EventRow";
-import { fetchEvents } from "@/api/schoolArticles";
+import { fetchEvents } from "@/api/articles";
 ```
