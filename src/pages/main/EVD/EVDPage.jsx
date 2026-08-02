@@ -6,7 +6,7 @@ import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import EventDetail from "@/components/main/adaptive/feature/EVD/EventDetail";
-import { fetchEventDetail } from "@/api/articles";
+import { fetchEventDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 
 const EVDPage = () => {

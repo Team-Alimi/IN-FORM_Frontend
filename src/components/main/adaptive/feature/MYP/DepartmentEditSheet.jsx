@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
-import { fetchVendors } from "@/api/vendors";
-import { patchUserMajor } from "@/api/user";
+import { fetchVendors } from "@/api/main/vendors";
+import { patchUserMajor } from "@/api/main/user";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 
 /**

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchVendors } from '@/api/vendors';
+import { fetchVendors } from '@/api/main/vendors';
 
 const VendorAddModal = ({
   onConfirm,

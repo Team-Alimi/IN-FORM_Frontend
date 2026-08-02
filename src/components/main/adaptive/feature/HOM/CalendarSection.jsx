@@ -7,8 +7,8 @@ import {
   formatMonthKey,
 } from "@/utils/dateUtil";
 import DaySelectEventList from "@/components/main/adaptive/feature/HOM/DaySelectEventList";
-import { fetchMonthlyAll } from "@/api/calendar";
-import { fetchEventDetail, fetchClubDetail } from "@/api/articles";
+import { fetchMonthlyAll } from "@/api/main/calendar";
+import { fetchEventDetail, fetchClubDetail } from "@/api/main/articles";
 
 import MainCalendar from "@/components/main/adaptive/feature/HOM/MainCalendar";
 import CalendarFilterBar from "@/components/main/adaptive/feature/HOM/CalendarFilterBar";

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchNotifications, readAllNotifications } from "@/api/notifications";
+import { fetchNotifications, readAllNotifications } from "@/api/main/notifications";
 import { useDeviceStore } from "@/stores/deviceStore";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 

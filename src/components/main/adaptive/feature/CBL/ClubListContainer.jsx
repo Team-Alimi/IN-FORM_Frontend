@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import {
   fetchClubs /*, fetchImminentClubs */,
-} from "@/api/articles";
+} from "@/api/main/articles";
 import { useState, useEffect } from "react";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";

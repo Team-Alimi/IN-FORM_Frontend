@@ -66,15 +66,16 @@ This project uses **3-letter uppercase codes** for all features:
 
 ```
 src/
-├── api/                    # API 함수 (도메인별 파일)
-│   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리)
-│   ├── articles.js         # 학교/동아리 공지사항 (fetchEvents, fetchClubs 등)
-│   ├── calendar.js         # 월별 캘린더 데이터 (fetchMonthlyAll)
-│   ├── bookmarks.js        # 북마크 CRUD
-│   ├── notifications.js    # 알림 목록/읽음 처리
-│   ├── user.js             # 사용자 정보 수정/탈퇴
-│   ├── auth.js             # 구글 로그인 (postGoogleLogin)
-│   ├── vendors.js          # 학과/제공처 목록 (fetchVendors)
+├── api/                    # API 함수
+│   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리) - 공용
+│   ├── main/               # 사용자 API (도메인별 파일)
+│   │   ├── articles.js     # 학교/동아리 공지사항 (fetchEvents, fetchClubs 등)
+│   │   ├── calendar.js     # 월별 캘린더 데이터 (fetchMonthlyAll)
+│   │   ├── bookmarks.js    # 북마크 CRUD
+│   │   ├── notifications.js# 알림 목록/읽음 처리
+│   │   ├── user.js         # 사용자 정보 수정/탈퇴
+│   │   ├── auth.js         # 구글 로그인 (postGoogleLogin)
+│   │   └── vendors.js      # 학과/제공처 목록 (fetchVendors)
 │   └── manage/             # 관리자 API (TypeScript)
 │
 ├── components/
@@ -151,7 +152,7 @@ import { useQuery } from "@tanstack/react-query";
 // 3. 내부 컴포넌트
 import DaySelectEventList from "@/components/...";
 // 4. API
-import { fetchEvents } from "@/api/articles";
+import { fetchEvents } from "@/api/main/articles";
 // 5. 유틸 / 상수 / 스토어
 import { formatDateKey } from "@/utils/dateUtil";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
@@ -254,7 +255,7 @@ export const fetchEvents = async (params) => { ... };
 // useQuery
 const { data, isLoading, error } = useQuery({
   queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 종속성 배열
-  queryFn: () => fetchMonthlyAll({ calendarMonth }),
+  queryFn: () => fetchMonthlyAll({ calendarMonth }), // from "@/api/main/calendar"
   staleTime: 60 * 1000 * 10,   // 10분
   gcTime: 60 * 1000 * 20,      // 20분
   placeholderData: keepPreviousData,
@@ -380,5 +381,5 @@ type: 간단한 설명
 절대 경로 `@/` 사용:
 ```js
 import EventRow from "@/components/main/adaptive/feature/EVL/EventRow";
-import { fetchEvents } from "@/api/articles";
+import { fetchEvents } from "@/api/main/articles";
 ```

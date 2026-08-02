@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
-import { fetchUnreadCount } from "@/api/notifications";
+import { fetchUnreadCount } from "@/api/main/notifications";
 import logoIcon from "@/assets/icons/logo.svg";
 import bellIcon from "@/assets/icons/notification.svg";
 import userIcon from "@/assets/icons/user.svg";

@@ -1,6 +1,6 @@
 import HotEventRow from "@/components/main/mobile/feature/HOM/HotEventRow";
 import { useQuery } from "@tanstack/react-query";
-import { fetchHotEvents } from "@/api/articles";
+import { fetchHotEvents } from "@/api/main/articles";
 import { useNavigate } from "react-router-dom";
 import { useDeviceStore } from "@/stores/deviceStore";
 import backIcon from "@/assets/icons/back_simple.svg";
