@@ -10,7 +10,7 @@ import MobileEventRow from "@/components/main/mobile/feature/EVL/mobileEventRow"
 import FilterBottomSheet from "@/components/main/adaptive/feature/EVL/FilterBottomSheet";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
-import { fetchEvents } from "@/api/schoolArticles";
+import { fetchEvents } from "@/api/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileTabBar from "@/components/main/mobile/common/mobileTabBar";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";

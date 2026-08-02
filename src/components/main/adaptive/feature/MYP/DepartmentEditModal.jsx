@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
-import { getVendors } from "@/api/getVendors";
-import { patchUserMajor } from "@/api/patchUserMajor";
+import { getVendors } from "@/api/vendors";
+import { patchUserMajor } from "@/api/user";
 
 /**
  * DepartmentEditModal - Desktop 전용 중앙 모달

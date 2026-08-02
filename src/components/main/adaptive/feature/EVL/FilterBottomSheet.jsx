@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
-import { getVendors } from "@/api/getVendors";
-import { fetchEvents } from "@/api/schoolArticles";
+import { getVendors } from "@/api/vendors";
+import { fetchEvents } from "@/api/articles";
 import { STATE_OPTIONS, FILTER_OPTIONS } from "@/constants/filterOption";
 
 const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.category_id !== null);

@@ -9,7 +9,7 @@ import MobileTabBar from "@/components/main/mobile/common/mobileTabBar";
 import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchClubs } from "@/api/clubArticles";
+import { fetchClubs } from "@/api/articles";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const queryClient = useQueryClient();

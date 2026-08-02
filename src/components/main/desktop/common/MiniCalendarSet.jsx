@@ -2,7 +2,7 @@ import MiniCalendar from "@/components/main/desktop/common/MiniCalendar";
 import { parseDate, formatDateKey, formatMonthKey } from "@/utils/dateUtil";
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMonthlyAll } from "@/api/getMonthlyAll";
+import { getMonthlyAll } from "@/api/calendar";
 import MiniCalendarEventList from "@/components/main/desktop/common/MiniCalendarEventList";
 import { useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
