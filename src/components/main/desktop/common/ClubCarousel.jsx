@@ -17,8 +17,6 @@ const ClubCarousel = () => {
 
         const res = await api.get("api/v1/club_articles/random");
 
-        console.log("club carousel data:", res.data);
-
         const articles = res.data.club_articles || res.data || [];
 
         const posters = articles

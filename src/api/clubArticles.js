@@ -10,7 +10,7 @@ export const fetchClubs = async (params) => {
     const res = await api.get("/api/v1/club_articles", { params });
     return res;
   } catch (error) {
-    console.log("API 호출 오류", error);
+    console.error("API 호출 오류", error);
     throw error;
   }
 };

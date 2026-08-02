@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## Claude 행동 지침
+
+1. **CLAUDE.md 자동 업데이트**: 큰 기능이 구현되거나 프로젝트 구조/컨벤션이 변경되면 이 파일도 함께 수정한다.
+2. **학습 설명 포함**: 코드 구현 시 사용자의 웹 프론트엔드 학습을 위해 구현한 코드에 대한 이론적 설명을 함께 제공한다.
+3. **단계별 구현**: 코드 구현 시 과정을 단계별로 나누고 한 단계가 끝나면 사용자에게 다음 단계 진행을 허가받은 후 다음 단계로 넘어간다.
+
+---
+
 ## Development Commands
 
 ```bash
@@ -12,160 +22,365 @@ npm run lint      # Run ESLint
 npm run format    # Format code with Prettier
 ```
 
+---
+
 ## Technology Stack
 
-- **React 19.2.0** with **Vite 7.2.2** (build tool)
+- **React 19.2.0** with **Vite 7.2.2**
 - **React Router DOM 7.9.5** for routing
-- **Tailwind CSS 4.1.17** for styling
+- **Tailwind CSS 4.1.17** for styling (utility classes only, no CSS modules)
 - **React Icons 5.5.0** for icon components
-- **Zustand 5.0.8** for state management (installed but not yet used)
-- **TanStack React Query 5.90.7** for server state (installed but not yet used)
-- **Axios 1.13.2** for HTTP requests (installed but not yet used)
+- **Zustand 5.0.8** for global client state (`stores/`)
+- **TanStack React Query 5.90.7** for server state and caching
+- **Axios 1.13.2** for HTTP requests (`api/axios.js`)
 
-## Project Architecture
+---
 
-### Route Structure
+## Feature Code System
 
-Routes defined in `src/App.jsx` using nested routing:
+This project uses **3-letter uppercase codes** for all features:
 
-**Main Routes:**
-- `/` → HOMPage (Home page with main calendar)
-- `/clubs` → CBLPage (Club list)
-- `/clubs/detail` → CBDPage (Club detail)
-- `/events` → EVLPage (Event list)
-- `/events/detail` → EVDPage (Event detail)
-- `/test` → TestPage (Testing/playground page)
-- Catch-all → NotFoundPage
-
-**Module Demo Routes** (`/modules/*`):
-- `/modules/tabBar` → TabBarPage
-- `/modules/searchBar` → SearchBarPage
-- `/modules/header` → HeaderPage
-- `/modules/miniCalendar` → MiniCalendarPage
-- `/modules/eventRow` → EventRowPage
-- `/modules/mainCalendar` → MainCalendarPage
-
-Module demo pages showcase individual reusable components in isolation.
-
-### Feature-Based Naming System
-
-This project uses **3-letter uppercase codes** for features:
-
-- **HOM** = Home
-- **CBL** = Club List
-- **CBD** = Club Detail
-- **EVL** = Event List
-- **EVD** = Event Detail
-- **COMMON** = Shared/common features
-- **NOT** = Error/Not Found pages
-- **TEST** = Testing/playground
+| Code | 의미 |
+|------|------|
+| **HOM** | 홈 (메인 캘린더) |
+| **EVL** | 공지사항 목록 |
+| **EVD** | 공지사항 상세 |
+| **CBL** | 동아리 목록 |
+| **CBD** | 동아리 상세 |
+| **MYP** | 마이페이지 |
+| **LGN** | 로그인 |
+| **ONB** | 온보딩 |
+| **PRI** | 개인정보처리방침 |
+| **TOS** | 서비스 이용약관 |
+| **NOT** | 에러/404 페이지 |
+| **MAN*** | 관리자 기능 (MANHOM, MANLGN, MANDTE, MANDTR, MANSTG, MANGBG, MANURV) |
 
 **Naming Patterns:**
 - Page components: `[CODE]Page.jsx` (e.g., `HOMPage.jsx`, `EVLPage.jsx`)
-- Feature folders: `pages/[CODE]/` and potentially `components/[CODE]/`
-- Common components: Named directly (e.g., `TabBar.jsx`, `MiniCalendar.jsx`)
+- Page folders: `pages/main/[CODE]/` or `pages/manage/[CODE]/`
+- Component folders: `components/main/adaptive/feature/[CODE]/`
 
-### Directory Organization
+---
+
+## Directory Structure
 
 ```
 src/
-├── api/          # API integration layer (directory exists but empty)
-├── components/   # Reusable components
-│   ├── common/  # Shared components (TabBar, MiniCalendar, MainCalendar, etc.)
-│   └── [FEATURE]/ # Feature-specific components (e.g., EVL/EventRow.jsx)
-├── pages/        # Route-based page components
-│   ├── [FEATURE]/ # Each feature has its own folder (HOM, CBL, EVL, etc.)
-│   └── COMMON/   # Module demo pages
-├── stores/       # Zustand state stores (directory exists but empty)
-├── hooks/        # Custom React hooks (directory exists but empty)
-├── utils/        # Utility functions (directory exists but empty)
-├── config/       # Configuration files (directory exists but empty)
-├── mocks/        # Mock data for development (directory exists but empty)
-└── assets/       # Static resources (directory exists but empty)
+├── api/                    # API 함수 (도메인별 파일)
+│   ├── axios.js            # Axios 인스턴스 (Bearer 토큰, 401 처리)
+│   ├── schoolArticles.js   # 공지사항 목록/상세/마감임박
+│   ├── clubArticles.js     # 동아리 목록/상세
+│   ├── getMonthlyAll.js    # 월별 캘린더 데이터
+│   ├── getHotEventList.js  # 인기 행사
+│   ├── getSchoolBookmarks.js / postBookmark.js / deleteSchoolBookmark.js / deleteSchoolBookmarksAll.js
+│   ├── getVendors.js       # 학과/제공처 목록
+│   ├── notifications.js    # 알림 목록/읽음 처리
+│   ├── patchUserMajor.js / deleteAccount.js / postGoogleLogin.js
+│   └── manage/             # 관리자 API (TypeScript)
+│
+├── components/
+│   ├── common/             # 전역 공용 (ErrorBoundary, ProtectedRoute)
+│   └── main/
+│       ├── adaptive/       # 모바일/데스크톱 공통 컴포넌트
+│       │   ├── common/     # BackHeader, Badge, NotificationModal, SearchBar
+│       │   └── feature/    # 기능별 컴포넌트 (HOM, EVL, EVD, CBL, CBD, MYP)
+│       ├── desktop/        # 데스크톱 전용 (TabBar, Footer, MiniCalendar 등)
+│       └── mobile/         # 모바일 전용 (BottomSheet, MobileTabBar 등)
+│   └── manage/             # 관리자 컴포넌트 (TypeScript)
+│
+├── pages/
+│   ├── main/[CODE]/        # 사용자 페이지
+│   └── manage/[CODE]/      # 관리자 페이지 (TypeScript)
+│
+├── stores/
+│   ├── useAuthStore.js     # 로그인 상태, 토큰, 사용자 정보 (persist)
+│   ├── useEVLFilterStore.js# EVL 필터 상태 (persist)
+│   └── deviceStore.js      # 모바일 여부 (430px 기준)
+│
+├── hooks/
+│   ├── useSearchHistory.js # 검색 히스토리 (localStorage, 최대 5개)
+│   ├── useCalendarPrefetch.js
+│   ├── useAlertModal.tsx
+│   └── useUrlAddModal.tsx
+│
+├── utils/
+│   ├── calendarUtil.js     # 캘린더 그리드 생성, 이벤트 바 렌더링
+│   ├── dateUtil.js         # 날짜 파싱/포맷/비교 함수
+│   ├── statusUtil.js       # API 상태값 → 한국어/색상 변환
+│   └── AnalyticsTraker.js  # GA4 페이지뷰 추적
+│
+├── constants/
+│   ├── filterOption.js     # FILTER_OPTIONS (카테고리), STATE_OPTIONS (상태)
+│   └── tagColors.js        # CATEGORY_COLORS (배지 색상)
+│
+└── assets/
 ```
 
-### Component Architecture
+---
 
-**Common Components Developed:**
+## Code Conventions
 
-1. **TabBar** (`components/common/TabBar.jsx`)
-   - Navigation bar with 3 tabs: 캘린더(/), 게시판(/events), 동아리(/clubs)
-   - Uses React Router's `NavLink` for automatic active state
-   - Active tab styling: darker text + bottom border indicator
-   - Note: Filename is `TabBar.jsx` not `COM3.jsx` (COM3 is a Windows reserved name)
+### TypeScript vs JSX 분리 원칙
+- `pages/main/`, `components/main/` → **JSX (.jsx, .js)**
+- `pages/manage/`, `components/manage/`, `api/manage/` → **TypeScript (.tsx, .ts)**
+- `hooks/` → 현재 혼재 (JS/TS)
 
-2. **MiniCalendar** (`components/common/MiniCalendar.jsx`)
-   - Compact 6-week calendar view (42 cells)
-   - Month navigation with chevron buttons
-   - Sunday/Saturday colored (red/blue)
-   - Today highlighted with blue circle background
-   - Shows only current month dates (empty cells for prev/next month days)
+### 파일명 규칙
+- 컴포넌트: **PascalCase** (예: `MobileHeader.jsx`, `BookmarkSection.jsx`)
+- 유틸/훅/스토어: **camelCase** (예: `useAuthStore.js`, `dateUtil.js`)
+- 상수: **UPPER_SNAKE_CASE** (예: `FILTER_OPTIONS`, `MAX_HISTORY`)
+- Windows 예약어 파일명 사용 금지 (COM1~COM9, LPT1 등)
 
-3. **MainCalendar** (`components/HOM/MainCalendar.jsx`)
-   - Full-size calendar similar to MiniCalendar
-   - Key difference: Shows prev/next month dates in faded gray
-   - Larger spacing and text for main page display
-   - Same navigation and color scheme as MiniCalendar
+### 컴포넌트 선언
+```jsx
+// ✅ 화살표 함수만 사용
+const EventRow = ({ status, title, date, onClick }) => {
+  return <div>...</div>;
+};
+export default EventRow;
 
-4. **EventRow** (`components/EVL/EventRow.jsx`)
-   - Props: `status`, `title`, `time`
-   - Layout: status badge + title on left, time on right
-   - Includes bottom border divider
+// ❌ function 키워드 사용 안 함
+function EventRow() { ... }
+```
 
-**Component Patterns:**
-- Korean comments throughout for documentation
-- Data-driven configuration where applicable
-- Tailwind utility classes only (no CSS modules)
-- Functional components with hooks (`useState`, `useMemo`)
-- Responsive design with breakpoints (e.g., `text-sm md:text-base`)
+### Import 순서
+```jsx
+// 1. React / React Hooks
+import { useState, useMemo } from "react";
+// 2. 외부 라이브러리
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+// 3. 내부 컴포넌트
+import DaySelectEventList from "@/components/...";
+// 4. API
+import { fetchEvents } from "@/api/schoolArticles";
+// 5. 유틸 / 상수 / 스토어
+import { formatDateKey } from "@/utils/dateUtil";
+import { FILTER_OPTIONS } from "@/constants/filterOption";
+import { useAuthStore } from "@/stores/useAuthStore";
+```
 
-### Styling Strategy
+### Hook 사용 순서
+```jsx
+const Component = () => {
+  // 1. useState
+  const [isOpen, setIsOpen] = useState(false);
+  // 2. 스토어
+  const { userInfo } = useAuthStore();
+  // 3. 커스텀 훅
+  const { history, addHistory } = useSearchHistory();
+  // 4. useQuery / useMutation
+  const { data, isLoading } = useQuery({ ... });
+  // 5. useMemo / useCallback
+  const filtered = useMemo(() => ..., [data]);
+  // 6. useEffect
+  useEffect(() => { ... }, []);
+};
+```
 
-**Tailwind Configuration** (`tailwind.config.js`):
-- Custom color: `main-component: #4068f7`
-- Placeholder sections exist for:
-  - `fontFamily` (여기에 폰트 패밀리 추가 예정)
-  - `boxShadow` (여기에 그림자 스타일 추가 예정)
-  - `borderRadius` (여기에 라운드 크기 추가 예정)
+### 상수 선언
+```jsx
+// ✅ 컴포넌트 외부 최상단에 선언
+const STATUS_KEY_MAP = {
+  진행중: "OnGoing",
+  마감임박: "EndingSoon",
+};
 
-**Styling Approach:**
-- Pure Tailwind utility classes
-- No CSS modules or separate stylesheets
-- Conditional classes for state (e.g., active tabs, today's date)
-- Common patterns: `rounded-3xl`, `shadow-md`, colored text for weekends
+const MyComponent = () => { ... };
+```
 
-### Calendar Component Logic
+### 이벤트 핸들러 네이밍
+```jsx
+// ✅ 컴포넌트 내부에서 정의하는 함수: handle* 접두사
+const handleDateClick = (date) => { ... };
+const handleDelete = (id) => { ... };
+const handleCloseBottomSheet = () => { ... };
 
-Both `MiniCalendar` and `MainCalendar` share similar architecture:
+// ✅ 부모 → 자식으로 넘기는 prop 이름: on* 접두사
+<BookmarkItem onDelete={handleDelete} />
 
-1. **State:** `current` date (useState), `today` memoized
-2. **Grid Generation:**
-   - Calculate first day of month and its weekday
-   - Build 6×7 (42 cells) grid
-   - MiniCalendar: null for non-current-month cells
-   - MainCalendar: shows prev/next month dates with `inCurrentMonth` flag
-3. **Navigation:** `goPrevMonth`/`goNextMonth` functions
-4. **Styling:** Conditional classes based on `isToday`, `isSunday`, `isSaturday`
+// ✅ 자식 컴포넌트에서 prop 받을 때: on*
+const BookmarkItem = ({ onDelete }) => { ... };
 
-### State Management (Planned but Not Implemented)
+// ❌ 내부 함수에 on* 사용 안 함
+const onDateClick = () => { ... };
+```
 
-- **Zustand** for global client state
-- **TanStack React Query** for server state and data fetching
-- **Axios** for HTTP client
-- Directories exist: `stores/`, `api/`, `hooks/` but are empty
+### 조건부 렌더링
+```jsx
+// 단순 표시/숨김: && 연산자
+{isLoggedIn && <ProfileSection />}
 
-### Git Workflow
+// 두 가지 분기: 삼항 연산자
+{isLoading ? <Spinner /> : <Content />}
 
-- **Main branch:** `main`
-- **Development branch:** `dev` (current branch)
+// 로딩/에러 처리: Early Return
+if (isLoading) return <div>로딩 중...</div>;
+if (error) return <div>에러가 발생했습니다</div>;
+return <div>...</div>;
+```
 
-## Project Maturity
+### Tailwind className
+```jsx
+// 조건 없을 때: 인라인
+<div className="flex items-center justify-between py-3">
 
-This is an early-stage project with:
+// 조건 있을 때: 템플릿 리터럴
+<div className={`
+  font-bold text-gray-900
+  ${isMobile ? "text-[17px]" : "text-[20px]"}
+`}>
 
-- ✅ Core infrastructure (Vite, React Router, Tailwind)
-- ✅ Multiple common components developed (TabBar, MiniCalendar, MainCalendar, EventRow, etc.)
-- ✅ Feature-based routing and folder structure
-- ✅ Module demo system at `/modules/*` routes
-- ⏳ No API integration, state management, or mock data implemented yet
-- ⏳ Empty directories ready for: `api/`, `stores/`, `hooks/`, `utils/`, `config/`, `mocks/`
+// 커스텀 색상: 대괄호 표기법
+<div className="bg-[#F4F8FE] text-[#4068f7]">
+```
+
+### 주석 스타일
+```jsx
+// 한국어 한 줄 주석 (코드 의도 설명)
+const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
+
+// 섹션 구분
+/******** 핸들러 ********/
+
+// API 함수는 JSDoc
+/**
+ * 학교 공지사항 목록 조회
+ * @param {Object} params
+ */
+export const fetchEvents = async (params) => { ... };
+```
+
+### React Query 패턴
+```jsx
+// useQuery
+const { data, isLoading, error } = useQuery({
+  queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 종속성 배열
+  queryFn: () => getMonthlyAll({ calendarMonth }),
+  staleTime: 60 * 1000 * 10,   // 10분
+  gcTime: 60 * 1000 * 20,      // 20분
+  placeholderData: keepPreviousData,
+  enabled: !!calendarMonth,    // 조건부 실행
+});
+
+// useMutation
+const deleteMutation = useMutation({
+  mutationFn: (id) => deleteSchoolBookmark(id),
+  onSuccess: () => queryClient.invalidateQueries(["schoolBookmarks"]),
+  onError: (error) => console.error(error),
+});
+```
+
+### Zustand Store 패턴
+```jsx
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+const useXxxStore = create(
+  persist(
+    (set) => ({
+      value: null,
+      setValue: (v) => set({ value: v }),
+    }),
+    { name: "xxx-storage" } // localStorage 키
+  )
+);
+```
+
+---
+
+## Component Patterns
+
+### 반응형 컴포넌트 구조
+- **`adaptive/`**: 모바일/데스크톱 모두 사용 (내부에서 `isMobile`로 조건부 렌더링)
+- **`desktop/`**: 데스크톱 전용
+- **`mobile/`**: 모바일 전용
+
+### Modal + Sheet 쌍 패턴
+데스크톱용 Modal과 모바일용 BottomSheet를 항상 쌍으로 구현:
+```
+DepartmentEditModal.jsx  ← 데스크톱 (중앙 고정 모달)
+DepartmentEditSheet.jsx  ← 모바일 (BottomSheet 컴포넌트 활용)
+```
+
+### 모바일 브레이크포인트
+- 기준: **430px** (`deviceStore.js`의 `MOBILE_BREAKPOINT`)
+- Tailwind 커스텀: `max-mobile`
+- 코드: `const isMobile = useDeviceStore((state) => state.isMobile);`
+
+---
+
+## Key Design Decisions
+
+### 인앱 브라우저 처리 (`index.html`)
+- 카카오톡: `kakaotalk://web/openExternal` 프로토콜로 자동 탈출
+- 라인: `?openExternalBrowser=1` 파라미터
+- 에브리타임/기타: 오버레이 안내 화면 표시
+- 이유: Google OAuth가 WebView(인앱 브라우저)에서 차단됨
+
+### Google OAuth
+- 인앱 브라우저에서 Google 로그인 불가 → 외부 브라우저 유도 필수
+
+---
+
+## Route Structure
+
+```
+/                     → HOMPage (공개)
+/login                → LGNPage (공개)
+/onboarding           → ONBPage (공개)
+/privacy-policy       → PRIPage (공개)
+/terms-of-service     → TOSPage (공개)
+/clubs                → CBLPage (보호)
+/clubs/detail/:id     → CBDPage (보호)
+/events               → EVLPage (보호)
+/events/detail/:id    → EVDPage (보호)
+/mypage               → MYPage  (보호)
+/manage               → MANHOMPage (관리자)
+/manage/login         → MANLGNPage
+/manage/detail/:id    → MANDTRPage
+/manage/edit          → MANDTEPage
+/manage/staged        → MANSTGPage
+/manage/garbage       → MANGBGPage
+/manage/unreviewed    → MANURVPage
+```
+
+---
+
+## Git Workflow
+
+### 브랜치 전략
+
+```
+main        ← 프로덕션 배포
+dev         ← 개발 통합 (기본 브랜치)
+manageDev   ← 관리자 기능 개발
+```
+
+기능 브랜치는 `feat/기능명`, `fix/버그명` 형태로 분기 후 `dev`에 병합한다.
+
+**이슈 처리 시 반드시 새 브랜치를 만들어서 구현할 것.**
+
+### 커밋 컨벤션
+
+```
+type: 간단한 설명
+```
+
+| type | 설명 |
+|------|------|
+| `feat` | 새로운 기능 |
+| `fix` | 버그 수정 |
+| `docs` | 문서 변경 |
+| `style` | 스타일 변경 (CSS, 포맷) |
+| `refactor` | 기능 변화 없는 코드 개선 |
+| `chore` | 설정·패키지·빌드 |
+| `test` | 테스트 코드 |
+
+### Import 경로
+
+절대 경로 `@/` 사용:
+```js
+import EventRow from "@/components/main/adaptive/feature/EVL/EventRow";
+import { fetchEvents } from "@/api/schoolArticles";
+```
