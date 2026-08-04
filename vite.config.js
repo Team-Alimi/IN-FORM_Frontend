@@ -25,8 +25,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
+      ...mockAliases, // ← MOCK ON: 이 줄 주석 해제 / OFF: 주석 처리 (반드시 "@" 보다 앞에 위치해야 함)
       "@": path.resolve(__dirname, "./src"),
-      ...mockAliases, // ← MOCK ON: 이 줄 주석 해제 / OFF: 주석 처리
     },
   },
 });
