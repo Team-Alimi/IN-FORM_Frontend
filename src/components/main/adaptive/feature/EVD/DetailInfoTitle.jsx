@@ -2,6 +2,7 @@ import React from "react";
 import Badge from "@/components/main/adaptive/common/Badge";
 import OriginalUrlBtn from "@/components/main/adaptive/feature/EVD/OriginalUrlBtn";
 import AddToCalendar from "@/components/main/adaptive/feature/EVD/AddToCalendar";
+import ShareButton from "@/components/main/adaptive/feature/EVD/ShareButton";
 
 const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategoryName, title, eventData, vendors, created_at, dueDate, bookmark }) => (
   <>
@@ -15,8 +16,9 @@ const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategory
       <h1 className="text-l md:text-2xl font-bold text-gray-900 leading-tight">
         {title}
       </h1>
-      <div className="shrink-0">
+      <div className="shrink-0 flex items-center gap-2">
         <AddToCalendar event={eventData} />
+        <ShareButton title={title} />
       </div>
     </div>
     {Array.isArray(vendors) && vendors.length > 0 && (
