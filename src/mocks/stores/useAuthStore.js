@@ -13,13 +13,15 @@
 import { create } from "zustand";
 import { MOCK_USER } from "@/mocks/data";
 
-const useAuthStore = create(() => ({
+const useAuthStore = create((set) => ({
   isLogIn: true,
   accessToken: "mock-access-token",
   refreshToken: "mock-refresh-token",
   userInfo: MOCK_USER,
-  login: () => {},
-  logout: () => {},
+  login: (accessToken, refreshToken, userInfo) =>
+    set({ isLogIn: true, accessToken, refreshToken, userInfo }),
+  logout: () =>
+    set({ isLogIn: false, accessToken: null, refreshToken: null, userInfo: null }),
 }));
 
 export default useAuthStore;

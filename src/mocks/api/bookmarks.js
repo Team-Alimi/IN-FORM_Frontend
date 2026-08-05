@@ -6,13 +6,17 @@
  *
  * 포함 함수:
  *   - fetchSchoolBookmarks   : 북마크 목록 반환 (모듈 메모리에 임시 저장)
- *   - postBookmark           : 북마크 추가 (항상 true 반환, 실제 저장 없음)
+ *   - postBookmark           : 북마크 추가 (article_id 중복 없이 _bookmarks 에 저장)
  *   - deleteSchoolBookmark   : 특정 항목 북마크 삭제 (메모리에서 제거)
  *   - deleteSchoolBookmarksAll : 전체 북마크 삭제 (메모리 초기화)
  *
  * 주의: 페이지 새로고침 시 북마크 상태가 초기 더미 데이터로 리셋됩니다.
  */
-import { MOCK_BOOKMARKS } from "@/mocks/data";
+import {
+  MOCK_BOOKMARKS,
+  MOCK_SCHOOL_ARTICLES,
+  MOCK_CLUB_ARTICLES,
+} from "@/mocks/data";
 
 // 런타임 북마크 상태 (메모리 내 임시 저장)
 let _bookmarks = [...MOCK_BOOKMARKS];
@@ -22,6 +26,16 @@ export const fetchSchoolBookmarks = async () => {
 };
 
 export const postBookmark = async (article_type, article_id) => {
+  // 이미 북마크된 항목이면 무시
+  const alreadyExists = _bookmarks.some((b) => b.article_id === article_id);
+  if (!alreadyExists) {
+    const source =
+      article_type === "CLUB" ? MOCK_CLUB_ARTICLES : MOCK_SCHOOL_ARTICLES;
+    const article = source.find((a) => a.article_id === article_id);
+    if (article) {
+      _bookmarks = [..._bookmarks, article];
+    }
+  }
   return true;
 };
 
