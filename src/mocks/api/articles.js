@@ -14,10 +14,10 @@
  */
 import {
   MOCK_SCHOOL_ARTICLES,
-  MOCK_SCHOOL_ARTICLE_DETAIL,
+  MOCK_SCHOOL_ARTICLE_DETAILS,
   MOCK_HOT_ARTICLES,
   MOCK_CLUB_ARTICLES,
-  MOCK_CLUB_ARTICLE_DETAIL,
+  MOCK_CLUB_ARTICLE_DETAILS,
 } from "@/mocks/data";
 
 export const fetchEvents = async (params) => {
@@ -45,10 +45,10 @@ export const fetchEventDetail = async (id) => {
   const found = MOCK_SCHOOL_ARTICLES.find(
     (a) => String(a.article_id) === String(id)
   );
+  const detail = MOCK_SCHOOL_ARTICLE_DETAILS[id] ?? MOCK_SCHOOL_ARTICLE_DETAILS[101];
   return {
-    ...(found ?? MOCK_SCHOOL_ARTICLE_DETAIL),
-    content: MOCK_SCHOOL_ARTICLE_DETAIL.content,
-    attachments: [],
+    ...(found ?? MOCK_SCHOOL_ARTICLES[0]),
+    ...detail,
   };
 };
 
@@ -86,10 +86,9 @@ export const fetchClubDetail = async (id) => {
   const found = MOCK_CLUB_ARTICLES.find(
     (a) => String(a.article_id) === String(id)
   );
+  const detail = MOCK_CLUB_ARTICLE_DETAILS[id] ?? MOCK_CLUB_ARTICLE_DETAILS[201];
   return {
-    ...(found ?? MOCK_CLUB_ARTICLE_DETAIL),
-    content: MOCK_CLUB_ARTICLE_DETAIL.content,
-    original_url: MOCK_CLUB_ARTICLE_DETAIL.original_url,
-    attachments: [],
+    ...(found ?? MOCK_CLUB_ARTICLES[0]),
+    ...detail,
   };
 };
