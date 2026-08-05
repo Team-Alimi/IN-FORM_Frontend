@@ -18,7 +18,20 @@ const ShareButton = ({ title }) => {
     } else {
       // Web Share API 미지원 환경 (일부 데스크톱 브라우저)
       try {
-        await navigator.clipboard.writeText(url);
+        if (navigator.clipboard?.writeText) {
+          // 최신 브라우저: Clipboard API 사용
+          await navigator.clipboard.writeText(url);
+        } else {
+          // 구형 브라우저 / 비HTTPS 환경 대체 방법 (execCommand)
+          const textarea = document.createElement("textarea");
+          textarea.value = url;
+          textarea.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
