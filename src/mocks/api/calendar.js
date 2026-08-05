@@ -16,10 +16,10 @@ export const fetchMonthlyAll = async ({ calendarMonth }) => {
   const month = parseInt(monthStr);
 
   const filtered = MOCK_CALENDAR_ARTICLES.filter((a) => {
-    const start = new Date(a.start_date);
-    const end = new Date(a.due_date);
-    const targetStart = new Date(year, month - 1, 1);
-    const targetEnd = new Date(year, month, 0);
+    const start = new Date(`${a.start_date}T00:00:00Z`);
+    const end = new Date(`${a.due_date}T00:00:00Z`);
+    const targetStart = new Date(Date.UTC(year, month - 1, 1));
+    const targetEnd = new Date(Date.UTC(year, month, 0));
     return start <= targetEnd && end >= targetStart;
   });
 
