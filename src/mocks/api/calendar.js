@@ -16,10 +16,10 @@ export const fetchMonthlyAll = async ({ calendarMonth }) => {
   const month = parseInt(monthStr);
 
   // YYYY-MM-DD 문자열은 사전순 비교 = 날짜 비교이므로 Date 변환 없이 비교
-  const monthStr = String(month).padStart(2, "0");
-  const targetStart = `${year}-${monthStr}-01`;
+  const paddedMonth = String(month).padStart(2, "0");
+  const targetStart = `${year}-${paddedMonth}-01`;
   const lastDay = new Date(year, month, 0).getDate(); // 해당 월 마지막 날 (로컬 기준, 일 계산용)
-  const targetEnd = `${year}-${monthStr}-${String(lastDay).padStart(2, "0")}`;
+  const targetEnd = `${year}-${paddedMonth}-${String(lastDay).padStart(2, "0")}`;
 
   const filtered = MOCK_CALENDAR_ARTICLES.filter(
     (a) => a.start_date <= targetEnd && a.due_date >= targetStart
