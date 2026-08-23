@@ -10,6 +10,7 @@ import MobileEventRow from "@/components/main/mobile/feature/EVL/MobileEventRow"
 import FilterBottomSheet from "@/components/main/adaptive/feature/EVL/FilterBottomSheet";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import { FiFilter } from "react-icons/fi";
+import { IoOptionsOutline } from "react-icons/io5";
 import { fetchEvents } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
@@ -147,7 +148,7 @@ const EVLPage = () => {
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
-      {isMobile ? <MobileHeader /> : <TabBar />}
+      {isMobile ? <MobileHeader title="공지사항" /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
@@ -180,8 +181,21 @@ const EVLPage = () => {
                     searchHistory={history}
                     onSelectHistory={handleSelectHistory}
                     onRemoveHistory={handleRemoveHistory}
+                    rightSlot={
+                      isMobile ? (
+                        // 모바일: 검색바 우측에 필터 아이콘 통합
+                        <button
+                          type="button"
+                          onClick={() => setIsFilterOpen(true)}
+                          className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                        >
+                          <IoOptionsOutline size={20} />
+                        </button>
+                      ) : null
+                    }
                   />
-                  <div className="flex items-center justify-between sm:justify-end sm:gap-2">
+                  {/* 데스크톱: 기존 필터 버튼 + 페이지 사이즈 유지 */}
+                  <div className="flex items-center justify-between sm:justify-end sm:gap-2 max-mobile:hidden">
                     <button
                       type="button"
                       onClick={() => setIsFilterOpen(true)}

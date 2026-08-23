@@ -20,7 +20,7 @@ const MYPage = () => {
     if (isMobile) {
         return (
             <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ECF0FF] to-[#F0FDFA]">
-                <MobileHeader />
+                <MobileHeader title="마이페이지" />
                 <main className="flex-1 w-full px-4 py-2">
                     <ProfileSection
                         onEditMajor={() => setIsEditOpen(true)}
