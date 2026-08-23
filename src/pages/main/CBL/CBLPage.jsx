@@ -18,7 +18,7 @@ const CBLPage = () => {
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
-      {isMobile ? <MobileHeader /> : <TabBar />}
+      {isMobile ? <MobileHeader title="동아리" /> : <TabBar />}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}

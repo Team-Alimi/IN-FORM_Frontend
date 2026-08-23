@@ -35,7 +35,7 @@ const HOMPage = () => {
       }
     >
       {isMobile ? (
-        <MobileHeader />
+        <MobileHeader greeting />
       ) : (
         <div className="max-mobile:hidden">
           <TabBar />

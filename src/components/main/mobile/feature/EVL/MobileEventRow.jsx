@@ -1,22 +1,11 @@
 import Badge from "@/components/main/adaptive/common/Badge";
-import { FILTER_OPTIONS, STATE_OPTIONS } from "@/constants/filterOption";
+import { STATE_OPTIONS } from "@/constants/filterOption";
 
 const STATUS_KEY_MAP = {
-  "진행중": "OnGoing",
-  "마감임박": "EndingSoon",
-  "예정": "UpComing",
-  "마감": "Ended",
-};
-
-const getCategoryBadge = (categoryKey) => {
-  const found = FILTER_OPTIONS.find((opt) => opt.key === categoryKey);
-  if (found) {
-    return {
-      label: found.label,
-      color: `${found.tagBg} ${found.borderColor} ${found.textColor} border`,
-    };
-  }
-  return { label: categoryKey, color: "bg-blue-100 border-blue-300 text-blue-700 border" };
+  진행중: "OnGoing",
+  마감임박: "EndingSoon",
+  예정: "UpComing",
+  마감: "Ended",
 };
 
 const getStatusBadge = (status) => {
@@ -27,7 +16,6 @@ const getStatusBadge = (status) => {
 };
 
 const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, onClick }) => {
-  const categoryBadge = category ? getCategoryBadge(category) : null;
   const statusBadge = getStatusBadge(status);
 
   return (
@@ -35,12 +23,11 @@ const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, 
       className="w-full bg-[#F7FAFC] rounded-[18px] px-4 py-3 mb-3 cursor-pointer shadow-[0_2px_12px_rgba(0,72,152,0.04)]"
       onClick={onClick}
     >
-      {/* 뱃지 영역 */}
+      {/* 뱃지 영역: category는 CATEGORY_BADGE_MAP에서 자동으로 색상/라벨 결정 */}
       <div className="flex gap-2 mb-2">
-        {categoryBadge && (
+        {category && (
           <Badge
-            text={categoryBadge.label}
-            color={categoryBadge.color}
+            category={category}
             className="text-xs px-2 py-0.5 font-medium"
           />
         )}

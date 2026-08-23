@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDeviceStore } from '@/stores/deviceStore';
 import Badge from '@/components/main/adaptive/common/Badge';
 import { getStatus } from '@/utils/statusUtil';
-import { FILTER_OPTIONS } from '@/constants/filterOption';
 
 const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status, bookmarkCount, onDelete }) => {
     const isMobile = useDeviceStore((state) => state.isMobile);
@@ -15,12 +14,6 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
 
     const statusInfo = getStatus(status);
 
-    const categoryOpt = FILTER_OPTIONS.find((o) => o.key === category);
-    const categoryLabel = categoryOpt?.label ?? category ?? "";
-    const categoryColor = categoryOpt
-        ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
-        : "bg-blue-100 border-blue-300 text-blue-700 border";
-
     if (isMobile) {
         return (
             <div
@@ -31,8 +24,7 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex gap-2">
                         <Badge
-                            text={categoryLabel}
-                            color={categoryColor}
+                            category={category}
                             className="text-xs px-2 py-0.5 font-medium"
                         />
                         {statusInfo && (
@@ -82,8 +74,7 @@ const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status,
                 <div className="flex-1">
                     <div className="flex gap-2 mb-2">
                         <Badge
-                            text={categoryLabel}
-                            color={categoryColor}
+                            category={category}
                             className="text-[10px] px-2 py-0.5"
                         />
                         {statusInfo && (

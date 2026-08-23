@@ -4,11 +4,11 @@ import OriginalUrlBtn from "@/components/main/adaptive/feature/EVD/OriginalUrlBt
 import AddToCalendar from "@/components/main/adaptive/feature/EVD/AddToCalendar";
 import ShareButton from "@/components/main/adaptive/feature/EVD/ShareButton";
 
-const DetailInfoTitle = ({ status, category_name, categoryColor, displayCategoryName, title, eventData, vendors, created_at, dueDate, bookmark }) => (
+const DetailInfoTitle = ({ status, category_name, title, eventData, vendors, created_at, dueDate, bookmark }) => (
   <>
     <div className="flex items-center gap-2 mb-4">
       {category_name && (
-        <Badge color={categoryColor} text={displayCategoryName} />
+        <Badge category={category_name} />
       )}
       <Badge color={status.color} text={status.text} />
     </div>

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { IoSearchOutline, IoCloseOutline } from "react-icons/io5";
 
+// rightSlot: 검색창 우측에 삽입할 커스텀 버튼/아이콘 (예: 필터 아이콘)
 const SearchBar = ({
   value,
   onChange,
@@ -9,6 +10,7 @@ const SearchBar = ({
   searchHistory = [],
   onSelectHistory,
   onRemoveHistory,
+  rightSlot,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const blurTimer = useRef(null);
@@ -59,6 +61,9 @@ const SearchBar = ({
           >
             <IoCloseOutline size={18} />
           </button>
+        )}
+        {rightSlot && (
+          <div className="ml-2 shrink-0 flex items-center">{rightSlot}</div>
         )}
       </div>
 
