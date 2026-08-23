@@ -1,8 +1,12 @@
 import { CATEGORY_BADGE_MAP } from "@/constants/filterOption";
 
 // category: CATEGORY_BADGE_MAP에서 배경색·텍스트색·라벨 자동 결정
+// hasOwnProperty로 프로토타입 체인 상속 속성(toString 등)과 구분
 const Badge = ({ color, text, category, className }) => {
-  const resolved = category ? CATEGORY_BADGE_MAP[category] : null;
+  const resolved =
+    category && Object.prototype.hasOwnProperty.call(CATEGORY_BADGE_MAP, category)
+      ? CATEGORY_BADGE_MAP[category]
+      : null;
   const bgClass = resolved ? resolved.bg : color;
   const textClass = resolved ? resolved.text : "";
   const label = resolved ? resolved.label : text;

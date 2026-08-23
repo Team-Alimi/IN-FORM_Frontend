@@ -186,6 +186,7 @@ const EVLPage = () => {
                         // 모바일: 검색바 우측에 필터 아이콘 통합
                         <button
                           type="button"
+                          aria-label="필터 열기"
                           onClick={() => setIsFilterOpen(true)}
                           className="text-gray-400 hover:text-gray-600 cursor-pointer"
                         >

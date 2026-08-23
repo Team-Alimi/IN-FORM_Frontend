@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStatus } from "@/utils/statusUtil";
-import { FILTER_OPTIONS } from "@/constants/filterOption";
 import DetailInfoTitle from "@/components/main/adaptive/feature/EVD/DetailInfoTitle";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 
@@ -71,16 +70,6 @@ const EventDetail = ({
 
   const status = getStatus(apiStatus);
 
-  const categoryOpt = category_name
-    ? FILTER_OPTIONS.find((o) => o.key === category_name)
-    : null;
-
-  const displayCategoryName = categoryOpt?.label ?? category_name ?? "";
-
-  const categoryColor = categoryOpt
-    ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
-    : "border-gray-300 text-gray-700 bg-gray-100 border";
-
   const imageAttachments = (attachments || []).filter((a) => IMAGE_EXTS.test(a.attachment_url));
   const fileAttachments = (attachments || []).filter((a) => !IMAGE_EXTS.test(a.attachment_url));
 
@@ -139,8 +128,6 @@ const EventDetail = ({
         <DetailInfoTitle
           status={status}
           category_name={category_name}
-          categoryColor={categoryColor}
-          displayCategoryName={displayCategoryName}
           title={title}
           eventData={eventData}
           vendors={vendors}

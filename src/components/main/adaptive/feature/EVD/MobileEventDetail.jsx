@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getStatus } from "@/utils/statusUtil";
-import { FILTER_OPTIONS } from "@/constants/filterOption";
 import DetailInfoTitle from "@/components/main/adaptive/feature/EVD/DetailInfoTitle";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
@@ -43,23 +42,12 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
     vendors: { vendor_name: vendorName }
   };
   const status = getStatus(apiStatus);
-  const categoryOpt = category_name
-    ? FILTER_OPTIONS.find((o) => o.key === category_name)
-    : null;
-
-  const displayCategoryName = categoryOpt?.label ?? category_name ?? "";
-  const categoryColor = categoryOpt
-    ? `${categoryOpt.tagBg} ${categoryOpt.borderColor} ${categoryOpt.textColor} border`
-    : "border-gray-300 text-gray-700 bg-gray-100 border";
-
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">
       <div className="border-b border-gray-200 pb-4 mb-4">
         <DetailInfoTitle
           status={status}
           category_name={category_name}
-          categoryColor={categoryColor}
-          displayCategoryName={displayCategoryName}
           title={title}
           eventData={eventData}
           vendors={vendors}
