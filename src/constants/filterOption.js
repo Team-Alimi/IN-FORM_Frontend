@@ -47,12 +47,12 @@ export const FILTER_OPTIONS = [
 ];
 
 // 새 UI 카테고리 배지 맵 (Badge category prop에서 사용)
-// key는 백엔드 category_name 확정 후 Step 3에서 업데이트 예정
+// key = 백엔드 category_name 값
 export const CATEGORY_BADGE_MAP = {
-  공모전: { label: "공모전", bg: "bg-contest/10", text: "text-contest" },
-  학사일정: { label: "학사 일정", bg: "bg-lecture/10", text: "text-lecture" },
-  장학금: { label: "장학금", bg: "bg-scholar/10", text: "text-scholar" },
-  동아리: { label: "동아리", bg: "bg-activity/10", text: "text-activity" },
+  CONTEST: { label: "공모전", bg: "bg-contest/10", text: "text-contest" },
+  LECTURE: { label: "특강", bg: "bg-lecture/10", text: "text-lecture" },
+  SCHOLAR: { label: "장학", bg: "bg-scholar/10", text: "text-scholar" },
+  ACTIVITY: { label: "대내외활동", bg: "bg-activity/10", text: "text-activity" },
 };
 
 export const STATE_OPTIONS = [
