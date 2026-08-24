@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
 import ProfileSection from "@/components/main/adaptive/feature/MYP/ProfileSection";
-import BookmarkSection from "@/components/main/adaptive/feature/MYP/BookmarkSection";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
@@ -52,7 +51,7 @@ const MYPage = () => {
                     onEditMajor={() => setIsEditOpen(true)}
                     onDeleteAccount={() => setIsDeleteOpen(true)}
                 />
-                <BookmarkSection />
+                {/* 북마크 목록은 /bookmarks 페이지로 이동 */}
             </main>
 
             <Footer />

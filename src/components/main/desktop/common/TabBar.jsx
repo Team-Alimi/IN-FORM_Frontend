@@ -28,6 +28,7 @@ const TabBar = () => {
     { id: "home", label: "홈", to: "/" },
     { id: "board", label: "공지사항", to: "/events" },
     { id: "club", label: "동아리", to: "/clubs" },
+    { id: "bookmark", label: "북마크", to: "/bookmarks" },
   ];
 
   const handleProfileClick = () => {

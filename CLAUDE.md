@@ -336,7 +336,7 @@ DepartmentEditSheet.jsx  ← 모바일 (BottomSheet 컴포넌트 활용)
 /clubs/detail/:id     → CBDPage (보호)
 /events               → EVLPage (보호)
 /events/detail/:id    → EVDPage (보호)
-/bookmarks            → BKMPage (보호, 모바일 전용)
+/bookmarks            → BKMPage (보호)
 /mypage               → MYPage  (보호)
 /manage               → MANHOMPage (관리자)
 /manage/login         → MANLGNPage
