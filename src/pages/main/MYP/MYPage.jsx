@@ -26,10 +26,10 @@ const MYPage = () => {
                         onEditMajor={() => setIsEditOpen(true)}
                         onDeleteAccount={() => setIsDeleteOpen(true)}
                     />
-                    <BookmarkSection />
+                    {/* 북마크 목록은 /bookmarks 탭으로 이동 */}
                 </main>
                 <MobileFooter />
-                <MobileTabBar activeIndex={3} />
+                <MobileTabBar activeIndex={4} />
 
                 <DepartmentEditSheet
                     isOpen={isEditOpen}
