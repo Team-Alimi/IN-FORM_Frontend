@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -18,7 +18,7 @@ import { FILTER_OPTIONS } from "@/constants/filterOption";
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 
-const CalendarSection = () => {
+const CalendarSection = ({ onTodayEventCount }) => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
@@ -106,6 +106,14 @@ const CalendarSection = () => {
     });
     return eventMap;
   }, [data]); // data가 변경될 때만 재계산
+
+  // 오늘 일정 개수를 부모(HOMPage)로 전달
+  useEffect(() => {
+    if (!onTodayEventCount) return;
+    const todayKey = formatDateKey(new Date());
+    const count = eventsByDate[todayKey]?.length ?? 0;
+    onTodayEventCount(count);
+  }, [eventsByDate, onTodayEventCount]);
 
   /******핸들러 핸들러 핸들러*******/
   const scrollToEventList = () => {
