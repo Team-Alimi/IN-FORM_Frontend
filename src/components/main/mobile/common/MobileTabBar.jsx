@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
 import homeIcon from "@/assets/icons/home.svg";
 import eventIcon from "@/assets/icons/event.svg";
 import clubIcon from "@/assets/icons/club.svg";
@@ -13,6 +14,7 @@ const navItems = [
 	{ icon: homeIcon, pressedIcon: homePressedIcon, label: "홈", path: "/" },
 	{ icon: eventIcon, pressedIcon: eventPressedIcon, label: "공지사항", path: "/events" },
 	{ icon: clubIcon, pressedIcon: clubPressedIcon, label: "동아리", path: "/clubs" },
+	{ reactIcon: { default: IoBookmarkOutline, active: IoBookmark }, label: "북마크", path: "/bookmarks" },
 	{ icon: mypageIcon, pressedIcon: mypagePressedIcon, label: "마이페이지", path: "/mypage" },
 ];
 
@@ -22,24 +24,26 @@ export default function MobileTabBar({ activeIndex = 0 }) {
 		<footer className="fixed bottom-0 left-0 w-full z-50">
 			<div className="mx-auto max-w-md rounded-t-2xl bg-white/30 backdrop-blur-md border-t border-gray-200 flex justify-between px-2 py-1 shadow-lg">
 				{navItems.map((item, idx) => (
-					   <button
-						   key={item.label}
-						   className={
-							   "flex flex-col items-center cursor-pointer flex-1 py-1 " +
-							   (activeIndex === idx
-								   ? "text-[#004898] font-bold"
-								   : "text-gray-400")
-						   }
-						   onClick={() => navigate(item.path)}
-					   >
-						   <img
-							   src={activeIndex === idx ? item.pressedIcon : item.icon}
-							   alt={item.label}
-							   className={
-								   "w-7 h-7 mb-1 " +
-								   (activeIndex === idx ? "" : "opacity-70")
-							   }
-						   />
+					<button
+						key={item.label}
+						className={
+							"flex flex-col items-center cursor-pointer flex-1 py-1 " +
+							(activeIndex === idx ? "text-[#004898] font-bold" : "text-gray-400")
+						}
+						onClick={() => navigate(item.path)}
+					>
+						{item.reactIcon ? (
+							React.createElement(
+								activeIndex === idx ? item.reactIcon.active : item.reactIcon.default,
+								{ size: 28, className: "mb-1 " + (activeIndex === idx ? "text-[#004898]" : "text-gray-400 opacity-70") }
+							)
+						) : (
+							<img
+								src={activeIndex === idx ? item.pressedIcon : item.icon}
+								alt={item.label}
+								className={"w-7 h-7 mb-1 " + (activeIndex === idx ? "" : "opacity-70")}
+							/>
+						)}
 						<span className="text-xs tracking-tight">
 							{item.label}
 						</span>

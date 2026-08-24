@@ -6,7 +6,7 @@ import { deleteSchoolBookmarksAll, deleteSchoolBookmark, fetchSchoolBookmarks } 
 import { useDeviceStore } from "@/stores/deviceStore";
 import useAuthStore from "@/stores/useAuthStore";
 
-const BookmarkSection = () => {
+const BookmarkSection = ({ standalone = false }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { userInfo } = useAuthStore();
@@ -62,52 +62,70 @@ const BookmarkSection = () => {
 
     const isMobile = useDeviceStore((state) => state.isMobile);
 
+    // standalone: BKMPage에서 독립형으로 사용 (컨테이너 스타일·제목·max-height 제거)
+    const containerClass = standalone
+        ? "w-full"
+        : isMobile
+            ? "bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5"
+            : "bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8";
+
+    const listClass = standalone
+        ? "pr-1 flex flex-col gap-2.5"
+        : isMobile
+            ? "pr-1 overflow-y-auto custom-scrollbar max-h-[450px] flex flex-col gap-2.5"
+            : "pr-1 flex flex-col gap-4";
+
     return (
         <div className="w-full">
-            {/* Unified Section Container */}
-            <div className={`
-                ${isMobile
-                    ? "bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5"
-                    : "bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8"
-                }
-            `}>
-                {/* Header section (Title & Batch Delete) - Integrated inside box */}
-                <div className="flex justify-between items-center mb-5 md:mb-6 px-1">
-                    <div className="flex flex-col gap-0.5">
-                        <h2 className={`
-                            font-bold text-gray-900 flex items-center gap-2
-                            ${isMobile ? "text-[17px]" : "text-[20px]"}
-                        `}>
-                            📌 북마크한 글
-                            {isLoggedIn && (
-                                <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
-                            )}
-                        </h2>
-                        <span className={`text-gray-700 font-semibold ml-7 leading-none ${isMobile ? "text-[12px]" : "text-[13px]"}`}>
-                            Bookmarked posts
-                        </span>
+            <div className={containerClass}>
+                {/* 제목 + 전체 삭제: standalone이 아닐 때만 표시 */}
+                {!standalone && (
+                    <div className="flex justify-between items-center mb-5 md:mb-6 px-1">
+                        <div className="flex flex-col gap-0.5">
+                            <h2 className={`
+                                font-bold text-gray-900 flex items-center gap-2
+                                ${isMobile ? "text-[17px]" : "text-[20px]"}
+                            `}>
+                                📌 북마크한 글
+                                {isLoggedIn && (
+                                    <span className="text-sm font-medium text-gray-400 ml-1">{bookmarks.length}</span>
+                                )}
+                            </h2>
+                            <span className={`text-gray-700 font-semibold ml-7 leading-none ${isMobile ? "text-[12px]" : "text-[13px]"}`}>
+                                Bookmarked posts
+                            </span>
+                        </div>
+                        {isLoggedIn && bookmarks.length > 0 && (
+                            <button
+                                onClick={handleBatchDelete}
+                                className={`
+                                    font-semibold text-red-500 hover:text-red-600 transition-colors
+                                    ${isMobile ? "text-[13px]" : "text-[14px]"}
+                                `}
+                            >
+                                전체 삭제
+                            </button>
+                        )}
                     </div>
-                    {isLoggedIn && bookmarks.length > 0 && (
+                )}
+
+                {/* standalone일 때 전체 삭제만 우측 정렬로 단독 표시 */}
+                {standalone && isLoggedIn && bookmarks.length > 0 && (
+                    <div className="flex justify-end mb-3">
                         <button
                             onClick={handleBatchDelete}
-                            className={`
-                                font-semibold text-red-500 hover:text-red-600 transition-colors
-                                ${isMobile ? "text-[13px]" : "text-[14px]"}
-                            `}
+                            className="text-[13px] font-semibold text-red-500 hover:text-red-600 transition-colors"
                         >
                             전체 삭제
                         </button>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {isLoggedIn ? (
                     isLoading ? (
                         <div className="py-20 text-center text-gray-400">데이터를 불러오는 중입니다...</div>
                     ) : bookmarks.length > 0 ? (
-                        <div className={`
-                            pr-1
-                            ${isMobile ? "overflow-y-auto custom-scrollbar max-h-[450px] flex flex-col gap-2.5" : "flex flex-col gap-4"}
-                        `}>
+                        <div className={listClass}>
                             {bookmarks.map((bookmark) => (
                                 <BookmarkItem
                                     key={bookmark.article_id}
