@@ -8,7 +8,7 @@
  *   - fetchMonthlyAll : 해당 연/월에 걸쳐 있는 일정만 필터링하여 반환
  *                       (start_date <= 월말 && due_date >= 월초 인 항목)
  */
-import { MOCK_CALENDAR_ARTICLES } from "@/mocks/data";
+import { MOCK_SCHOOL_ARTICLES } from "@/mocks/data";
 
 export const fetchMonthlyAll = async ({ calendarMonth }) => {
   const [yearStr, monthStr] = calendarMonth.split("-");
@@ -21,7 +21,7 @@ export const fetchMonthlyAll = async ({ calendarMonth }) => {
   const lastDay = new Date(year, month, 0).getDate(); // 해당 월 마지막 날 (로컬 기준, 일 계산용)
   const targetEnd = `${year}-${paddedMonth}-${String(lastDay).padStart(2, "0")}`;
 
-  const filtered = MOCK_CALENDAR_ARTICLES.filter(
+  const filtered = MOCK_SCHOOL_ARTICLES.filter(
     (a) => a.start_date <= targetEnd && a.due_date >= targetStart
   );
 

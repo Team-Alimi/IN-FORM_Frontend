@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -16,9 +16,8 @@ import { useDeviceStore } from "@/stores/deviceStore";
 import MobileEventDetail from "@/components/main/adaptive/feature/EVD/MobileEventDetail";
 import { FILTER_OPTIONS } from "@/constants/filterOption";
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
-import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 
-const CalendarSection = () => {
+const CalendarSection = ({ onTodayEventCount }) => {
   const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
@@ -106,6 +105,14 @@ const CalendarSection = () => {
     });
     return eventMap;
   }, [data]); // data가 변경될 때만 재계산
+
+  // 오늘 일정 개수를 부모(HOMPage)로 전달
+  useEffect(() => {
+    if (!onTodayEventCount) return;
+    const todayKey = formatDateKey(new Date());
+    const count = eventsByDate[todayKey]?.length ?? 0;
+    onTodayEventCount(count);
+  }, [eventsByDate, onTodayEventCount]);
 
   /******핸들러 핸들러 핸들러*******/
   const scrollToEventList = () => {
@@ -196,21 +203,10 @@ const CalendarSection = () => {
     <div
       className={
         isMobile
-          ? "flex flex-col gap-2 bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 min-h-[500px] justify-between"
+          ? "flex flex-col gap-2 min-h-[500px] justify-between"
           : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between overflow-hidden"
       }
     >
-      <SectionTitle
-        KoreanTitle={"일정 캘린더"}
-        EnglishTitle={"Schedule Calendar"}
-      />
-      <div className="mt-2 mx-2">
-        <CalendarFilterBar
-          selectedFilter={selectedFilter}
-          onClick={handleFilterClick}
-        />
-      </div>
-
       <div className="p-2">
         <MainCalendar
           currentMonth={calendarMonth}
@@ -219,6 +215,12 @@ const CalendarSection = () => {
           onSelectDate={handleDateClick}
           onMonthChange={handleMonthChange}
           onOverflowClick={handleOverflowClick}
+          filterBarSlot={
+            <CalendarFilterBar
+              selectedFilter={selectedFilter}
+              onClick={handleFilterClick}
+            />
+          }
         />
       </div>
       <div className="mb-2 p-1 min-w-0">

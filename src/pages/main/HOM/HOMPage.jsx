@@ -7,12 +7,27 @@ import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import MobileFooter from "@/components/main/mobile/common/MobileFooter";
-import { useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchClubs } from "@/api/main/articles";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const queryClient = useQueryClient();
+  const [todayEventCount, setTodayEventCount] = useState(null);
+
+  const handleTodayEventCount = useCallback((count) => {
+    setTodayEventCount(count);
+  }, []);
+
+  // subtitle 계산: 로딩 중(null)이면 undefined, 0개면 없어요, n개면 n개
+  const subtitle = isMobile
+    ? todayEventCount === null
+      ? undefined
+      : todayEventCount === 0
+        ? "오늘의 일정이 없어요."
+        : `오늘은 ${todayEventCount}개의 일정이 있어요.`
+    : undefined;
+
   useEffect(() => {
     queryClient.prefetchQuery({
       queryKey: ["clubs", "", 1], // 1단계에서 정한 key와 동일
@@ -30,12 +45,12 @@ const HOMPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
+          ? "min-h-screen flex flex-col bg-white"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
       {isMobile ? (
-        <MobileHeader greeting />
+        <MobileHeader greeting subtitle={subtitle} />
       ) : (
         <div className="max-mobile:hidden">
           <TabBar />
@@ -56,7 +71,7 @@ const HOMPage = () => {
             {/* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */}
           </aside>
           <main className="flex-1 min-w-0 w-full space-y-6">
-            <CalendarSection />
+            <CalendarSection onTodayEventCount={handleTodayEventCount} />
           </main>
         </div>
       </div>

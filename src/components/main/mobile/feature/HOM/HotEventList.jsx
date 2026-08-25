@@ -62,24 +62,19 @@ const HotEventList = () => {
     <div
       className={
         isMobile
-          ? "bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-3"
+          ? "py-2"
           : "bg-gray-50 rounded-2xl "
       }
     >
-      <div className = "flex flex-row justify-between">
-    <div className="text-lg font-bold max-mobile:text-base">
-        🔥 HOT 공지사항{" "}
-      </div>
-      <div className = "flex flex-row gap-4 max-mobile:hidden">
+      <div className="flex flex-row justify-end max-mobile:hidden">
         <button className="p-2" onClick={handleScrollBack}>
           <img src={backIcon} className="h-4 w-4 cursor-pointer" />
         </button>
         <button className="p-2" onClick={handleScrollNext}>
           <img src={NextIcon} className="h-4 w-4 cursor-pointer" />
         </button>
-        </div>
       </div>
-  
+
       <div ref = {scrollRef} className="flex flex-row overflow-x-auto scrollbar-hide px-2">
         {articles.map((item) => (
           <HotEventRow
