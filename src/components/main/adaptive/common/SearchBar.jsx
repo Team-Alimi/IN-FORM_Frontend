@@ -40,8 +40,8 @@ const SearchBar = ({
 
   return (
     <div className="w-full relative">
-      <div className={`relative flex items-center bg-[#F7FAFC] rounded-[18px] shadow-[0_4px_24px_rgba(0,72,152,0.06)] px-5 py-2 transition-all ${isFocused ? "ring-1 ring-blue-300" : ""}`}>
-        <IoSearchOutline size={24} className="text-gray-400 mr-2 shrink-0" />
+      <div className={`relative flex items-center bg-white border rounded-full px-4 py-2.5 transition-all ${isFocused ? "border-blue-300 ring-2 ring-blue-100" : "border-gray-200"}`}>
+        <IoSearchOutline size={18} className="text-gray-400 mr-2 shrink-0" />
         <input
           type="text"
           value={value}
@@ -51,7 +51,7 @@ const SearchBar = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder || ""}
           className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-[14px]"
-          style={{ minHeight: 28 }}
+          style={{ minHeight: 24 }}
         />
         {value && (
           <button
@@ -59,11 +59,14 @@ const SearchBar = ({
             onClick={() => onChange({ target: { value: "" } })}
             className="ml-1 text-gray-400 hover:text-gray-600"
           >
-            <IoCloseOutline size={18} />
+            <IoCloseOutline size={16} />
           </button>
         )}
         {rightSlot && (
-          <div className="ml-2 shrink-0 flex items-center">{rightSlot}</div>
+          <>
+            <div className="w-px h-4 bg-gray-300 mx-2 shrink-0" />
+            <div className="shrink-0 flex items-center">{rightSlot}</div>
+          </>
         )}
       </div>
 

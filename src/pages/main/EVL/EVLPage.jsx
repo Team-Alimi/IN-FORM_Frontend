@@ -179,7 +179,7 @@ const EVLPage = () => {
                     value={searchText}
                     onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
                     onSubmit={handleSearchSubmit}
-                    placeholder="공지사항 검색..."
+                    placeholder="제목이나 내용을 검색하세요."
                     searchHistory={history}
                     onSelectHistory={handleSelectHistory}
                     onRemoveHistory={handleRemoveHistory}
