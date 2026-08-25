@@ -256,51 +256,6 @@ export const MOCK_CLUB_ARTICLE_DETAILS = {
   },
 };
 
-// ─── 캘린더 일정 ────────────────────────────────────────────────────────────────
-
-export const MOCK_CALENDAR_ARTICLES = [
-  {
-    article_id: 101,
-    title: "수강신청 안내",
-    start_date: "2026-08-01",
-    due_date: "2026-08-20",
-    category_name: "LECTURE",
-    article_type: "SCHOOL",
-  },
-  {
-    article_id: 102,
-    title: "현장실습 모집",
-    start_date: "2026-08-05",
-    due_date: "2026-08-10",
-    category_name: "SCHOLAR",
-    article_type: "SCHOOL",
-  },
-  {
-    article_id: 103,
-    title: "해커톤 참가자 모집",
-    start_date: "2026-08-12",
-    due_date: "2026-08-30",
-    category_name: "CONTEST",
-    article_type: "SCHOOL",
-  },
-  {
-    article_id: 105,
-    title: "교내 인턴십 모집",
-    start_date: "2026-08-03",
-    due_date: "2026-09-01",
-    category_name: "SCHOLAR",
-    article_type: "SCHOOL",
-  },
-  {
-    article_id: 107,
-    title: "창업 공모전",
-    start_date: "2026-08-18",
-    due_date: "2026-09-10",
-    category_name: "CONTEST",
-    article_type: "SCHOOL",
-  },
-];
-
 // ─── 북마크 ─────────────────────────────────────────────────────────────────────
 
 export const MOCK_BOOKMARKS = [
