@@ -22,7 +22,7 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 101,
     title: "2026학년도 1학기 수강신청 안내",
-    status: "OnGoing",
+    status: "CLOSED",
     start_date: "2026-07-01",
     due_date: "2026-08-20",
     created_at: "2026-07-01T09:00:00",
@@ -35,9 +35,9 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 102,
     title: "2026 하계 현장실습 참여 학생 모집",
-    status: "EndingSoon",
+    status: "ENDING_SOON",
     start_date: "2026-07-10",
-    due_date: "2026-08-10",
+    due_date: "2026-08-28",
     created_at: "2026-07-10T10:00:00",
     categories: { category_name: "SCHOLAR" },
     vendors: [{ vendor_name: "취업지원센터" }],
@@ -48,7 +48,7 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 103,
     title: "교내 소프트웨어 해커톤 참가자 모집",
-    status: "OnGoing",
+    status: "OPEN",
     start_date: "2026-07-15",
     due_date: "2026-08-30",
     created_at: "2026-07-15T11:00:00",
@@ -61,9 +61,9 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 104,
     title: "도서관 하계방학 운영시간 변경 안내",
-    status: "OnGoing",
+    status: "ENDING_SOON",
     start_date: "2026-07-20",
-    due_date: "2026-08-25",
+    due_date: "2026-08-27",
     created_at: "2026-07-20T09:00:00",
     categories: { category_name: "ACTIVITY" },
     vendors: [{ vendor_name: "도서관" }],
@@ -74,7 +74,7 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 105,
     title: "2026년 하반기 교내 인턴십 모집 공고",
-    status: "OnGoing",
+    status: "OPEN",
     start_date: "2026-07-22",
     due_date: "2026-09-01",
     created_at: "2026-07-22T10:30:00",
@@ -87,7 +87,7 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 106,
     title: "교내 건강검진 실시 안내",
-    status: "Closed",
+    status: "CLOSED",
     start_date: "2026-06-01",
     due_date: "2026-07-15",
     created_at: "2026-06-01T08:00:00",
@@ -100,7 +100,7 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 107,
     title: "제7회 창업 아이디어 공모전 안내",
-    status: "OnGoing",
+    status: "OPEN",
     start_date: "2026-07-25",
     due_date: "2026-09-10",
     created_at: "2026-07-25T09:00:00",
@@ -113,9 +113,9 @@ export const MOCK_SCHOOL_ARTICLES = [
   {
     article_id: 108,
     title: "외국어교육원 집중 어학과정 수강생 모집",
-    status: "EndingSoon",
-    start_date: "2026-07-28",
-    due_date: "2026-08-08",
+    status: "UPCOMING",
+    start_date: "2026-09-01",
+    due_date: "2026-09-20",
     created_at: "2026-07-28T10:00:00",
     categories: { category_name: "LECTURE" },
     vendors: [{ vendor_name: "외국어교육원" }],
@@ -273,8 +273,8 @@ export const MOCK_BOOKMARKS = [
     categories: { category_name: "SCHOLAR" },
     vendors: [{ vendor_name: "취업지원센터" }],
     start_date: "2026-07-10",
-    due_date: "2026-08-10",
-    status: "EndingSoon",
+    due_date: "2026-08-28",
+    status: "ENDING_SOON",
     bookmark_count: 27,
   },
   {
@@ -284,7 +284,7 @@ export const MOCK_BOOKMARKS = [
     vendors: [{ vendor_name: "창업지원단" }],
     start_date: "2026-07-25",
     due_date: "2026-09-10",
-    status: "OnGoing",
+    status: "OPEN",
     bookmark_count: 40,
   },
 ];
