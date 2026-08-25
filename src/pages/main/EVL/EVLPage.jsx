@@ -144,7 +144,7 @@ const EVLPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
+          ? "min-h-screen flex flex-col bg-white"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
@@ -160,18 +160,20 @@ const EVLPage = () => {
           <main
             className={
               isMobile
-                ? "flex-1 w-full bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-3 pt-4 min-h-[500px] flex flex-col justify-between"
+                ? "flex-1 w-full min-h-[500px] flex flex-col justify-between"
                 : "flex-1 w-full bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8 min-h-[500px] flex flex-col justify-between"
             }
           >
             <div>
-              <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
-                {/* 왼쪽: 제목 */}
-                <SectionTitle
-                  KoreanTitle="공지사항"
-                  EnglishTitle="Notice list"
-                />
-                {/* 오른쪽: 검색바 + 필터/페이지 선택 */}
+              <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
+                {/* 왼쪽: 제목 - 데스크톱만 표시 (모바일은 MobileHeader에서 표시) */}
+                <div className="max-mobile:hidden">
+                  <SectionTitle
+                    KoreanTitle="공지사항"
+                    EnglishTitle="Notice list"
+                  />
+                </div>
+                {/* 검색바 + 필터/페이지 선택 */}
                 <div className="w-full sm:w-64 flex flex-col gap-2">
                   <SearchBar
                     value={searchText}
