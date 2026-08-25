@@ -232,7 +232,7 @@ const EVLPage = () => {
                         <MobileEventRow
                           key={event.article_id}
                           status={statusText}
-                          category={event.categories.category_name}
+                          category={event.categories?.category_name}
                           title={event.title}
                           source={
                             event.vendor_name ||
@@ -241,6 +241,7 @@ const EVLPage = () => {
                           }
                           date={event.due_date}
                           bookmarkCount={event.bookmark_count || 0}
+                          viewCount={event.view_count}
                           onClick={() => handleRowClick(event.article_id)}
                         />
                       );

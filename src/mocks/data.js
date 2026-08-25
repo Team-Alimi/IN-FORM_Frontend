@@ -29,6 +29,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "LECTURE" },
     vendors: [{ vendor_name: "학사지원팀" }],
     bookmark_count: 42,
+    view_count: 1234,
     is_bookmarked: false,
   },
   {
@@ -41,6 +42,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "SCHOLAR" },
     vendors: [{ vendor_name: "취업지원센터" }],
     bookmark_count: 27,
+    view_count: 856,
     is_bookmarked: true,
   },
   {
@@ -53,6 +55,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "CONTEST" },
     vendors: [{ vendor_name: "컴퓨터공학과" }],
     bookmark_count: 35,
+    view_count: 2341,
     is_bookmarked: false,
   },
   {
@@ -65,6 +68,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "ACTIVITY" },
     vendors: [{ vendor_name: "도서관" }],
     bookmark_count: 18,
+    view_count: 412,
     is_bookmarked: false,
   },
   {
@@ -77,6 +81,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "SCHOLAR" },
     vendors: [{ vendor_name: "취업지원센터" }],
     bookmark_count: 53,
+    view_count: 3021,
     is_bookmarked: false,
   },
   {
@@ -89,6 +94,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "ACTIVITY" },
     vendors: [{ vendor_name: "학생처" }],
     bookmark_count: 11,
+    view_count: 289,
     is_bookmarked: false,
   },
   {
@@ -101,6 +107,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "CONTEST" },
     vendors: [{ vendor_name: "창업지원단" }],
     bookmark_count: 40,
+    view_count: 1876,
     is_bookmarked: true,
   },
   {
@@ -113,6 +120,7 @@ export const MOCK_SCHOOL_ARTICLES = [
     categories: { category_name: "LECTURE" },
     vendors: [{ vendor_name: "외국어교육원" }],
     bookmark_count: 22,
+    view_count: 634,
     is_bookmarked: false,
   },
 ];

@@ -1,5 +1,6 @@
 import Badge from "@/components/main/adaptive/common/Badge";
 import { STATE_OPTIONS } from "@/constants/filterOption";
+import { IoChevronForwardOutline } from "react-icons/io5";
 
 const STATUS_KEY_MAP = {
   진행중: "OnGoing",
@@ -15,40 +16,45 @@ const getStatusBadge = (status) => {
   return { text: status, color: `${opt.backgroundColor} ${opt.textColor} ${opt.borderColor} border` };
 };
 
-const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, onClick }) => {
+// "2026-08-20" → "2026.08.20"
+const formatDate = (dateStr) => dateStr?.replace(/-/g, ".") ?? "";
+
+const MobileEventRow = ({ status, category, title, source, date, bookmarkCount, viewCount, onClick }) => {
   const statusBadge = getStatusBadge(status);
 
   return (
     <div
-      className="w-full bg-[#F7FAFC] rounded-[18px] px-4 py-3 mb-3 cursor-pointer shadow-[0_2px_12px_rgba(0,72,152,0.04)]"
+      className="w-full bg-white rounded-[18px] px-4 py-3.5 mb-2.5 cursor-pointer border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:bg-gray-50 transition-colors"
       onClick={onClick}
     >
-      {/* 뱃지 영역: category는 CATEGORY_BADGE_MAP에서 자동으로 색상/라벨 결정 */}
-      <div className="flex gap-2 mb-2">
-        {category && (
+      {/* 제목(좌, flex-1) + 뱃지(우상단, 세로 스택) */}
+      <div className="flex items-start gap-2 mb-2.5">
+        <p className="flex-1 font-bold text-gray-900 text-[15px] leading-snug line-clamp-2">
+          {title}
+        </p>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {category && <Badge category={category} />}
           <Badge
-            category={category}
+            text={statusBadge.text}
+            color={statusBadge.color}
             className="text-xs px-2 py-0.5 font-medium"
           />
-        )}
-        <Badge
-          text={statusBadge.text}
-          color={statusBadge.color}
-          className="text-xs px-2 py-0.5 font-medium"
-        />
-      </div>
-      {/* 제목 */}
-      <div className="font-bold text-gray-900 text-[16px] mb-1 leading-snug">
-        {title}
-      </div>
-      {/* 출처, 날짜, 북마크 */}
-      <div className="flex items-center justify-between text-gray-400 text-[14px]">
-        <div className="flex items-center">
-          <span>{source}</span>
-          <span className="mx-1">•</span>
-          <span>{date}</span>
         </div>
-        <span className="text-[13px]">북마크 {bookmarkCount}</span>
+      </div>
+
+      {/* 구분선 */}
+      <div className="border-t border-gray-100 mb-2" />
+
+      {/* 하단 메타 정보 */}
+      <div className="flex items-center text-gray-400 text-[12px] gap-1.5">
+        <span>{source}</span>
+        <span>•</span>
+        <span>{formatDate(date)}</span>
+        {viewCount != null && (
+          <span className="ml-1">조회 {viewCount.toLocaleString()}</span>
+        )}
+        <span className="ml-1">북마크 {bookmarkCount}</span>
+        <IoChevronForwardOutline size={13} className="ml-auto text-gray-300 shrink-0" />
       </div>
     </div>
   );
