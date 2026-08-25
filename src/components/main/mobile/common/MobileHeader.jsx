@@ -38,25 +38,25 @@ const MobileHeader = ({ title, greeting = false, subtitle }) => {
   return (
     <>
       {/* 헤더 높이만큼 여백 확보 */}
-      <div className={subtitle ? "h-16" : "h-[52px]"} />
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white px-4 py-3">
+      <div className={subtitle ? "h-[76px]" : "h-16"} />
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white px-4 pt-5 pb-3">
         <div className="flex items-center justify-between">
           {/* 좌측: 타이틀 또는 인사말 */}
           <div className="flex flex-col">
-            <span className="text-[18px] font-bold text-gray-900 leading-tight">
+            <span className="text-[22px] font-bold text-gray-900 leading-tight">
               {leftText}
             </span>
             {subtitle && (
-              <span className="text-[13px] text-gray-400 mt-0.5">{subtitle}</span>
+              <span className="text-[14px] text-gray-400 mt-0.5">{subtitle}</span>
             )}
           </div>
 
           {/* 우측: 알림 벨 버튼 */}
           <button
             onClick={handleBellClick}
-            className="relative w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 bg-white cursor-pointer"
+            className="relative w-10 h-10 flex items-center justify-center cursor-pointer"
           >
-            <img src={bellIcon} alt="알림" className="w-4 h-4" />
+            <img src={bellIcon} alt="알림" className="w-6 h-6" />
             {isLogIn && unreadCount > 0 && (
               <div className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-white">
                 {unreadCount > 99 ? "99+" : unreadCount}

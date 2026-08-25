@@ -45,7 +45,7 @@ const HOMPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
+          ? "min-h-screen flex flex-col bg-white"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
