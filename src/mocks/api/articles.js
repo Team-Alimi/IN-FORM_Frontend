@@ -63,8 +63,13 @@ export const fetchHotEvents = async () => {
 
 export const fetchClubs = async (params) => {
   const { page = 1, size = 4, keyword = "" } = params || {};
+  const lowerKeyword = keyword.toLowerCase();
   const filtered = keyword
-    ? MOCK_CLUB_ARTICLES.filter((a) => a.title.includes(keyword))
+    ? MOCK_CLUB_ARTICLES.filter(
+        (a) =>
+          a.title.toLowerCase().includes(lowerKeyword) ||
+          a.vendors?.some((v) => v.vendor_name.toLowerCase().includes(lowerKeyword))
+      )
     : MOCK_CLUB_ARTICLES;
   const start = (page - 1) * size;
   const paginated = filtered.slice(start, start + size);
