@@ -84,18 +84,20 @@ const ClubListContainer = () => {
 
   return (
     <div>
-      <SectionTitle
-        KoreanTitle={"동아리 홍보글"}
-        EnglishTitle={"Club promotional article"}
-      />
-      <div className="m-2">
+      <div className="max-mobile:hidden">
+        <SectionTitle
+          KoreanTitle={"동아리 홍보글"}
+          EnglishTitle={"Club promotional article"}
+        />
+      </div>
+      <div className="mb-4">
         <SearchBar
-          placeholder={"동아리 검색..."}
+          placeholder={"동아리를 검색하세요."}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
         {clubList.map((item) => (
           <ClubRow
             key={item.article_id}
