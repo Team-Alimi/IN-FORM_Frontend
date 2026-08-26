@@ -1,4 +1,5 @@
 import ClubRow from "@/components/main/adaptive/feature/CBL/ClubRow";
+import RecommendedClubCarousel from "@/components/main/adaptive/feature/CBL/RecommendedClubCarousel";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import {
@@ -7,11 +8,13 @@ import {
 import { useState, useEffect } from "react";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useDeviceStore } from "@/stores/deviceStore";
 const CLUB_PAGE_COUNT = 4;
 const DEBOUNCE_DELAY = 400;
 
 const ClubListContainer = () => {
   const navigate = useNavigate();
+  const isMobile = useDeviceStore((state) => state.isMobile);
   // const [isLoading, setIsLoading] = useState(false);
   // const [clubList, setClubList] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -84,18 +87,39 @@ const ClubListContainer = () => {
 
   return (
     <div>
-      <SectionTitle
-        KoreanTitle={"동아리 홍보글"}
-        EnglishTitle={"Club promotional article"}
-      />
-      <div className="m-2">
+      {/* 데스크톱 섹션 타이틀 */}
+      <div className="max-mobile:hidden">
+        <SectionTitle
+          KoreanTitle={"동아리 홍보글"}
+          EnglishTitle={"Club promotional article"}
+        />
+      </div>
+
+      {/* 검색바: 모바일에서는 맨 위, 데스크톱도 상단 */}
+      <div className="mb-4">
         <SearchBar
-          placeholder={"동아리 검색..."}
+          placeholder={"동아리를 검색하세요."}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+
+      {/* 추천 동아리 섹션 (모바일 전용) */}
+      {isMobile && (
+        <div className="mb-1">
+          <div className="mb-3">
+            <p className="text-[15px] font-bold text-gray-900">추천 동아리</p>
+          </div>
+          <RecommendedClubCarousel clubs={clubList.slice(0, 4)} />
+        </div>
+      )}
+
+      {/* 전체 동아리 섹션 헤더 (모바일 전용) */}
+      {isMobile && (
+        <p className="text-[15px] font-bold text-gray-900 mb-3">전체 동아리</p>
+      )}
+
+      <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
         {clubList.map((item) => (
           <ClubRow
             key={item.article_id}

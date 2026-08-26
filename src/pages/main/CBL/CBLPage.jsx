@@ -14,7 +14,7 @@ const CBLPage = () => {
     <div
       className={
         isMobile
-          ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]"
+          ? "min-h-screen flex flex-col bg-white"
           : "min-h-screen flex flex-col bg-[#f8f9fa]"
       }
     >
@@ -30,7 +30,7 @@ const CBLPage = () => {
           <main
             className={
               isMobile
-                ? "flex-1 w-full bg-[#F4F8FE] rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-3 pt-4 min-h-[500px] flex flex-col justify-between"
+                ? "flex-1 w-full min-h-[500px]"
                 : "flex-1 w-full bg-white rounded-2xl border border-gray-100 shadow-[0_2px_15px_rgb(0,0,0,0.03)] p-6 md:p-8 min-h-[500px] flex flex-col justify-between"
             }
           >
