@@ -202,6 +202,8 @@ export const MOCK_CLUB_ARTICLES = [
     categories: { category_name: "ACTIVITY" },
     vendors: [{ vendor_name: "디자인 연구회" }],
     bookmark_count: 15,
+    view_count: 312,
+    tags: ["UX/UI", "디자인", "스터디"],
     is_bookmarked: false,
   },
   {
@@ -213,6 +215,8 @@ export const MOCK_CLUB_ARTICLES = [
     categories: { category_name: "CONTEST" },
     vendors: [{ vendor_name: "ICPC 알고리즘 팀" }],
     bookmark_count: 30,
+    view_count: 874,
+    tags: ["알고리즘", "코딩", "대회"],
     is_bookmarked: true,
   },
   {
@@ -224,6 +228,8 @@ export const MOCK_CLUB_ARTICLES = [
     categories: { category_name: "ACTIVITY" },
     vendors: [{ vendor_name: "락밴드 BEAT" }],
     bookmark_count: 20,
+    view_count: 541,
+    tags: ["밴드", "음악", "공연"],
     is_bookmarked: false,
   },
   {
@@ -235,6 +241,8 @@ export const MOCK_CLUB_ARTICLES = [
     categories: { category_name: "CONTEST" },
     vendors: [{ vendor_name: "AI 연구 동아리" }],
     bookmark_count: 45,
+    view_count: 1203,
+    tags: ["AI", "머신러닝", "프로젝트"],
     is_bookmarked: false,
   },
 ];

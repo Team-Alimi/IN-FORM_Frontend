@@ -87,17 +87,15 @@ const ClubListContainer = () => {
 
   return (
     <div>
+      {/* 데스크톱 섹션 타이틀 */}
       <div className="max-mobile:hidden">
         <SectionTitle
           KoreanTitle={"동아리 홍보글"}
           EnglishTitle={"Club promotional article"}
         />
       </div>
-      {/* 추천 동아리 캐러셀 (모바일 전용) */}
-      {isMobile && (
-        <RecommendedClubCarousel clubs={clubList.slice(0, 4)} />
-      )}
 
+      {/* 검색바: 모바일에서는 맨 위, 데스크톱도 상단 */}
       <div className="mb-4">
         <SearchBar
           placeholder={"동아리를 검색하세요."}
@@ -105,6 +103,22 @@ const ClubListContainer = () => {
           onChange={(e) => setSearchText(e.target.value)}
         />
       </div>
+
+      {/* 추천 동아리 섹션 (모바일 전용) */}
+      {isMobile && (
+        <div className="mb-1">
+          <div className="mb-3">
+            <p className="text-[15px] font-bold text-gray-900">추천 동아리</p>
+          </div>
+          <RecommendedClubCarousel clubs={clubList.slice(0, 4)} />
+        </div>
+      )}
+
+      {/* 전체 동아리 섹션 헤더 (모바일 전용) */}
+      {isMobile && (
+        <p className="text-[15px] font-bold text-gray-900 mb-3">전체 동아리</p>
+      )}
+
       <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
         {clubList.map((item) => (
           <ClubRow

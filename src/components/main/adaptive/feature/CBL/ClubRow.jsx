@@ -1,11 +1,10 @@
 import { useDeviceStore } from "@/stores/deviceStore";
-import Badge from "@/components/main/adaptive/common/Badge";
 
 const ClubRow = ({ data, onClick }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { title, vendors, start_date, due_date, attachment_url, article_id, categories } = data;
+  // tags: 백엔드 동아리 태그 API 연동 예정 (현재 mock 데이터 사용)
+  const { title, vendors, start_date, due_date, attachment_url, article_id, tags, view_count } = data;
   const clubName = vendors?.[0]?.vendor_name ?? "";
-  const category = categories?.category_name;
 
   const handleClick = () => onClick(article_id);
 
@@ -16,7 +15,7 @@ const ClubRow = ({ data, onClick }) => {
         onClick={handleClick}
       >
         {/* 좌측 썸네일 */}
-        <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+        <div className="w-[60px] h-[60px] rounded-xl overflow-hidden shrink-0">
           {attachment_url ? (
             <img src={attachment_url} alt={clubName} className="w-full h-full object-cover" />
           ) : (
@@ -28,9 +27,29 @@ const ClubRow = ({ data, onClick }) => {
 
         {/* 우측 텍스트 */}
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-gray-900 text-[14px] truncate">{clubName}</p>
-          <p className="text-gray-400 text-[12px] truncate mt-0.5">{title}</p>
-          {category && <div className="mt-1.5"><Badge category={category} /></div>}
+          <p className="font-bold text-gray-900 text-[14px] line-clamp-2 leading-snug">{clubName}</p>
+          {/* 해시태그: 동아리 태그 (백엔드 API 연동 예정) */}
+          {tags && tags.length > 0 && (
+            <p className="text-[12px] mt-0.5 font-medium text-gray-500">
+              {tags.map((t) => `#${t}`).join(" ")}
+            </p>
+          )}
+          {/* 메타 정보 */}
+          <div className="flex items-center gap-1 text-gray-400 text-[11px] mt-1">
+            <span className="truncate max-w-20">{vendors?.[0]?.vendor_name}</span>
+            {view_count != null && (
+              <>
+                <span>·</span>
+                <span>조회 {view_count.toLocaleString()}</span>
+              </>
+            )}
+            {due_date && (
+              <>
+                <span>·</span>
+                <span>~{due_date}</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );
