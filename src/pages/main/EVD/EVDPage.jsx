@@ -61,6 +61,15 @@ const EVDPage = () => {
     );
   }
 
+  // 북마크 토글 시 페이지 상태 동기화
+  const handleBookmarkToggle = (isBookmarked) => {
+    setEvent((prev) => ({
+      ...prev,
+      is_bookmarked: isBookmarked,
+      bookmark_count: isBookmarked ? prev.bookmark_count + 1 : prev.bookmark_count - 1,
+    }));
+  };
+
   // 캘린더 더보기 버튼에 필요한 이벤트 데이터
   const eventData = {
     title: event.title,
@@ -112,7 +121,7 @@ const EVDPage = () => {
 
         {/* 화면 우하단 고정 북마크 버튼 */}
         <div className="fixed bottom-8 right-5 z-50">
-          <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} />
+          <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
         </div>
       </div>
     );
@@ -142,7 +151,7 @@ const EVDPage = () => {
 
       {/* 화면 우하단 고정 북마크 버튼 */}
       <div className="fixed bottom-8 right-6 z-50">
-        <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} />
+        <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
       </div>
 
       <Footer />
