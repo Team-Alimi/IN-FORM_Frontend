@@ -44,7 +44,7 @@ const ShareButton = ({ title }) => {
     <button
       onClick={handleShare}
       title={copied ? "링크 복사됨" : "공유하기"}
-      className="w-8 h-8 md:w-10 md:h-10 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all shadow-sm"
+      className="w-8 h-8 text-gray-600 flex items-center justify-center transition-all"
     >
       {copied ? (
         // 복사 완료: 체크마크 아이콘
