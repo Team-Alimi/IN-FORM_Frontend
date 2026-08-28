@@ -174,6 +174,7 @@ const MobileLayout = ({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
           <span><span className="font-medium text-gray-600">게시일</span> {created_at?.slice(0, 10)}</span>
           <span><span className="font-medium text-gray-600">마감일</span> {dueDate}</span>
+          <span><span className="font-medium text-gray-600">북마크</span> {bookmark_count}</span>
         </div>
       </div>
 
