@@ -213,7 +213,8 @@ const MobileLayout = ({ title, status, vendors, categories, content, linkUrl, at
           <img
             src={validAttachments[coverIndex].file_url}
             alt={`동아리 커버 ${coverIndex + 1}`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={() => setSelectedIndex(coverIndex)}
           />
         )}
         {/* 도트 인디케이터 */}
