@@ -4,12 +4,16 @@ import { useDeviceStore } from '@/stores/deviceStore';
 import Badge from '@/components/main/adaptive/common/Badge';
 import { getStatus } from '@/utils/statusUtil';
 
-const BookmarkItem = ({ id, category, title, source, startDate, dueDate, status, bookmarkCount, onDelete }) => {
+const BookmarkItem = ({ id, sourceType, category, title, source, startDate, dueDate, status, bookmarkCount, onDelete }) => {
     const isMobile = useDeviceStore((state) => state.isMobile);
     const navigate = useNavigate();
 
     const handleItemClick = () => {
-        navigate(`/events/detail/${id}`);
+        if (sourceType === "CLUB") {
+            navigate(`/clubs/detail/${id}`);
+        } else {
+            navigate(`/events/detail/${id}`);
+        }
     };
 
     const statusInfo = getStatus(status);

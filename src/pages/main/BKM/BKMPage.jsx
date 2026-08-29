@@ -1,9 +1,9 @@
 import { useDeviceStore } from "@/stores/deviceStore";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
-import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
+import MobileBookmarkList from "@/components/main/adaptive/feature/BKM/MobileBookmarkList";
 import BookmarkSection from "@/components/main/adaptive/feature/MYP/BookmarkSection";
 
 const BKMPage = () => {
@@ -11,10 +11,9 @@ const BKMPage = () => {
 
     if (isMobile) {
         return (
-            <div className="min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]">
-                <MobileHeader title="북마크" />
-                <main className="flex-1 w-full px-4 py-2">
-                    <BookmarkSection standalone />
+            <div className="min-h-screen flex flex-col bg-white">
+                <main className="flex-1 w-full">
+                    <MobileBookmarkList />
                 </main>
                 <MobileFooter />
                 <MobileTabBar activeIndex={3} />

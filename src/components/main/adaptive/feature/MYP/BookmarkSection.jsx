@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import BookmarkItem from "@/components/main/adaptive/feature/MYP/BookmarkItem";
-import { deleteSchoolBookmarksAll, deleteSchoolBookmark, fetchSchoolBookmarks } from "@/api/main/bookmarks";
+import { fetchBookmarks, deleteBookmark, deleteAllBookmarks } from "@/api/main/bookmarks";
 import { useDeviceStore } from "@/stores/deviceStore";
 import useAuthStore from "@/stores/useAuthStore";
 
@@ -12,21 +12,19 @@ const BookmarkSection = ({ standalone = false }) => {
     const { userInfo } = useAuthStore();
     const isLoggedIn = !!userInfo;
 
-    // 실제 데이터 페칭
     const { data: bookmarkData, isLoading } = useQuery({
-        queryKey: ["schoolBookmarks"],
-        queryFn: () => fetchSchoolBookmarks({ page: 1, size: 50 }),
+        queryKey: ["bookmarks"],
+        queryFn: () => fetchBookmarks({ page: 1, size: 50 }),
         enabled: isLoggedIn,
     });
 
-    // API 응답 구조에 맞게 데이터 가공 (school_articles)
-    const bookmarks = bookmarkData?.data?.school_articles || [];
+    const bookmarks = bookmarkData?.data?.content || [];
 
     // 일괄 삭제 Mutation
     const deleteAllMutation = useMutation({
-        mutationFn: deleteSchoolBookmarksAll,
+        mutationFn: deleteAllBookmarks,
         onSuccess: () => {
-            queryClient.invalidateQueries(["schoolBookmarks"]);
+            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
             alert("모든 북마크가 삭제되었습니다.");
         },
         onError: (error) => {
@@ -37,9 +35,9 @@ const BookmarkSection = ({ standalone = false }) => {
 
     // 개별 삭제 Mutation
     const deleteBookmarkMutation = useMutation({
-        mutationFn: (id) => deleteSchoolBookmark(id),
+        mutationFn: (id) => deleteBookmark(id),
         onSuccess: () => {
-            queryClient.invalidateQueries(["schoolBookmarks"]);
+            queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
             alert("북마크가 삭제되었습니다.");
         },
         onError: (error) => {
@@ -128,14 +126,15 @@ const BookmarkSection = ({ standalone = false }) => {
                         <div className={listClass}>
                             {bookmarks.map((bookmark) => (
                                 <BookmarkItem
-                                    key={bookmark.article_id}
-                                    id={bookmark.article_id}
-                                    category={bookmark.categories?.category_name || "분속없음"}
+                                    key={bookmark.id}
+                                    id={bookmark.id}
+                                    sourceType={bookmark.source_type}
+                                    category={bookmark.categories?.[0]?.name || ""}
                                     title={bookmark.title}
-                                    source={bookmark.vendors?.[0]?.vendor_name || bookmark.vendor_name || "출처없음"}
-                                    startDate={bookmark.start_date || ""}
-                                    dueDate={bookmark.due_date || ""}
-                                    status={bookmark.status}
+                                    source={bookmark.vendors?.[0]?.name || "출처없음"}
+                                    startDate={bookmark.starts_on || ""}
+                                    dueDate={bookmark.ends_on || ""}
+                                    status={bookmark.deadline_status}
                                     bookmarkCount={bookmark.bookmark_count || 0}
                                     onDelete={handleDelete}
                                 />
