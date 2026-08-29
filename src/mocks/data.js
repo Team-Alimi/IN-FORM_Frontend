@@ -254,25 +254,35 @@ export const MOCK_CLUB_ARTICLE_DETAILS = {
     content:
       "안녕하세요! 디자인 연구회에서 UX/UI 스터디 멤버를 모집합니다.\n\n[모집 대상]\n- UX/UI 디자인에 관심 있는 재학생 누구나\n- Figma 기초 사용법을 알고 있는 분\n\n[활동 내용]\n1. 매주 화/목 오후 6시 정기 모임\n2. 포트폴리오 제작 지원\n3. 디자인 챌린지 참여\n\n[지원 방법]\n구글 폼을 통해 지원해주세요.",
     original_url: "https://forms.gle/example",
-    attachments: [],
+    attachments: [
+      { file_id: 1, file_url: "https://picsum.photos/seed/design/800/500" },
+      { file_id: 2, file_url: "https://picsum.photos/seed/uxui/800/500" },
+      { file_id: 3, file_url: "https://picsum.photos/seed/figma/800/500" },
+    ],
   },
   202: {
     content:
       "ICPC 알고리즘 팀에서 신규 스터디 멤버를 모집합니다.\n\n[모집 대상]\n- 알고리즘 문제 풀이에 관심 있는 재학생\n- 주 2회 이상 참여 가능한 분\n\n[스터디 방식]\n1. 매주 월/수 오후 7시 온·오프라인 병행\n2. BOJ, Codeforces 문제 풀이 및 해설\n3. 교내외 대회 참가 지원\n\n[지원 방법]\n오픈채팅방 참여 후 신청서 제출",
     original_url: null,
-    attachments: [],
+    attachments: [
+      { file_id: 2, file_url: "https://picsum.photos/seed/algorithm/800/500" },
+    ],
   },
   203: {
     content:
       "락밴드 BEAT에서 신입 부원을 모집합니다!\n\n[오디션 일정]\n2026.08.01 ~ 2026.08.05 (사전 신청 필수)\n\n[모집 파트]\n- 보컬\n- 기타 (일렉/베이스)\n- 드럼\n- 키보드\n\n[자격 요건]\n파트별 6개월 이상 경력자 (초보자 지원 불가)\n\n[활동 내용]\n매주 토요일 오후 2시 정기 합주, 연 2회 공연 참가",
     original_url: null,
-    attachments: [],
+    attachments: [
+      { file_id: 3, file_url: "https://picsum.photos/seed/band/800/500" },
+    ],
   },
   204: {
     content:
       "AI 연구 동아리에서 인공지능 프로젝트팀 팀원을 모집합니다.\n\n[프로젝트 주제]\n- 자연어 처리 (NLP) 기반 챗봇 개발\n- 컴퓨터 비전 이미지 분류 모델\n\n[모집 인원]\n각 팀당 3~5명\n\n[지원 자격]\n- Python 기본 문법 이해\n- PyTorch 또는 TensorFlow 사용 경험 우대\n\n[활동 기간]\n2026.08.01 ~ 2026.12.31 (5개월)\n\n[지원 방법]\n이메일로 이력서 및 포트폴리오 제출",
     original_url: "mailto:ai.club@example.com",
-    attachments: [],
+    attachments: [
+      { file_id: 4, file_url: "https://picsum.photos/seed/ai/800/500" },
+    ],
   },
 };
 
