@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
-import MobileHeader from "@/components/main/mobile/common/MobileHeader";
-import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import ClubDetail from "@/components/main/adaptive/feature/CBD/ClubDetail";
+import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import { fetchClubDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 
@@ -58,13 +56,69 @@ const CBDPage = () => {
     );
   }
 
+  // 북마크 토글 시 페이지 상태 동기화
+  const handleBookmarkToggle = (isBookmarked) => {
+    setClub((prev) => ({
+      ...prev,
+      is_bookmarked: isBookmarked,
+      bookmark_count: isBookmarked ? prev.bookmark_count + 1 : prev.bookmark_count - 1,
+    }));
+  };
+
+  // 모바일: 커스텀 레이아웃 + 고정 북마크 버튼
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <div className="flex-1 overflow-y-auto">
+          <ClubDetail
+            isMobile={true}
+            title={club.title}
+            status={club.status}
+            vendors={club.vendors}
+            categories={club.categories}
+            startDate={club.start_date}
+            dueDate={club.due_date}
+            created_at={club.created_at}
+            content={club.content}
+            linkUrl={club.original_url}
+            attachments={club.attachments}
+          />
+        </div>
+
+        {/* 하단 고정 바: 북마크 + 지원하러 가기 */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 px-4 py-3 flex items-center gap-3">
+          <BookmarkButton
+            articleId={club.article_id}
+            articleType="CLUB"
+            isBookmarked={club.is_bookmarked}
+            onToggle={handleBookmarkToggle}
+          />
+          {club.original_url && (
+            <a
+              href={club.original_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center py-2.5 rounded-xl font-medium text-sm bg-[#4068f7] text-white"
+            >
+              지원하러 가기
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 데스크톱: 기존 레이아웃 유지
   return (
-    <div className={isMobile ? "min-h-screen flex flex-col bg-linear-to-b from-[#ECF0FF] to-[#F0FDFA]" : "min-h-screen flex flex-col bg-gray-50"}>
-      {isMobile ? <MobileHeader /> : <TabBar />}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <TabBar />
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4">
         <ClubDetail
+          isMobile={false}
           title={club.title}
+          status={club.status}
           vendors={club.vendors}
+          categories={club.categories}
           startDate={club.start_date}
           dueDate={club.due_date}
           created_at={club.created_at}
@@ -73,12 +127,7 @@ const CBDPage = () => {
           attachments={club.attachments}
         />
       </div>
-      {isMobile ? (
-        <>
-          <MobileFooter />
-          <MobileTabBar activeIndex={2} />
-        </>
-      ) : <Footer />}
+      <Footer />
     </div>
   );
 };
