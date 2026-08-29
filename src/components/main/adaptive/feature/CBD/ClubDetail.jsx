@@ -156,7 +156,7 @@ const ImageModal = ({
 
 // ─── 모바일 레이아웃 ──────────────────────────────────────────────────────────
 
-const MobileLayout = ({ title, status, vendors, categories, content, linkUrl, attachments }) => {
+const MobileLayout = ({ title, status, vendors, categories, content, attachments }) => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [coverIndex, setCoverIndex] = useState(0);
