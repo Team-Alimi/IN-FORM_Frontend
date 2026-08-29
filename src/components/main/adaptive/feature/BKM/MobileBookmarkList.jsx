@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import MobileBookmarkItem from "@/components/main/adaptive/feature/BKM/MobileBookmarkItem";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
@@ -15,6 +15,8 @@ const SOURCE_TABS = [
   { label: "공지사항", value: "SCHOOL" },
   { label: "동아리", value: "CLUB" },
 ];
+
+const PAGE_SIZE = 20;
 
 const MobileBookmarkList = () => {
   const queryClient = useQueryClient();
@@ -58,15 +60,46 @@ const MobileBookmarkList = () => {
     setIsNotificationOpen(true);
   };
 
-  // ─── 북마크 목록 조회 ─────────────────────────────────────────────────────
-  const { data, isLoading } = useQuery({
+  // ─── 북마크 목록 무한 스크롤 조회 ─────────────────────────────────────────
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["bookmarks", sourceFilter, keyword],
-    queryFn: () =>
-      fetchBookmarks({ source_type: sourceFilter, keyword, page: 1, size: 50 }),
+    queryFn: ({ pageParam }) =>
+      fetchBookmarks({ source_type: sourceFilter, keyword, page: pageParam, size: PAGE_SIZE }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const pageInfo = lastPage?.data?.page_info;
+      return pageInfo?.has_next ? pageInfo.current_page + 1 : undefined;
+    },
     enabled: isLogIn,
   });
 
-  const bookmarks = data?.data?.content || [];
+  // 모든 페이지의 아이템을 하나의 배열로 합산
+  const bookmarks = data?.pages?.flatMap((page) => page?.data?.content || []) || [];
+
+  // ─── 무한 스크롤 센티넬 (IntersectionObserver) ────────────────────────────
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // ─── 선택 핸들러 ──────────────────────────────────────────────────────────
   const isAllSelected =
@@ -220,7 +253,7 @@ const MobileBookmarkList = () => {
               </div>
 
               {/* 북마크 아이템 목록 */}
-              <div className="px-4">
+              <div className="px-4 pt-2">
                 {bookmarks.map((bookmark) => (
                   <MobileBookmarkItem
                     key={bookmark.id}
@@ -236,6 +269,16 @@ const MobileBookmarkList = () => {
                     onToggleSelect={handleToggleItem}
                   />
                 ))}
+
+                {/* 무한 스크롤 센티넬 */}
+                <div ref={sentinelRef} className="h-4" />
+
+                {/* 다음 페이지 로딩 인디케이터 */}
+                {isFetchingNextPage && (
+                  <div className="py-4 text-center text-gray-400 text-sm">
+                    불러오는 중...
+                  </div>
+                )}
               </div>
             </>
           ) : (
