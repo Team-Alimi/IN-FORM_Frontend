@@ -17,8 +17,6 @@ import { fetchUnreadCount } from "@/api/main/notifications";
 import NotificationModal from "@/components/main/adaptive/common/NotificationModal";
 import AccountDeleteSheet from "@/components/main/adaptive/feature/MYP/AccountDeleteSheet";
 import AccountDeleteModal from "@/components/main/adaptive/feature/MYP/AccountDeleteModal";
-import DepartmentEditSheet from "@/components/main/adaptive/feature/MYP/DepartmentEditSheet";
-import DepartmentEditModal from "@/components/main/adaptive/feature/MYP/DepartmentEditModal";
 import bellIcon from "@/assets/icons/notification.svg";
 
 // ─── 설정 행 컴포넌트 ────────────────────────────────────────────────────────────
@@ -91,7 +89,6 @@ const MobileMYPage = () => {
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isEditMajorOpen, setIsEditMajorOpen] = useState(false);
 
   // ─── 안 읽은 알림 개수 ────────────────────────────────────────────────────────
   const { data: unreadData } = useQuery({
@@ -212,7 +209,7 @@ const MobileMYPage = () => {
 
         {/* ─── 프로필 카드 ── 전체 클릭 → 학과 수정 ────────────────────────── */}
         <div
-          onClick={() => isLogIn && setIsEditMajorOpen(true)}
+          onClick={() => isLogIn && navigate("/mypage/edit")}
           className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-5 py-5 flex items-center gap-4 transition-colors ${
             isLogIn ? "cursor-pointer active:bg-gray-50" : ""
           }`}
@@ -358,18 +355,6 @@ const MobileMYPage = () => {
         />
       )}
 
-      {/* ─── 학과 수정: 모바일 → Sheet / 데스크톱 → Modal ──────────────────────── */}
-      {isMobile ? (
-        <DepartmentEditSheet
-          isOpen={isEditMajorOpen}
-          onClose={() => setIsEditMajorOpen(false)}
-        />
-      ) : (
-        <DepartmentEditModal
-          isOpen={isEditMajorOpen}
-          onClose={() => setIsEditMajorOpen(false)}
-        />
-      )}
     </>
   );
 };

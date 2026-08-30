@@ -50,6 +50,64 @@ export async function patchUserMajor(userId, majorId) {
 }
 
 /**
+ * 관심 공지 분야 조회
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function fetchMyInterestCategories() {
+  try {
+    const res = await api.get("/api/v1/users/me/interests/categories");
+    return res.data;
+  } catch (error) {
+    console.error("[API] fetchMyInterestCategories 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
+ * 관심 공지 분야 저장 (전체 교체)
+ * @param {number[]} ids - 선택한 category id 배열
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function putMyInterestCategories(ids) {
+  try {
+    const res = await api.put("/api/v1/users/me/interests/categories", { ids });
+    return res.data;
+  } catch (error) {
+    console.error("[API] putMyInterestCategories 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
+ * 관심 동아리 유형 조회
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function fetchMyClubTypes() {
+  try {
+    const res = await api.get("/api/v1/users/me/interests/club-types");
+    return res.data;
+  } catch (error) {
+    console.error("[API] fetchMyClubTypes 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
+ * 관심 동아리 유형 저장 (전체 교체)
+ * @param {number[]} ids - 선택한 club-type id 배열
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function putMyClubTypes(ids) {
+  try {
+    const res = await api.put("/api/v1/users/me/interests/club-types", { ids });
+    return res.data;
+  } catch (error) {
+    console.error("[API] putMyClubTypes 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
  * 회원 탈퇴 (유저 정보 및 연관 데이터 전체 삭제)
  * @returns {Promise}
  */

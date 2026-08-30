@@ -9,7 +9,7 @@ const MYPage = () => {
 
     if (isMobile) {
         return (
-            <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
+            <div className="min-h-screen flex flex-col bg-white">
                 <main className="flex-1 w-full">
                     <MobileMYPage />
                 </main>
