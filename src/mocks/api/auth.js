@@ -19,3 +19,7 @@ export const postGoogleLogin = async (_idToken) => {
     user_info: MOCK_USER,
   };
 };
+
+export const postLogout = async (_refreshToken) => {
+  return { success: true };
+};

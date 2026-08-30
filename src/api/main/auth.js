@@ -16,3 +16,20 @@ export const postGoogleLogin = async (idToken) => {
     throw error;
   }
 };
+
+/**
+ * 현재 기기 로그아웃 (Refresh Token 세션 종료)
+ * @param {string} refreshToken - 현재 기기의 Refresh Token
+ * @returns {Promise<Object>} { success: true }
+ */
+export const postLogout = async (refreshToken) => {
+  try {
+    const response = await api.post("/api/v1/auth/logout", {
+      refresh_token: refreshToken,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("로그아웃 API 통신 오류:", error);
+    throw error;
+  }
+};
