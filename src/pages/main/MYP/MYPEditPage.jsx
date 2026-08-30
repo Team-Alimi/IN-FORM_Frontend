@@ -88,13 +88,13 @@ const MYPEditPage = () => {
   const [selectedClubTypeIds, setSelectedClubTypeIds] = useState(new Set());
 
   // ─── 관심 공지 분야 조회 ───────────────────────────────────────────────────────
-  const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
+  const { data: categoryData, isLoading: isCategoryLoading, isError: isCategoryError } = useQuery({
     queryKey: ["myInterestCategories"],
     queryFn: fetchMyInterestCategories,
   });
 
   // ─── 관심 동아리 유형 조회 ─────────────────────────────────────────────────────
-  const { data: clubTypeData, isLoading: isClubTypeLoading } = useQuery({
+  const { data: clubTypeData, isLoading: isClubTypeLoading, isError: isClubTypeError } = useQuery({
     queryKey: ["myClubTypes"],
     queryFn: fetchMyClubTypes,
   });
@@ -151,7 +151,7 @@ const MYPEditPage = () => {
   });
 
   const handleSave = () => {
-    if (saveMutation.isPending) return;
+    if (saveMutation.isPending || isCategoryError || isClubTypeError) return;
     saveMutation.mutate();
   };
 
@@ -159,6 +159,20 @@ const MYPEditPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <p className="text-[14px] text-gray-400">불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (isCategoryError || isClubTypeError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-3">
+        <p className="text-[14px] text-gray-500">관심사 정보를 불러오지 못했습니다.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="text-[13px] text-[#4068f7] font-medium"
+        >
+          돌아가기
+        </button>
       </div>
     );
   }
