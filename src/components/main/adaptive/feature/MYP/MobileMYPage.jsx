@@ -110,13 +110,38 @@ const MobileMYPage = () => {
   });
   const emailNotificationEnabled = profileData?.data?.email_notification_enabled ?? true;
 
-  // ─── 알림 수신 설정 변경 ──────────────────────────────────────────────────────
+  // ─── 알림 수신 설정 변경 (Optimistic Update) ─────────────────────────────────
+  // onMutate: API 응답 전에 캐시를 즉시 새 값으로 업데이트 → 토글이 즉각 반응
+  // onError:  실패 시 onMutate에서 저장해 둔 이전 값으로 복구
   const notificationMutation = useMutation({
     mutationFn: (enabled) => patchNotificationSetting(enabled),
+    onMutate: async (newEnabled) => {
+      // 진행 중인 리패치가 있으면 취소 (낙관적 업데이트를 덮어쓰지 않도록)
+      await queryClient.cancelQueries({ queryKey: ["myProfile"] });
+
+      // 롤백용으로 현재 캐시 스냅샷 저장
+      const previousProfile = queryClient.getQueryData(["myProfile"]);
+
+      // 캐시를 즉시 새 값으로 업데이트
+      queryClient.setQueryData(["myProfile"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: { ...old.data, email_notification_enabled: newEnabled },
+        };
+      });
+
+      return { previousProfile };
+    },
     onSuccess: () => {
+      // 서버 실제 값으로 최종 동기화
       queryClient.invalidateQueries({ queryKey: ["myProfile"] });
     },
-    onError: (error) => {
+    onError: (error, _newEnabled, context) => {
+      // 실패 시 이전 캐시 값으로 롤백
+      if (context?.previousProfile !== undefined) {
+        queryClient.setQueryData(["myProfile"], context.previousProfile);
+      }
       console.error("알림 설정 변경 실패:", error);
     },
   });
