@@ -147,6 +147,7 @@ const MobileMYPage = () => {
   });
 
   const handleToggleNotification = () => {
+    if (!isLogIn) return;
     if (notificationMutation.isPending) return;
     notificationMutation.mutate(!emailNotificationEnabled);
   };
