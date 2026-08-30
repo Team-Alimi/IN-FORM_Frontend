@@ -33,7 +33,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
   };
 
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
-  const vendorName = mainVendor?.vendor_name || "";
+  const vendorName = mainVendor?.name || "";
   const eventData = {
     title,
     content,

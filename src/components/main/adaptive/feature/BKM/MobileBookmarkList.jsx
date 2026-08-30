@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import MobileBookmarkItem from "@/components/main/adaptive/feature/BKM/MobileBookmarkItem";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import { fetchBookmarks, deleteBookmark } from "@/api/main/bookmarks";
-import { fetchUnreadCount } from "@/api/main/notifications";
-import NotificationModal from "@/components/main/adaptive/common/NotificationModal";
 import useAuthStore from "@/stores/useAuthStore";
-import bellIcon from "@/assets/icons/notification.svg";
+import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 
 // 소스 필터 탭 정의
 const SOURCE_TABS = [
@@ -50,29 +48,10 @@ const MobileBookmarkList = () => {
     setSelectedIds(new Set([id]));
   }, []);
 
-  // 편집 완료 버튼
-  const handleEditDone = () => {
-    setIsEditMode(false);
+  // 초기화: 선택 초기화 + 편집 모드 종료
+  const handleReset = () => {
     setSelectedIds(new Set());
-  };
-
-  // ─── 알림 ─────────────────────────────────────────────────────────────────
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-
-  const { data: unreadData } = useQuery({
-    queryKey: ["notificationsUnreadCount"],
-    queryFn: fetchUnreadCount,
-    enabled: isLogIn,
-    refetchInterval: 60 * 1000,
-  });
-  const unreadCount = unreadData?.unread_count || 0;
-
-  const handleBellClick = () => {
-    if (!isLogIn) {
-      navigate("/login");
-      return;
-    }
-    setIsNotificationOpen(true);
+    setIsEditMode(false);
   };
 
   // ─── 북마크 목록 무한 스크롤 조회 ─────────────────────────────────────────
@@ -165,37 +144,7 @@ const MobileBookmarkList = () => {
 
   return (
     <>
-      {/* 헤더 높이만큼 여백 */}
-      <div className="h-[66px]" />
-
-      {/* 고정 헤더 */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[22px] font-bold text-gray-900">북마크</span>
-          {isEditMode ? (
-            // 편집 모드: 완료 버튼
-            <button
-              onClick={handleEditDone}
-              className="px-2 py-1 text-[14px] font-medium text-[#4068f7]"
-            >
-              완료
-            </button>
-          ) : (
-            // 일반 모드: 알림 벨
-            <button
-              onClick={handleBellClick}
-              className="relative w-10 h-10 flex items-center justify-center"
-            >
-              <img src={bellIcon} alt="알림" className="w-6 h-6" />
-              {isLogIn && unreadCount > 0 && (
-                <div className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-white">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </div>
-              )}
-            </button>
-          )}
-        </div>
-      </header>
+      <MobileHeader title="북마크" />
 
       {/* 본문 */}
       <div className="flex flex-col pb-32">
@@ -350,9 +299,9 @@ const MobileBookmarkList = () => {
       {isEditMode && (
         <div className="fixed bottom-[60px] left-0 right-0 z-40 px-4 pb-2">
           <div className="flex items-center gap-3">
-            {/* 초기화 버튼 */}
+            {/* 초기화: 선택 초기화 + 편집 모드 종료 */}
             <button
-              onClick={() => setSelectedIds(new Set())}
+              onClick={handleReset}
               className="py-3.5 px-5 rounded-xl font-medium text-[14px] text-gray-500 bg-gray-100 active:scale-[0.98] transition-all"
             >
               초기화
@@ -372,12 +321,6 @@ const MobileBookmarkList = () => {
           </div>
         </div>
       )}
-
-      {/* 알림 모달 */}
-      <NotificationModal
-        isOpen={isNotificationOpen}
-        onClose={() => setIsNotificationOpen(false)}
-      />
     </>
   );
 };

@@ -38,16 +38,16 @@ const MobileHeader = ({ title, greeting = false, subtitle }) => {
   return (
     <>
       {/* 헤더 높이만큼 여백 확보 */}
-      <div className={subtitle ? "h-[76px]" : "h-16"} />
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white px-4 pt-5 pb-3">
+      <div className={subtitle ? "h-[92px]" : "h-[76px]"} />
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white px-5 pt-6 pb-4">
         <div className="flex items-center justify-between">
           {/* 좌측: 타이틀 또는 인사말 */}
           <div className="flex flex-col">
-            <span className="text-[22px] font-bold text-gray-900 leading-tight">
+            <span className="text-[24px] font-bold text-gray-900 leading-tight">
               {leftText}
             </span>
             {subtitle && (
-              <span className="text-[14px] text-gray-400 mt-0.5">{subtitle}</span>
+              <span className="text-[14px] text-gray-400 mt-1">{subtitle}</span>
             )}
           </div>
 

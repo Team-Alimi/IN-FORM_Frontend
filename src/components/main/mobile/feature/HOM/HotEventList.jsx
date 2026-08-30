@@ -78,9 +78,9 @@ const HotEventList = () => {
       <div ref = {scrollRef} className="flex flex-row overflow-x-auto scrollbar-hide px-2">
         {articles.map((item) => (
           <HotEventRow
-            article_id={item.article_id}
-            key={item.article_id}
-            category={item.categories?.category_name}
+            article_id={item.id}
+            key={item.id}
+            category={item.categories?.[0]?.name}
             title={item.title}
             onArticleClick={handleArticleClick}
           />

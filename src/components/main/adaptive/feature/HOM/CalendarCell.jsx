@@ -23,27 +23,35 @@ const CalendarCell = ({
       onClick(date); // Date 객체를 전달!
     }
   };
-  let cellStyle = "";
+
+  // 원형 배지 크기
+  let circleSizeStyle = "";
   let cellTextStyle = "";
   if (isMini) {
-    //미니 캘린더용
-    cellStyle = "w-8 h-6";
+    circleSizeStyle = "w-6 h-6";
     cellTextStyle = "text-xs";
   } else {
-    //기본 캘린더용
-    cellStyle = "w-12 h-8 md:w-14 md:h-9 max-mobile:w-10 max-mobile:h-6 ";
+    circleSizeStyle = "w-8 h-8 md:w-9 md:h-9 max-mobile:w-7 max-mobile:h-7";
     cellTextStyle = "text-xs sm:text-base md:text-base font-medium";
   }
+
+  // 원형 배경 색상
+  let circleBg = "";
+  if (isToday) circleBg = "bg-blue-500 text-white";
+  else if (isSelected && inCurrentMonth) circleBg = "bg-blue-300 text-white";
+  else circleBg = `${textColor} hover:bg-gray-100`;
+
   return (
-    <div className="flex justify-center pt-1 sm:pt-2 max-mobile:p-0">
+    <div
+      className={`flex justify-center items-center py-0.5 ${inCurrentMonth ? "cursor-pointer" : "cursor-default"}`}
+      onClick={handleClick}
+    >
       <div
-        className={`${cellStyle} flex flex-col items-center justify-center rounded-lg transition-colors
-          ${isToday ? "bg-blue-500 text-white" : isSelected && inCurrentMonth ? "bg-blue-300 text-white" : textColor}
-          ${inCurrentMonth ? "cursor-pointer hover:bg-gray-100" : "cursor-default"}
+        className={`${circleSizeStyle} flex items-center justify-center rounded-full transition-colors
+          ${circleBg}
           ${isToday && inCurrentMonth ? "hover:bg-blue-600" : ""}
           ${isSelected && !isToday && inCurrentMonth ? "hover:bg-blue-400" : ""}
         `}
-        onClick={handleClick}
       >
         <span className={`${cellTextStyle} max-mobile:text-[12px]`}>
           {date.getDate()}

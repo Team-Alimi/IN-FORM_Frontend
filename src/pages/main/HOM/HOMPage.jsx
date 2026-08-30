@@ -50,7 +50,10 @@ const HOMPage = () => {
       }
     >
       {isMobile ? (
-        <MobileHeader greeting subtitle={subtitle} />
+        <>
+          <MobileHeader greeting subtitle={subtitle} />
+          <div className={`fixed left-0 right-0 z-51 border-b border-gray-200 ${subtitle ? "top-[92px]" : "top-[76px]"}`} />
+        </>
       ) : (
         <div className="max-mobile:hidden">
           <TabBar />
@@ -64,7 +67,10 @@ const HOMPage = () => {
         </div>
       )}
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2 flex flex-col gap-2">
-        <HotEventList />
+        {/* HotEventList: 데스크톱 전용 */}
+        <div className="max-mobile:hidden">
+          <HotEventList />
+        </div>
         <div className="flex flex-col md:flex-row gap-6 items-start">
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
             <ServiceLinkList />
