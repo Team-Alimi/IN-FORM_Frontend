@@ -30,11 +30,11 @@ export const fetchEvents = async (params) => {
   return {
     data: {
       data: {
-        school_articles: paginated,
+        content: paginated,
         page_info: {
           current_page: page,
           total_pages: Math.ceil(filtered.length / size) || 1,
-          total_articles: filtered.length,
+          total_items: filtered.length,
         },
       },
     },
@@ -43,7 +43,7 @@ export const fetchEvents = async (params) => {
 
 export const fetchEventDetail = async (id) => {
   const found = MOCK_SCHOOL_ARTICLES.find(
-    (a) => String(a.article_id) === String(id)
+    (a) => String(a.id) === String(id)
   );
   const detail = MOCK_SCHOOL_ARTICLE_DETAILS[id] ?? MOCK_SCHOOL_ARTICLE_DETAILS[101];
   return {
@@ -53,7 +53,7 @@ export const fetchEventDetail = async (id) => {
 };
 
 export const fetchImminentEvents = async () => {
-  const imminent = MOCK_SCHOOL_ARTICLES.filter((a) => a.status === "EndingSoon");
+  const imminent = MOCK_SCHOOL_ARTICLES.filter((a) => a.deadline_status === "CLOSING_SOON");
   return { data: { data: imminent } };
 };
 
