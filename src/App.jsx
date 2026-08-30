@@ -94,7 +94,14 @@ function App() {
           }
         />
         <Route path="/mypage" element={<MYPage />} />
-        <Route path="/mypage/edit" element={<MYPEditPage />} />
+        <Route
+          path="/mypage/edit"
+          element={
+            <ProtectedRoute>
+              <MYPEditPage />
+            </ProtectedRoute>
+          }
+        />
         {/* 관리자 라우트 — /manage/* 경로 아래 전부 묶음 */}
         <Route path="/manage">
           <Route index element={<MANHOMPage />} />
