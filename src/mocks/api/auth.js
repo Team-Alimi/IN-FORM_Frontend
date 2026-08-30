@@ -12,10 +12,14 @@
  */
 import { MOCK_USER } from "@/mocks/data";
 
-export const postGoogleLogin = async (_idToken) => {
+export const postGoogleLogin = async () => {
   return {
     access_token: "mock-access-token",
     refresh_token: "mock-refresh-token",
     user_info: MOCK_USER,
   };
+};
+
+export const postLogout = async () => {
+  return { success: true };
 };
