@@ -5,10 +5,14 @@
  * vite.config.js 의 alias 설정으로 실제 파일 대신 이 파일이 사용됩니다.
  *
  * 포함 함수:
- *   - fetchMyProfile          : 현재 로그인 유저의 프로필 반환 (email_notification_enabled 포함)
- *   - patchNotificationSetting: 알림 수신 설정 토글
- *   - patchUserMajor          : majorId 로 useAuthStore 의 userInfo.major 를 갱신
- *   - deleteAccount           : useAuthStore.logout() 을 호출하여 세션 상태 초기화
+ *   - fetchMyProfile             : 현재 로그인 유저의 프로필 반환 (email_notification_enabled 포함)
+ *   - patchNotificationSetting  : 알림 수신 설정 토글
+ *   - patchUserMajor            : majorId 로 useAuthStore 의 userInfo.major 를 갱신
+ *   - deleteAccount             : useAuthStore.logout() 을 호출하여 세션 상태 초기화
+ *   - fetchMyInterestCategories : 관심 공지 분야 조회
+ *   - putMyInterestCategories   : 관심 공지 분야 저장
+ *   - fetchMyClubTypes          : 관심 동아리 유형 조회
+ *   - putMyClubTypes            : 관심 동아리 유형 저장
  */
 import { MOCK_VENDORS, MOCK_USER } from "@/mocks/data";
 import useAuthStore from "@/stores/useAuthStore";
@@ -61,4 +65,41 @@ export const deleteAccount = async () => {
   // 세션 상태(isLogIn, 토큰, userInfo) 를 모두 초기화
   useAuthStore.getState().logout();
   return { data: { success: true } };
+};
+
+// 관심 공지 분야 메모리 관리 (초기값: 1, 3번 선택)
+let mockInterestCategoryIds = [1, 3];
+
+const MOCK_CATEGORY_NAMES = {
+  1: "학사", 2: "장학금", 3: "공모전·대회", 4: "특강·세미나",
+  5: "취업·인턴십", 6: "행사·축제", 7: "봉사활동", 8: "어학시험",
+  9: "자격증", 10: "학술·연구",
+};
+
+export const fetchMyInterestCategories = async () => ({
+  success: true,
+  data: mockInterestCategoryIds.map((id) => ({ id, name: MOCK_CATEGORY_NAMES[id] })),
+});
+
+export const putMyInterestCategories = async (ids) => {
+  mockInterestCategoryIds = [...ids];
+  return fetchMyInterestCategories();
+};
+
+// 관심 동아리 유형 메모리 관리 (초기값: 1, 2번 선택)
+let mockClubTypeIds = [1, 2];
+
+const MOCK_CLUB_TYPE_NAMES = {
+  1: "학술/IT", 2: "체육/스포츠", 3: "음악/공연", 4: "봉사",
+  5: "문화·예술", 6: "창업", 7: "댄스", 8: "종교",
+};
+
+export const fetchMyClubTypes = async () => ({
+  success: true,
+  data: mockClubTypeIds.map((id) => ({ id, name: MOCK_CLUB_TYPE_NAMES[id] })),
+});
+
+export const putMyClubTypes = async (ids) => {
+  mockClubTypeIds = [...ids];
+  return fetchMyClubTypes();
 };

@@ -15,6 +15,7 @@ import HOMPage from '@/pages/main/HOM/HOMPage';
 import ErrorPage from '@/pages/NOT/ErrorPage';
 import LGNPage from '@/pages/main/LGN/LGNPage';
 import MYPage from '@/pages/main/MYP/MYPage';
+import MYPEditPage from '@/pages/main/MYP/MYPEditPage';
 import BKMPage from '@/pages/main/BKM/BKMPage';
 import ONBPage from '@/pages/main/ONB/ONBPage';
 import PRIPage from '@/pages/main/PRI/PRIPage';
@@ -93,6 +94,14 @@ function App() {
           }
         />
         <Route path="/mypage" element={<MYPage />} />
+        <Route
+          path="/mypage/edit"
+          element={
+            <ProtectedRoute>
+              <MYPEditPage />
+            </ProtectedRoute>
+          }
+        />
         {/* 관리자 라우트 — /manage/* 경로 아래 전부 묶음 */}
         <Route path="/manage">
           <Route index element={<MANHOMPage />} />
