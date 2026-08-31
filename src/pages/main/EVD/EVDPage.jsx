@@ -74,9 +74,9 @@ const EVDPage = () => {
   const eventData = {
     title: event.title,
     content: event.content,
-    start_date: event.start_date,
-    due_date: event.due_date,
-    vendors: { vendor_name: event.vendors?.[0]?.vendor_name || "" },
+    starts_on: event.starts_on,
+    ends_on: event.ends_on,
+    vendors: { name: event.vendors?.[0]?.name || "" },
   };
 
   // 모바일: 커스텀 헤더 + 고정 하단 북마크 바
@@ -104,15 +104,16 @@ const EVDPage = () => {
         <div className="flex-1 pt-[52px] overflow-y-auto">
           <EventDetail
             isMobile={true}
-            articleId={event.article_id}
-            status={event.status}
+            articleId={event.id}
+            status={event.deadline_status}
             title={event.title}
             vendors={event.vendors}
-            startDate={event.start_date}
-            dueDate={event.due_date}
-            created_at={event.created_at}
+            startDate={event.starts_on}
+            dueDate={event.ends_on}
+            created_at={event.published_at}
             content={event.content}
-            category_name={event.categories?.category_name}
+            summary={event.summary}
+            category_name={event.categories?.[0]?.name}
             is_bookmarked={event.is_bookmarked}
             bookmark_count={event.bookmark_count}
             attachments={event.attachments}
@@ -121,7 +122,7 @@ const EVDPage = () => {
 
         {/* 화면 우하단 고정 북마크 버튼 */}
         <div className="fixed bottom-8 right-5 z-50">
-          <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
+          <BookmarkButton articleId={event.id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
         </div>
       </div>
     );
@@ -134,15 +135,16 @@ const EVDPage = () => {
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4">
         <EventDetail
           isMobile={false}
-          articleId={event.article_id}
-          status={event.status}
+          articleId={event.id}
+          status={event.deadline_status}
           title={event.title}
           vendors={event.vendors}
-          startDate={event.start_date}
-          dueDate={event.due_date}
-          created_at={event.created_at}
+          startDate={event.starts_on}
+          dueDate={event.ends_on}
+          created_at={event.published_at}
           content={event.content}
-          category_name={event.categories?.category_name}
+          summary={event.summary}
+          category_name={event.categories?.[0]?.name}
           is_bookmarked={event.is_bookmarked}
           bookmark_count={event.bookmark_count}
           attachments={event.attachments}
@@ -151,7 +153,7 @@ const EVDPage = () => {
 
       {/* 화면 우하단 고정 북마크 버튼 */}
       <div className="fixed bottom-8 right-6 z-50">
-        <BookmarkButton articleId={event.article_id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
+        <BookmarkButton articleId={event.id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
       </div>
 
       <Footer />

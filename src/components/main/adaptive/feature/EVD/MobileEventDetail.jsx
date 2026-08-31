@@ -37,9 +37,9 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
   const eventData = {
     title,
     content,
-    start_date: startDate,
-    due_date: dueDate,
-    vendors: { vendor_name: vendorName }
+    starts_on: startDate,
+    ends_on: dueDate,
+    vendors: { name: vendorName },
   };
   const status = getStatus(apiStatus);
   return (

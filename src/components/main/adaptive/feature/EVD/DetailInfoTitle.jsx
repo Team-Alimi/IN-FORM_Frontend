@@ -23,11 +23,11 @@ const DetailInfoTitle = ({ status, category_name, title, eventData, vendors, cre
     </div>
     {Array.isArray(vendors) && vendors.length > 0 && (
       <div className="flex flex-row flex-wrap gap-2 mb-4">
-        {vendors.map((vendor) => (
+        {vendors.map((vendor, i) => (
           <OriginalUrlBtn
-            key={vendor.vendor_id}
-            vendor_name={vendor.vendor_name}
-            original_url={vendor.original_url}
+            key={i}
+            name={vendor.name}
+            source_url={vendor.source_url}
           />
         ))}
       </div>

@@ -60,7 +60,7 @@ const ImageModal = ({ imageAttachments, selectedIndex, onClose, onPrev, onNext, 
         </button>
       )}
       <img
-        src={imageAttachments[selectedIndex].attachment_url}
+        src={imageAttachments[selectedIndex].file_url}
         alt="확대된 첨부파일"
         className="max-w-full max-h-full object-contain rounded-lg pointer-events-none select-none"
         onClick={(e) => e.stopPropagation()}
@@ -80,8 +80,8 @@ const useImageViewer = (attachments) => {
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
 
-  const imageAttachments = (attachments || []).filter((a) => IMAGE_EXTS.test(a.attachment_url));
-  const fileAttachments = (attachments || []).filter((a) => !IMAGE_EXTS.test(a.attachment_url));
+  const imageAttachments = (attachments || []).filter((a) => IMAGE_EXTS.test(a.file_url));
+  const fileAttachments = (attachments || []).filter((a) => !IMAGE_EXTS.test(a.file_url));
 
   const handlePrevImage = (e) => {
     e.stopPropagation();
@@ -125,6 +125,7 @@ const MobileLayout = ({
   dueDate,
   created_at,
   content,
+  summary,
   category_name,
   is_bookmarked,
   bookmark_count,
@@ -160,11 +161,11 @@ const MobileLayout = ({
         {/* 제공처 (원문 링크 버튼) */}
         {Array.isArray(vendors) && vendors.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {vendors.map((vendor) => (
+            {vendors.map((vendor, i) => (
               <OriginalUrlBtn
-                key={vendor.vendor_id}
-                vendor_name={vendor.vendor_name}
-                original_url={vendor.original_url}
+                key={i}
+                name={vendor.name}
+                source_url={vendor.source_url}
               />
             ))}
           </div>
@@ -181,15 +182,30 @@ const MobileLayout = ({
       {/* 구분선 */}
       <div className="border-t border-gray-100" />
 
+      {/* AI 요약 */}
+      {summary && (
+        <div className="px-5 pt-5">
+          <div className="px-4 py-3.5 bg-blue-50 rounded-2xl">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
+              AI 요약
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+          </div>
+        </div>
+      )}
+
       {/* 본문 */}
       <div className="px-5 py-5 min-h-[200px]">
         {imageAttachments.length > 0 && (
           <div className="mb-5 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
             {imageAttachments.map((a, idx) => (
               <img
-                key={a.file_id}
-                src={a.attachment_url}
-                alt={`첨부파일 ${a.file_id}`}
+                key={a.id}
+                src={a.file_url}
+                alt={`첨부파일 ${a.id}`}
                 className="h-52 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedIndex(idx)}
               />
@@ -214,14 +230,14 @@ const MobileLayout = ({
             <div className="flex flex-col gap-1.5">
               {fileAttachments.map((a) => (
                 <a
-                  key={a.file_id}
-                  href={a.attachment_url}
+                  key={a.id}
+                  href={a.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
                 >
                   <span>📎</span>
-                  <span className="truncate">{a.attachment_url.split("/").pop()}</span>
+                  <span className="truncate">{a.original_name || a.file_url.split("/").pop()}</span>
                 </a>
               ))}
             </div>
@@ -255,6 +271,7 @@ const DesktopLayout = ({
   dueDate,
   created_at,
   content,
+  summary,
   category_name,
   is_bookmarked,
   bookmark_count,
@@ -274,13 +291,13 @@ const DesktopLayout = ({
   } = useImageViewer(attachments);
 
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
-  const vendorName = mainVendor?.vendor_name || "";
+  const vendorName = mainVendor?.name || "";
   const eventData = {
     title,
     content,
-    start_date: startDate,
-    due_date: dueDate,
-    vendors: { vendor_name: vendorName },
+    starts_on: startDate,
+    ends_on: dueDate,
+    vendors: { name: vendorName },
   };
 
   return (
@@ -313,11 +330,11 @@ const DesktopLayout = ({
         </div>
         {Array.isArray(vendors) && vendors.length > 0 && (
           <div className="flex flex-row flex-wrap gap-2 mb-4">
-            {vendors.map((vendor) => (
+            {vendors.map((vendor, i) => (
               <OriginalUrlBtn
-                key={vendor.vendor_id}
-                vendor_name={vendor.vendor_name}
-                original_url={vendor.original_url}
+                key={i}
+                name={vendor.name}
+                source_url={vendor.source_url}
               />
             ))}
           </div>
@@ -331,13 +348,25 @@ const DesktopLayout = ({
 
       {/* 본문 */}
       <div className="p-6 md:p-8 min-h-[200px]">
+        {/* AI 요약 */}
+        {summary && (
+          <div className="mb-6 px-4 py-4 bg-blue-50 rounded-2xl">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
+              AI 요약
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+          </div>
+        )}
         {imageAttachments.length > 0 && (
           <div className="mb-6 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
             {imageAttachments.map((a, idx) => (
               <img
-                key={a.file_id}
-                src={a.attachment_url}
-                alt={`첨부파일 ${a.file_id}`}
+                key={a.id}
+                src={a.file_url}
+                alt={`첨부파일 ${a.id}`}
                 className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedIndex(idx)}
               />
@@ -360,14 +389,14 @@ const DesktopLayout = ({
             <div className="flex flex-col gap-1.5">
               {fileAttachments.map((a) => (
                 <a
-                  key={a.file_id}
-                  href={a.attachment_url}
+                  key={a.id}
+                  href={a.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
                 >
                   <span>📎</span>
-                  <span className="truncate">{a.attachment_url.split("/").pop()}</span>
+                  <span className="truncate">{a.original_name || a.file_url.split("/").pop()}</span>
                 </a>
               ))}
             </div>

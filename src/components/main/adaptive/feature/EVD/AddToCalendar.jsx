@@ -6,17 +6,17 @@ const formatDate = (dateStr) => {
 };
 
 const getGoogleCalendarUrl = (event) => {
-  const { title, content, start_date, due_date, vendors } = event;
-  const start = formatDate(start_date);
-  const end = formatDate(due_date);
-  const details = `주관: ${vendors?.vendor_name || ""}\n\n${content || ""}`;
+  const { title, content, starts_on, ends_on, vendors } = event;
+  const start = formatDate(starts_on);
+  const end = formatDate(ends_on);
+  const details = `주관: ${vendors?.name || ""}\n\n${content || ""}`;
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(details)}`;
 };
 
 const downloadIcsFile = (event) => {
-  const { title, content, start_date, due_date, vendors } = event;
-  const start = formatDate(start_date);
-  const end = formatDate(due_date);
+  const { title, content, starts_on, ends_on, vendors } = event;
+  const start = formatDate(starts_on);
+  const end = formatDate(ends_on);
   const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -27,7 +27,7 @@ DTSTAMP:${start}T000000Z
 DTSTART;VALUE=DATE:${start}
 DTEND;VALUE=DATE:${end}
 SUMMARY:${title}
-DESCRIPTION:${vendors?.vendor_name ? `[${vendors.vendor_name}] ` : ""}${content?.replace(/\n/g, "\\n") || ""}
+DESCRIPTION:${vendors?.name ? `[${vendors.name}] ` : ""}${content?.replace(/\n/g, "\\n") || ""}
 END:VEVENT
 END:VCALENDAR`.trim();
   const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
