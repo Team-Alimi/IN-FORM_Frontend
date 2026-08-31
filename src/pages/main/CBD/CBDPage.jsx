@@ -65,6 +65,8 @@ const CBDPage = () => {
     }));
   };
 
+  const applyUrl = club.vendors?.[0]?.source_url ?? null;
+
   // 모바일: 커스텀 레이아웃 + 고정 북마크 버튼
   if (isMobile) {
     return (
@@ -73,14 +75,17 @@ const CBDPage = () => {
           <ClubDetail
             isMobile={true}
             title={club.title}
-            status={club.status}
+            status={club.deadline_status}
             vendors={club.vendors}
             categories={club.categories}
-            startDate={club.start_date}
-            dueDate={club.due_date}
-            created_at={club.created_at}
+            startDate={club.starts_on}
+            dueDate={club.ends_on}
+            created_at={club.published_at}
+            summary={club.summary}
+            bookmark_count={club.bookmark_count}
+            view_count={club.view_count}
             content={club.content}
-            linkUrl={club.original_url}
+            linkUrl={applyUrl}
             attachments={club.attachments}
           />
         </div>
@@ -88,14 +93,14 @@ const CBDPage = () => {
         {/* 하단 고정 바: 북마크 + 지원하러 가기 */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 px-4 py-3 flex items-center gap-3">
           <BookmarkButton
-            articleId={club.article_id}
+            articleId={club.id}
             articleType="CLUB"
             isBookmarked={club.is_bookmarked}
             onToggle={handleBookmarkToggle}
           />
-          {club.original_url && (
+          {applyUrl && (
             <a
-              href={club.original_url}
+              href={applyUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center py-2.5 rounded-xl font-medium text-sm bg-[#4068f7] text-white"
@@ -116,14 +121,17 @@ const CBDPage = () => {
         <ClubDetail
           isMobile={false}
           title={club.title}
-          status={club.status}
+          status={club.deadline_status}
           vendors={club.vendors}
           categories={club.categories}
-          startDate={club.start_date}
-          dueDate={club.due_date}
-          created_at={club.created_at}
+          startDate={club.starts_on}
+          dueDate={club.ends_on}
+          created_at={club.published_at}
+          summary={club.summary}
+          bookmark_count={club.bookmark_count}
+          view_count={club.view_count}
           content={club.content}
-          linkUrl={club.original_url}
+          linkUrl={applyUrl}
           attachments={club.attachments}
         />
       </div>
