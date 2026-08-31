@@ -50,9 +50,8 @@ const RecommendedClubCarousel = ({ clubs }) => {
         <div className="shrink-0 w-[21%]" aria-hidden="true" />
 
         {clubs.map((club, i) => {
-          const clubName = club.vendors?.[0]?.vendor_name ?? "";
-          // tags: 동아리 태그 (백엔드 API 연동 예정, 현재 mock 데이터 사용)
-          const tags = club.tags ?? [];
+          const clubName = club.vendors?.[0]?.name ?? "";
+          const tags = club.categories?.map((c) => c.name) ?? [];
           const isActive = i === activeIndex;
 
           return (
@@ -68,7 +67,7 @@ const RecommendedClubCarousel = ({ clubs }) => {
                 scrollSnapAlign: "center",
                 aspectRatio: "3 / 4",
               }}
-              onClick={() => navigate(`/clubs/detail/${club.article_id}`)}
+              onClick={() => navigate(`/clubs/detail/${club.id}`)}
             >
               {/* 배경 이미지 또는 그라디언트 */}
               <div className="absolute inset-0">
