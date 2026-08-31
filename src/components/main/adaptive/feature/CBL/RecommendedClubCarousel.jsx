@@ -56,7 +56,7 @@ const RecommendedClubCarousel = ({ clubs }) => {
 
           return (
             <div
-              key={club.article_id}
+              key={club.id}
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}

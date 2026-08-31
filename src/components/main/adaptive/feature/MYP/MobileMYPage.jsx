@@ -44,11 +44,9 @@ const SettingRow = ({ leftIcon, label, onClick, rightSlot }) => (
   </div>
 );
 
-
-
 // ─── 섹션 헤더 컴포넌트 ──────────────────────────────────────────────────────────
 const SectionHeader = ({ title }) => (
-  <div className="px-4 pt-6 pb-2">
+  <div className="mx-4 px-4 pt-6 pb-2">
     <span className="text-[12px] font-semibold text-gray-400 tracking-wider">{title}</span>
   </div>
 );
@@ -169,7 +167,7 @@ const MobileMYPage = () => {
         {/* ─── 프로필 카드 ── 전체 클릭 → 학과 수정 ────────────────────────── */}
         <div
           onClick={() => isLogIn && navigate("/mypage/edit")}
-          className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-5 py-5 flex items-center gap-4 transition-colors ${
+          className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 px-5 py-5 flex items-center gap-4 transition-colors ${
             isLogIn ? "cursor-pointer active:bg-gray-50" : ""
           }`}
         >
@@ -189,7 +187,7 @@ const MobileMYPage = () => {
               {userInfo?.email || ""}
             </p>
             {userInfo && (
-              <p className="text-[12px] font-semibold text-[#4068f7] mt-1.5">
+              <p className="text-[12px] font-semibold text-emerald-500 mt-1.5">
                 학교 인증 완료
               </p>
             )}
@@ -211,7 +209,7 @@ const MobileMYPage = () => {
 
         {/* ─── 일반 설정 ────────────────────────────────────────────────────── */}
         <SectionHeader title="일반 설정" />
-        <div className="mx-4 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
+        <div className="mx-4 bg-white divide-y divide-gray-100">
           {/* 알림 설정 */}
           <SettingRow
             leftIcon={<IoNotificationsOutline />}
@@ -235,9 +233,9 @@ const MobileMYPage = () => {
           />
         </div>
 
-        {/* ─── 서비스 정보 ──────────────────────────────────────────────────── */}
+        {/* ─── 서비스 정보 + 로그아웃/회원탈퇴 (한 묶음) ──────────────────── */}
         <SectionHeader title="서비스 정보" />
-        <div className="mx-4 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
+        <div className="mx-4 bg-white divide-y divide-gray-100">
           {/* 서비스 이용약관 */}
           <SettingRow
             leftIcon={<IoDocumentTextOutline />}
@@ -250,12 +248,8 @@ const MobileMYPage = () => {
             label="개인정보처리방침"
             onClick={() => navigate("/privacy-policy")}
           />
-        </div>
-
-        {/* ─── 로그아웃 / 회원탈퇴 ── 아이콘 + 빨간 텍스트 행 ─────────────── */}
-        {isLogIn && (
-          <div className="mx-4 mt-6 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
-            {/* 로그아웃 */}
+          {/* 로그아웃 */}
+          {isLogIn && (
             <div
               onClick={handleLogout}
               className={`w-full flex items-center px-4 py-4 transition-colors cursor-pointer active:bg-gray-50 ${
@@ -269,18 +263,20 @@ const MobileMYPage = () => {
                 {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
               </span>
             </div>
-            {/* 회원탈퇴 */}
+          )}
+          {/* 회원탈퇴 */}
+          {isLogIn && (
             <div
               onClick={() => setIsDeleteOpen(true)}
               className="w-full flex items-center px-4 py-4 transition-colors cursor-pointer active:bg-gray-50"
             >
-              <span className="mr-3 text-red-400 shrink-0 text-[20px] flex items-center">
+              <span className="mr-3 text-red-500 shrink-0 text-[20px] flex items-center">
                 <IoPersonRemoveOutline />
               </span>
-              <span className="text-[15px] font-medium text-red-400">회원탈퇴</span>
+              <span className="text-[15px] font-medium text-red-500">회원탈퇴</span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* 비로그인 상태 */}
         {!isLogIn && (

@@ -436,6 +436,35 @@ export const MOCK_VENDORS = [
   { vendor_id: 25, vendor_name: "외국어교육원", vendor_type: "ORGANIZATION" },
 ];
 
+// GET /api/v1/vendors?type=SCHOOL 응답 형식 (id, name 필드 사용)
+export const MOCK_SCHOOL_VENDORS = [
+  { id: 10, name: "컴퓨터공학과", type: "SCHOOL" },
+  { id: 11, name: "전자공학과", type: "SCHOOL" },
+  { id: 12, name: "기계공학과", type: "SCHOOL" },
+  { id: 13, name: "경영학과", type: "SCHOOL" },
+  { id: 14, name: "국어국문학과", type: "SCHOOL" },
+  { id: 20, name: "학사지원팀", type: "SCHOOL" },
+  { id: 21, name: "취업지원센터", type: "SCHOOL" },
+  { id: 22, name: "창업지원단", type: "SCHOOL" },
+  { id: 23, name: "도서관", type: "SCHOOL" },
+  { id: 24, name: "학생처", type: "SCHOOL" },
+  { id: 25, name: "외국어교육원", type: "SCHOOL" },
+];
+
+// GET /api/v1/categories 응답 형식
+export const MOCK_CATEGORIES = [
+  { id: 1, name: "학사", sort_order: 1 },
+  { id: 2, name: "장학금", sort_order: 2 },
+  { id: 3, name: "공모전·대회", sort_order: 3 },
+  { id: 4, name: "특강·세미나", sort_order: 4 },
+  { id: 5, name: "취업·인턴십", sort_order: 5 },
+  { id: 6, name: "행사·축제", sort_order: 6 },
+  { id: 7, name: "봉사활동", sort_order: 7 },
+  { id: 8, name: "어학시험", sort_order: 8 },
+  { id: 9, name: "자격증", sort_order: 9 },
+  { id: 10, name: "학술·연구", sort_order: 10 },
+];
+
 // ─── 페이지 정보 ────────────────────────────────────────────────────────────────
 
 export const MOCK_PAGE_INFO = {
