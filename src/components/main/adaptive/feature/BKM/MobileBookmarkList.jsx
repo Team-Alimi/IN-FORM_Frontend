@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import MobileBookmarkItem from "@/components/main/adaptive/feature/BKM/MobileBookmarkItem";
 import SearchBar from "@/components/main/adaptive/common/SearchBar";
 import { fetchBookmarks, deleteBookmark } from "@/api/main/bookmarks";
-import { fetchUnreadCount } from "@/api/main/notifications";
-import NotificationModal from "@/components/main/adaptive/common/NotificationModal";
 import useAuthStore from "@/stores/useAuthStore";
-import bellIcon from "@/assets/icons/notification.svg";
+import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 
 // 소스 필터 탭 정의
 const SOURCE_TABS = [
@@ -24,14 +22,17 @@ const MobileBookmarkList = () => {
   const isLogIn = useAuthStore((state) => state.isLogIn);
 
   // ─── 필터 / 검색 상태 ─────────────────────────────────────────────────────
-  const [sourceFilter, setSourceFilter] = useState(null); // null=전체, "SCHOOL", "CLUB"
+  const [sourceFilter, setSourceFilter] = useState(null);
   const [searchInput, setSearchInput] = useState("");
-  const [keyword, setKeyword] = useState(""); // Enter 시 쿼리에 반영되는 검색어
+  const [keyword, setKeyword] = useState("");
 
   // 검색어를 지웠을 때 쿼리도 초기화
   useEffect(() => {
     if (!searchInput.trim()) setKeyword("");
   }, [searchInput]);
+
+  // ─── 편집 모드 ────────────────────────────────────────────────────────────
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // ─── 선택 상태 ────────────────────────────────────────────────────────────
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -41,23 +42,16 @@ const MobileBookmarkList = () => {
     setSelectedIds(new Set());
   }, [sourceFilter, keyword]);
 
-  // ─── 알림 ─────────────────────────────────────────────────────────────────
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  // 카드 롱프레스 → 편집 모드 진입 + 해당 카드 선택
+  const handleLongPress = useCallback((id) => {
+    setIsEditMode(true);
+    setSelectedIds(new Set([id]));
+  }, []);
 
-  const { data: unreadData } = useQuery({
-    queryKey: ["notificationsUnreadCount"],
-    queryFn: fetchUnreadCount,
-    enabled: isLogIn,
-    refetchInterval: 60 * 1000,
-  });
-  const unreadCount = unreadData?.unread_count || 0;
-
-  const handleBellClick = () => {
-    if (!isLogIn) {
-      navigate("/login");
-      return;
-    }
-    setIsNotificationOpen(true);
+  // 초기화: 선택 초기화 + 편집 모드 종료
+  const handleReset = () => {
+    setSelectedIds(new Set());
+    setIsEditMode(false);
   };
 
   // ─── 북마크 목록 무한 스크롤 조회 ─────────────────────────────────────────
@@ -131,6 +125,7 @@ const MobileBookmarkList = () => {
     },
     onSuccess: () => {
       setSelectedIds(new Set());
+      setIsEditMode(false);
       queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
     },
     onError: (error) => {
@@ -149,29 +144,10 @@ const MobileBookmarkList = () => {
 
   return (
     <>
-      {/* 헤더 높이만큼 여백 */}
-      <div className="h-[66px]" />
-
-      {/* 고정 헤더 */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
-          <span className="text-[22px] font-bold text-gray-900">북마크</span>
-          <button
-            onClick={handleBellClick}
-            className="relative w-10 h-10 flex items-center justify-center"
-          >
-            <img src={bellIcon} alt="알림" className="w-6 h-6" />
-            {isLogIn && unreadCount > 0 && (
-              <div className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </div>
-            )}
-          </button>
-        </div>
-      </header>
+      <MobileHeader title="북마크" />
 
       {/* 본문 */}
-      <div className="flex flex-col pb-24">
+      <div className="flex flex-col pb-32">
         {/* 검색바 */}
         <div className="px-4 pt-1 pb-3">
           <SearchBar
@@ -182,32 +158,21 @@ const MobileBookmarkList = () => {
           />
         </div>
 
-        {/* 소스 필터 탭 + 선택 취소 */}
-        <div className="px-4 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {SOURCE_TABS.map((tab) => (
-              <button
-                key={tab.label}
-                onClick={() => setSourceFilter(tab.value)}
-                className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
-                  sourceFilter === tab.value
-                    ? "bg-[#4068f7] text-white"
-                    : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          {/* 선택된 항목이 있을 때만 표시: 선택 전체 해제 */}
-          {selectedIds.size > 0 && (
+        {/* 소스 필터 탭 */}
+        <div className="px-4 pb-3 flex items-center gap-2">
+          {SOURCE_TABS.map((tab) => (
             <button
-              onClick={() => setSelectedIds(new Set())}
-              className="text-[13px] font-medium text-red-500"
+              key={tab.label}
+              onClick={() => setSourceFilter(tab.value)}
+              className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+                sourceFilter === tab.value
+                  ? "bg-[#4068f7] text-white"
+                  : "bg-gray-100 text-gray-500"
+              }`}
             >
-              취소
+              {tab.label}
             </button>
-          )}
+          ))}
         </div>
 
         {/* 목록 */}
@@ -218,39 +183,41 @@ const MobileBookmarkList = () => {
             </div>
           ) : bookmarks.length > 0 ? (
             <>
-              {/* 전체 선택 행 */}
-              <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
-                <button
-                  onClick={handleToggleAll}
-                  className="flex items-center gap-2 text-[13px] text-gray-600"
-                >
-                  <div
-                    className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all ${
-                      isAllSelected
-                        ? "border-[#4068f7] bg-[#4068f7]"
-                        : "border-gray-300 bg-white"
-                    }`}
+              {/* 전체 선택 행 - 편집 모드에서만 표시 */}
+              {isEditMode && (
+                <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
+                  <button
+                    onClick={handleToggleAll}
+                    className="flex items-center gap-2 text-[13px] text-gray-600"
                   >
-                    {isAllSelected && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path
-                          d="M2 6L5 9L10 3"
-                          stroke="white"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  전체 선택
-                </button>
-                {selectedIds.size > 0 && (
-                  <span className="text-[13px] text-[#4068f7] font-medium">
-                    {selectedIds.size}개 선택됨
-                  </span>
-                )}
-              </div>
+                    <div
+                      className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all ${
+                        isAllSelected
+                          ? "border-[#4068f7] bg-[#4068f7]"
+                          : "border-gray-300 bg-white"
+                      }`}
+                    >
+                      {isAllSelected && (
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path
+                            d="M2 6L5 9L10 3"
+                            stroke="white"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    전체 선택
+                  </button>
+                  {selectedIds.size > 0 && (
+                    <span className="text-[13px] text-[#4068f7] font-medium">
+                      {selectedIds.size}개 선택됨
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* 북마크 아이템 목록 */}
               <div className="px-4 pt-2">
@@ -265,15 +232,17 @@ const MobileBookmarkList = () => {
                     endsOn={bookmark.ends_on}
                     deadlineStatus={bookmark.deadline_status}
                     viewCount={bookmark.view_count}
+                    bookmarkCount={bookmark.bookmark_count}
                     isSelected={selectedIds.has(bookmark.id)}
                     onToggleSelect={handleToggleItem}
+                    isEditMode={isEditMode}
+                    onLongPress={handleLongPress}
                   />
                 ))}
 
                 {/* 무한 스크롤 센티넬 */}
                 <div ref={sentinelRef} className="h-4" />
 
-                {/* 다음 페이지 로딩 인디케이터 */}
                 {isFetchingNextPage && (
                   <div className="py-4 text-center text-gray-400 text-sm">
                     불러오는 중...
@@ -326,26 +295,32 @@ const MobileBookmarkList = () => {
         )}
       </div>
 
-      {/* 하단 고정 삭제 버튼 */}
-      {selectedIds.size > 0 && (
+      {/* 하단 고정 바 - 편집 모드에서만 표시 */}
+      {isEditMode && (
         <div className="fixed bottom-[60px] left-0 right-0 z-40 px-4 pb-2">
-          <button
-            onClick={handleDelete}
-            disabled={deleteMutation.isPending}
-            className="w-full py-3.5 rounded-xl font-bold text-[15px] bg-red-500 text-white disabled:opacity-50 transition-all active:scale-[0.98]"
-          >
-            {deleteMutation.isPending
-              ? "삭제 중..."
-              : `${selectedIds.size}개 삭제하기`}
-          </button>
+          <div className="flex items-center gap-3">
+            {/* 초기화: 선택 초기화 + 편집 모드 종료 */}
+            <button
+              onClick={handleReset}
+              className="py-3.5 px-5 rounded-xl font-medium text-[14px] text-gray-500 bg-gray-100 active:scale-[0.98] transition-all"
+            >
+              초기화
+            </button>
+            {/* 삭제하기 버튼 */}
+            <button
+              onClick={handleDelete}
+              disabled={selectedIds.size === 0 || deleteMutation.isPending}
+              className="flex-1 py-3.5 rounded-xl font-bold text-[15px] bg-red-500 text-white disabled:opacity-40 transition-all active:scale-[0.98]"
+            >
+              {deleteMutation.isPending
+                ? "삭제 중..."
+                : selectedIds.size > 0
+                  ? `${selectedIds.size}개 삭제하기`
+                  : "삭제하기"}
+            </button>
+          </div>
         </div>
       )}
-
-      {/* 알림 모달 */}
-      <NotificationModal
-        isOpen={isNotificationOpen}
-        onClose={() => setIsNotificationOpen(false)}
-      />
     </>
   );
 };

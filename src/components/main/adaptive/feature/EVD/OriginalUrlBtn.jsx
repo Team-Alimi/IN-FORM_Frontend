@@ -1,10 +1,10 @@
 import React from "react";
 import urlIcon from "@/assets/icons/url.svg";
 
-const OriginalUrlBtn = ({ vendor_name, original_url }) => {
+const OriginalUrlBtn = ({ name, source_url }) => {
   const handleClick = () => {
-    if (original_url) {
-      window.open(original_url, "_blank", "noopener,noreferrer");
+    if (source_url) {
+      window.open(source_url, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -12,7 +12,7 @@ const OriginalUrlBtn = ({ vendor_name, original_url }) => {
     <button
       type="button"
       onClick={handleClick}
-      disabled={!original_url}
+      disabled={!source_url}
       className="
         inline-flex items-center gap-1.5
         px-3 h-8
@@ -28,7 +28,7 @@ const OriginalUrlBtn = ({ vendor_name, original_url }) => {
       "
     >
       <span className="leading-5">
-        {vendor_name}
+        {name}
       </span>
 
       <img

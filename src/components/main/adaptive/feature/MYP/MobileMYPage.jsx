@@ -13,11 +13,9 @@ import useAuthStore from "@/stores/useAuthStore";
 import { useDeviceStore } from "@/stores/deviceStore";
 import { fetchMyProfile, patchNotificationSetting } from "@/api/main/user";
 import { postLogout } from "@/api/main/auth";
-import { fetchUnreadCount } from "@/api/main/notifications";
-import NotificationModal from "@/components/main/adaptive/common/NotificationModal";
 import AccountDeleteSheet from "@/components/main/adaptive/feature/MYP/AccountDeleteSheet";
 import AccountDeleteModal from "@/components/main/adaptive/feature/MYP/AccountDeleteModal";
-import bellIcon from "@/assets/icons/notification.svg";
+import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 
 // ─── 설정 행 컴포넌트 ────────────────────────────────────────────────────────────
 // div를 사용하여 내부에 button(Toggle 등) 중첩 허용
@@ -46,11 +44,9 @@ const SettingRow = ({ leftIcon, label, onClick, rightSlot }) => (
   </div>
 );
 
-
-
 // ─── 섹션 헤더 컴포넌트 ──────────────────────────────────────────────────────────
 const SectionHeader = ({ title }) => (
-  <div className="px-4 pt-6 pb-2">
+  <div className="mx-4 px-4 pt-6 pb-2">
     <span className="text-[12px] font-semibold text-gray-400 tracking-wider">{title}</span>
   </div>
 );
@@ -87,17 +83,7 @@ const MobileMYPage = () => {
   const refreshToken = useAuthStore((state) => state.refreshToken);
   const logout = useAuthStore((state) => state.logout);
 
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  // ─── 안 읽은 알림 개수 ────────────────────────────────────────────────────────
-  const { data: unreadData } = useQuery({
-    queryKey: ["notificationsUnreadCount"],
-    queryFn: fetchUnreadCount,
-    enabled: isLogIn,
-    refetchInterval: 60 * 1000,
-  });
-  const unreadCount = unreadData?.unread_count || 0;
 
   // ─── 프로필 조회 (email_notification_enabled 포함) ────────────────────────────
   const { data: profileData } = useQuery({
@@ -170,39 +156,10 @@ const MobileMYPage = () => {
     logoutMutation.mutate();
   };
 
-  const handleBellClick = () => {
-    if (!isLogIn) {
-      navigate("/login");
-      return;
-    }
-    setIsNotificationOpen(true);
-  };
-
   return (
     <>
       {/* ─── 모바일 고정 헤더 ──────────────────────────────────────────────────── */}
-      {isMobile && (
-        <>
-          {/* 헤더 높이만큼 여백 */}
-          <div className="h-[66px]" />
-          <header className="fixed top-0 left-0 right-0 z-50 bg-white px-4 pt-4 pb-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[22px] font-bold text-gray-900">마이페이지</span>
-              <button
-                onClick={handleBellClick}
-                className="relative w-10 h-10 flex items-center justify-center"
-              >
-                <img src={bellIcon} alt="알림" className="w-6 h-6" />
-                {isLogIn && unreadCount > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-white">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </div>
-                )}
-              </button>
-            </div>
-          </header>
-        </>
-      )}
+      {isMobile && <MobileHeader title="마이페이지" />}
 
       {/* ─── 본문 ──────────────────────────────────────────────────────────────── */}
       <div className={`flex flex-col ${isMobile ? "pb-32" : "pb-8"}`}>
@@ -210,7 +167,7 @@ const MobileMYPage = () => {
         {/* ─── 프로필 카드 ── 전체 클릭 → 학과 수정 ────────────────────────── */}
         <div
           onClick={() => isLogIn && navigate("/mypage/edit")}
-          className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-5 py-5 flex items-center gap-4 transition-colors ${
+          className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 px-5 py-5 flex items-center gap-4 transition-colors ${
             isLogIn ? "cursor-pointer active:bg-gray-50" : ""
           }`}
         >
@@ -230,7 +187,7 @@ const MobileMYPage = () => {
               {userInfo?.email || ""}
             </p>
             {userInfo && (
-              <p className="text-[12px] font-semibold text-[#4068f7] mt-1.5">
+              <p className="text-[12px] font-semibold text-emerald-500 mt-1.5">
                 학교 인증 완료
               </p>
             )}
@@ -252,7 +209,7 @@ const MobileMYPage = () => {
 
         {/* ─── 일반 설정 ────────────────────────────────────────────────────── */}
         <SectionHeader title="일반 설정" />
-        <div className="mx-4 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
+        <div className="mx-4 bg-white divide-y divide-gray-100">
           {/* 알림 설정 */}
           <SettingRow
             leftIcon={<IoNotificationsOutline />}
@@ -276,9 +233,9 @@ const MobileMYPage = () => {
           />
         </div>
 
-        {/* ─── 서비스 정보 ──────────────────────────────────────────────────── */}
+        {/* ─── 서비스 정보 + 로그아웃/회원탈퇴 (한 묶음) ──────────────────── */}
         <SectionHeader title="서비스 정보" />
-        <div className="mx-4 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
+        <div className="mx-4 bg-white divide-y divide-gray-100">
           {/* 서비스 이용약관 */}
           <SettingRow
             leftIcon={<IoDocumentTextOutline />}
@@ -291,12 +248,8 @@ const MobileMYPage = () => {
             label="개인정보처리방침"
             onClick={() => navigate("/privacy-policy")}
           />
-        </div>
-
-        {/* ─── 로그아웃 / 회원탈퇴 ── 아이콘 + 빨간 텍스트 행 ─────────────── */}
-        {isLogIn && (
-          <div className="mx-4 mt-6 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden divide-y divide-gray-50">
-            {/* 로그아웃 */}
+          {/* 로그아웃 */}
+          {isLogIn && (
             <div
               onClick={handleLogout}
               className={`w-full flex items-center px-4 py-4 transition-colors cursor-pointer active:bg-gray-50 ${
@@ -310,18 +263,20 @@ const MobileMYPage = () => {
                 {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
               </span>
             </div>
-            {/* 회원탈퇴 */}
+          )}
+          {/* 회원탈퇴 */}
+          {isLogIn && (
             <div
               onClick={() => setIsDeleteOpen(true)}
               className="w-full flex items-center px-4 py-4 transition-colors cursor-pointer active:bg-gray-50"
             >
-              <span className="mr-3 text-red-400 shrink-0 text-[20px] flex items-center">
+              <span className="mr-3 text-red-500 shrink-0 text-[20px] flex items-center">
                 <IoPersonRemoveOutline />
               </span>
-              <span className="text-[15px] font-medium text-red-400">회원탈퇴</span>
+              <span className="text-[15px] font-medium text-red-500">회원탈퇴</span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* 비로그인 상태 */}
         {!isLogIn && (
@@ -335,12 +290,6 @@ const MobileMYPage = () => {
           </div>
         )}
       </div>
-
-      {/* ─── 알림 모달 ─────────────────────────────────────────────────────────── */}
-      <NotificationModal
-        isOpen={isNotificationOpen}
-        onClose={() => setIsNotificationOpen(false)}
-      />
 
       {/* ─── 회원탈퇴: 모바일 → Sheet / 데스크톱 → Modal ──────────────────────── */}
       {isMobile ? (

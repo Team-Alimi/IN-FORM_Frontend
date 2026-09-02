@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // ★ MOCK 모드 전환 방법:
 //   - ON  (더미 데이터 사용) : 아래 useMocks 를 true 로 변경
 //   - OFF (실제 API 사용)   : false 로 유지 (기본값)
-const useMocks = true;
+const useMocks = false;
 
 const mockAliases = {
   "@/api/main/articles": path.resolve(__dirname, "src/mocks/api/articles.js"),

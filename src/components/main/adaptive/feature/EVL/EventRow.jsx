@@ -19,17 +19,16 @@ const EventRow = ({ status, title, date, onClick }) => {
 
   return (
     <div
-      className="w-full cursor-pointer hover:bg-gray-50 transition-colors"
+      className="w-full bg-white rounded-[18px] border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] px-4 py-3 mb-2.5 cursor-pointer hover:bg-gray-50 active:bg-gray-50 transition-colors"
       onClick={onClick}
     >
-      <div className="flex items-center justify-between py-3">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Badge color={getBadgeColor(status)} text={status} />
           <span className="text-gray-800 text-sm">{title}</span>
         </div>
-        <span className="text-gray-500 text-sm">{date}</span>
+        <span className="text-gray-500 text-sm shrink-0 ml-2">{date}</span>
       </div>
-      <div className="border-b border-gray-200" />
     </div>
   );
 };

@@ -44,7 +44,7 @@ const ClubListContainer = () => {
         keyword: debouncedSearch || undefined,
       });
       return {
-        clubList: res.data.data.club_articles,
+        clubList: res.data.data.content,
         pageInfo: res.data.data.page_info,
       };
     },
@@ -122,7 +122,7 @@ const ClubListContainer = () => {
       <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
         {clubList.map((item) => (
           <ClubRow
-            key={item.article_id}
+            key={item.id}
             data={item}
             onClick={handleClubClick}
           />

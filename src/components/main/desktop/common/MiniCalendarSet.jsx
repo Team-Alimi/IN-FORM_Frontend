@@ -44,16 +44,17 @@ const MiniCalendarSet = () => {
     const eventMap = {};
 
     events.articles.forEach((article) => {
-      const startDate = parseDate(article.start_date);
-      const endDate = parseDate(article.due_date);
+      const startDate = parseDate(article.starts_on);
+      const endDate = parseDate(article.ends_on);
       if (!startDate || !endDate) return;
       // 필요한 데이터만 추출한 경량 객체 생성
       const SingleEvent = {
-        article_id: article.article_id,
+        id: article.id,
+        article_id: article.id,
         title: article.title,
         category_name: article.categories?.category_name || null,
-        start_date: article.start_date,
-        due_date: article.due_date,
+        starts_on: article.starts_on,
+        ends_on: article.ends_on,
       };
       // start_at부터 end_at까지 모든 날짜에 이벤트 추가
       const current = new Date(startDate);

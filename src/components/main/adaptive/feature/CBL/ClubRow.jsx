@@ -2,11 +2,10 @@ import { useDeviceStore } from "@/stores/deviceStore";
 
 const ClubRow = ({ data, onClick }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  // tags: 백엔드 동아리 태그 API 연동 예정 (현재 mock 데이터 사용)
-  const { title, vendors, start_date, due_date, attachment_url, article_id, tags, view_count } = data;
-  const clubName = vendors?.[0]?.vendor_name ?? "";
+  const { title, vendors, starts_on, ends_on, id, view_count } = data;
+  const clubName = vendors?.[0]?.name ?? "";
 
-  const handleClick = () => onClick(article_id);
+  const handleClick = () => onClick(id);
 
   if (isMobile) {
     return (
@@ -14,39 +13,27 @@ const ClubRow = ({ data, onClick }) => {
         className="flex items-center gap-3 bg-white rounded-[18px] px-3 py-3 mb-2.5 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] cursor-pointer active:bg-gray-50 transition-colors"
         onClick={handleClick}
       >
-        {/* 좌측 썸네일 */}
-        <div className="w-[60px] h-[60px] rounded-xl overflow-hidden shrink-0">
-          {attachment_url ? (
-            <img src={attachment_url} alt={clubName} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-              <span className="text-blue-400 font-bold text-2xl">{clubName.charAt(0)}</span>
-            </div>
-          )}
+        {/* 좌측 썸네일 (목록 API는 attachment_url 미제공 → 글자 아바타) */}
+        <div className="w-[60px] h-[60px] rounded-xl overflow-hidden shrink-0 bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+          <span className="text-blue-400 font-bold text-2xl">{clubName.charAt(0)}</span>
         </div>
 
         {/* 우측 텍스트 */}
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-gray-900 text-[14px] line-clamp-2 leading-snug">{clubName}</p>
-          {/* 해시태그: 동아리 태그 (백엔드 API 연동 예정) */}
-          {tags && tags.length > 0 && (
-            <p className="text-[12px] mt-0.5 font-medium text-gray-500">
-              {tags.map((t) => `#${t}`).join(" ")}
-            </p>
-          )}
+          <p className="font-bold text-gray-900 text-[14px] line-clamp-2 leading-snug">{title}</p>
           {/* 메타 정보 */}
           <div className="flex items-center gap-1 text-gray-400 text-[11px] mt-1">
-            <span className="truncate max-w-20">{vendors?.[0]?.vendor_name}</span>
+            {clubName && <span className="truncate max-w-24">{clubName}</span>}
             {view_count != null && (
               <>
-                <span>·</span>
+                {clubName && <span>·</span>}
                 <span>조회 {view_count.toLocaleString()}</span>
               </>
             )}
-            {due_date && (
+            {ends_on && (
               <>
                 <span>·</span>
-                <span>~{due_date}</span>
+                <span>~{ends_on}</span>
               </>
             )}
           </div>
@@ -61,23 +48,13 @@ const ClubRow = ({ data, onClick }) => {
       className="flex flex-col bg-white w-full rounded-3xl overflow-hidden shadow-md cursor-pointer"
       onClick={handleClick}
     >
-      <div className="w-full aspect-4/5 bg-gray-200 relative">
-        {attachment_url ? (
-          <img
-            src={attachment_url}
-            alt={title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-            <span className="text-blue-300 font-bold text-5xl">{clubName.charAt(0)}</span>
-          </div>
-        )}
+      <div className="w-full aspect-4/5 bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+        <span className="text-blue-300 font-bold text-5xl">{clubName.charAt(0)}</span>
       </div>
       <div className="flex flex-col p-4 gap-1">
         <div className="text-lg font-bold text-gray-700">{title}</div>
         <div className="text-base font-medium text-gray-700">{clubName}</div>
-        <div className="text-sm text-gray-500">{`${start_date || "미정"} ~ ${due_date || "미정"}`}</div>
+        <div className="text-sm text-gray-500">{`${starts_on || "미정"} ~ ${ends_on || "미정"}`}</div>
       </div>
     </div>
   );

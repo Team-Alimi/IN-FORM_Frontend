@@ -108,6 +108,35 @@ export async function putMyClubTypes(ids) {
 }
 
 /**
+ * 구독 학과·기관 조회
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function fetchMyVendors() {
+  try {
+    const res = await api.get("/api/v1/users/me/vendors");
+    return res.data;
+  } catch (error) {
+    console.error("[API] fetchMyVendors 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
+ * 구독 학과·기관 저장 (전체 교체, SCHOOL 유형만 허용)
+ * @param {number[]} ids - 선택한 vendor id 배열
+ * @returns {Promise<Object>} { success, data: [{ id, name }] }
+ */
+export async function putMyVendors(ids) {
+  try {
+    const res = await api.put("/api/v1/users/me/vendors", { ids });
+    return res.data;
+  } catch (error) {
+    console.error("[API] putMyVendors 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
  * 회원 탈퇴 (유저 정보 및 연관 데이터 전체 삭제)
  * @returns {Promise}
  */

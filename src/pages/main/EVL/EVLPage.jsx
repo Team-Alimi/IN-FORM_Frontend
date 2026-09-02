@@ -82,16 +82,14 @@ const EVLPage = () => {
         const res = await fetchEvents(params);
 
         const apiData = res.data?.data;
-        setEvents(apiData?.school_articles || []);
+        setEvents(apiData?.content || []);
         if (apiData?.page_info) {
           setPageInfo(apiData.page_info);
         } else {
           setPageInfo({
             current_page: currentPage,
             total_pages: 1,
-            total_articles: apiData?.school_articles
-              ? apiData.school_articles.length
-              : 0,
+            total_items: apiData?.content ? apiData.content.length : 0,
           });
         }
       } catch (error) {
@@ -121,13 +119,13 @@ const EVLPage = () => {
     if (!events) return [];
 
     const score = (status) => {
-      if (status === "ENDING_SOON") return 4;
+      if (status === "CLOSING_SOON") return 4;
       if (status === "OPEN") return 3;
       if (status === "UPCOMING") return 2;
       return 1;
     };
 
-    return [...events].sort((a, b) => score(b.status) - score(a.status));
+    return [...events].sort((a, b) => score(b.deadline_status) - score(a.deadline_status));
   }, [events]);
 
   const handleRowClick = (id) => {
@@ -226,33 +224,31 @@ const EVLPage = () => {
               <div className="space-y-1">
                 {sortedEvents.length > 0 ? (
                   sortedEvents.map((event) => {
-                    const statusText = getStatus(event.status).text;
+                    const statusResult = getStatus(event.deadline_status);
                     if (isMobile) {
                       return (
                         <MobileEventRow
-                          key={event.article_id}
-                          status={statusText}
-                          category={event.categories?.category_name}
+                          key={event.id}
+                          status={statusResult}
+                          category={event.categories?.[0]?.name}
                           title={event.title}
-                          source={
-                            event.vendor_name ||
-                            event.vendors?.[0]?.vendor_name ||
-                            ""
-                          }
-                          date={event.due_date}
+                          vendors={event.vendors || []}
+                          date={event.ends_on}
                           bookmarkCount={event.bookmark_count || 0}
                           viewCount={event.view_count}
-                          onClick={() => handleRowClick(event.article_id)}
+                          onClick={() => handleRowClick(event.id)}
                         />
                       );
                     } else {
                       return (
                         <EventRow
-                          key={event.article_id}
+                          key={event.id}
                           title={event.title}
-                          date={event.due_date}
-                          status={statusText}
-                          onClick={() => handleRowClick(event.article_id)}
+                          date={event.ends_on}
+                          status={statusResult?.text}
+                          category={event.categories?.[0]?.name}
+                          vendors={event.vendors || []}
+                          onClick={() => handleRowClick(event.id)}
                         />
                       );
                     }
@@ -347,7 +343,7 @@ const EVLPage = () => {
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={handleFilterApply}
-        totalCount={pageInfo.total_articles}
+        totalCount={pageInfo.total_items}
         keyword={searchText}
       />
     </div>

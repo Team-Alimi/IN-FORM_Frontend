@@ -13,8 +13,10 @@
  *   - putMyInterestCategories   : 관심 공지 분야 저장
  *   - fetchMyClubTypes          : 관심 동아리 유형 조회
  *   - putMyClubTypes            : 관심 동아리 유형 저장
+ *   - fetchMyVendors            : 구독 학과·기관 조회
+ *   - putMyVendors              : 구독 학과·기관 저장
  */
-import { MOCK_VENDORS, MOCK_USER } from "@/mocks/data";
+import { MOCK_VENDORS, MOCK_SCHOOL_VENDORS, MOCK_USER } from "@/mocks/data";
 import useAuthStore from "@/stores/useAuthStore";
 
 // 알림 수신 설정을 메모리에서 관리 (초기값: true)
@@ -102,4 +104,17 @@ export const fetchMyClubTypes = async () => ({
 export const putMyClubTypes = async (ids) => {
   mockClubTypeIds = [...ids];
   return fetchMyClubTypes();
+};
+
+// 구독 학과·기관 메모리 관리 (초기값: 10, 20번 선택)
+let mockVendorIds = [10, 20];
+
+export const fetchMyVendors = async () => ({
+  success: true,
+  data: MOCK_SCHOOL_VENDORS.filter((v) => mockVendorIds.includes(v.id)),
+});
+
+export const putMyVendors = async (ids) => {
+  mockVendorIds = [...ids];
+  return fetchMyVendors();
 };

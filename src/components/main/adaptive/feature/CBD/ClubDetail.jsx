@@ -156,7 +156,7 @@ const ImageModal = ({
 
 // ─── 모바일 레이아웃 ──────────────────────────────────────────────────────────
 
-const MobileLayout = ({ title, status, vendors, categories, content, attachments }) => {
+const MobileLayout = ({ title, status, vendors, categories, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, attachments }) => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [coverIndex, setCoverIndex] = useState(0);
@@ -179,8 +179,8 @@ const MobileLayout = ({ title, status, vendors, categories, content, attachments
   };
 
   // 해시태그: vendors + category
-  const hashtags = Array.isArray(vendors) ? vendors.map((v) => v.vendor_name) : [];
-  const categoryName = categories?.category_name;
+  const hashtags = Array.isArray(vendors) ? vendors.map((v) => v.name) : [];
+  const categoryName = categories?.[0]?.name;
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -278,10 +278,66 @@ const MobileLayout = ({ title, status, vendors, categories, content, attachments
             )}
           </div>
         )}
+
+        {/* 메타 정보 */}
+        <div className="mt-3 space-y-1.5 text-sm text-gray-500">
+          {created_at && (
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 shrink-0">게시일</span>
+              <span>{created_at.slice(0, 10)}</span>
+            </div>
+          )}
+          {(startDate || dueDate) && (
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 shrink-0">기간</span>
+              <span>
+                {startDate && dueDate
+                  ? `${startDate} ~ ${dueDate}`
+                  : startDate || dueDate}
+              </span>
+            </div>
+          )}
+          {(view_count != null || bookmark_count != null) && (
+            <div className="flex items-center gap-3">
+              {view_count != null && (
+                <span className="flex items-center gap-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  {view_count.toLocaleString()}
+                </span>
+              )}
+              {bookmark_count != null && (
+                <span className="flex items-center gap-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                  {bookmark_count}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 구분선 */}
       <div className="border-t border-gray-100" />
+
+      {/* AI 요약 */}
+      {summary && (
+        <div className="px-5 pt-5">
+          <div className="px-4 py-3.5 bg-blue-50 rounded-2xl">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
+              AI 요약
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+          </div>
+        </div>
+      )}
 
       {/* 본문 */}
       <div className="px-5 py-5">
@@ -304,7 +360,7 @@ const MobileLayout = ({ title, status, vendors, categories, content, attachments
 
 // ─── 데스크톱 레이아웃 ────────────────────────────────────────────────────────
 
-const DesktopLayout = ({ title, vendors, startDate, dueDate, created_at, content, linkUrl, attachments }) => {
+const DesktopLayout = ({ title, vendors, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, linkUrl, attachments }) => {
   const navigate = useNavigate();
   const imageViewer = useImageViewer(attachments);
   const { validAttachments, setSelectedIndex } = imageViewer;
@@ -332,7 +388,7 @@ const DesktopLayout = ({ title, vendors, startDate, dueDate, created_at, content
           {mainVendor && (
             <div className="flex items-center gap-1.5">
               <span className="font-medium text-gray-600">주관:</span>
-              <span>{mainVendor.vendor_name}</span>
+              <span>{mainVendor.name}</span>
             </div>
           )}
           <div className="flex items-center gap-1.5">
@@ -352,18 +408,52 @@ const DesktopLayout = ({ title, vendors, startDate, dueDate, created_at, content
               <span>{dueDate}</span>
             </div>
           )}
+          {(view_count != null || bookmark_count != null) && (
+            <>
+              <div className="w-full" />
+              {view_count != null && (
+                <span className="flex items-center gap-1">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  {view_count.toLocaleString()}
+                </span>
+              )}
+              {bookmark_count != null && (
+                <span className="flex items-center gap-1">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                  {bookmark_count}
+                </span>
+              )}
+            </>
+          )}
         </div>
       </div>
 
       {/* 본문 */}
       <div className="p-6 md:p-8 min-h-[200px]">
+        {summary && (
+          <div className="mb-6 px-4 py-4 bg-blue-50 rounded-2xl">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+              </svg>
+              AI 요약
+            </p>
+            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+          </div>
+        )}
+
         {validAttachments.length > 0 && (
           <div className="mb-6 flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
             {validAttachments.map((a, idx) => (
               <img
-                key={a.file_id}
+                key={a.id}
                 src={a.file_url}
-                alt={`첨부파일 ${a.file_id}`}
+                alt={`첨부파일 ${a.id}`}
                 className="h-64 w-auto shrink-0 rounded-xl border border-gray-100 object-contain snap-start cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setSelectedIndex(idx)}
               />

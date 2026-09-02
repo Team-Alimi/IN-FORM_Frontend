@@ -18,7 +18,8 @@ import { FILTER_OPTIONS } from "@/constants/filterOption";
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
 
 const CalendarSection = ({ onTodayEventCount }) => {
-  const [selectedFilter, setSelectedFilter] = useState(["CONTEST"]);
+  const [selectedFilter, setSelectedFilter] = useState([]); // 초기: 전체
+  const [isMyDeptOnly, setIsMyDeptOnly] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
 
@@ -37,21 +38,20 @@ const CalendarSection = ({ onTodayEventCount }) => {
     return formatMonthKey(today); //'YYYY-MM' 형식
   });
   useCalendarPrefetch(calendarMonth);
-  // selectedFilter key → category_id 변환 (MY 제외)
+  // selectedFilter key → category_id 변환 (MY/ALL 제외, 빈 배열이면 전체)
   const categoryIds = selectedFilter
-    .filter((key) => key !== "MY")
+    .filter((key) => key !== "MY" && key !== "ALL")
     .map((key) => FILTER_OPTIONS.find((opt) => opt.key === key)?.category_id)
     .filter(Boolean);
-  const isMyOnly = selectedFilter.includes("MY") || undefined;
 
   // React Query로 월간 일정 데이터 가져오기
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["monthlyAll", calendarMonth, selectedFilter], // 필터 변경 시 재요청
+    queryKey: ["monthlyAll", calendarMonth, selectedFilter, isMyDeptOnly], // 필터 변경 시 재요청
     queryFn: () =>
       fetchMonthlyAll({
         calendarMonth,
         category_id: categoryIds,
-        is_my_only: isMyOnly,
+        is_my_only: isMyDeptOnly || undefined,
       }),
     staleTime: 60 * 1000 * 10,
     gcTime: 60 * 1000 * 20,
@@ -79,16 +79,16 @@ const CalendarSection = ({ onTodayEventCount }) => {
     const articles = data?.articles ?? [];
 
     articles.forEach((article) => {
-      const startDate = parseDate(article.start_date);
-      const endDate = parseDate(article.due_date);
+      const startDate = parseDate(article.starts_on);
+      const endDate = parseDate(article.ends_on);
       if (!startDate || !endDate) return;
       // 필요한 데이터만 추출한 경량 객체 생성
       const SingleEvent = {
-        article_id: article.article_id,
+        id: article.id,
         title: article.title,
-        category_name: article.categories?.category_name || null,
-        start_date: article.start_date,
-        due_date: article.due_date,
+        category_name: article.categories?.[0]?.name || null,
+        starts_on: article.starts_on,
+        ends_on: article.ends_on,
       };
       // start_at부터 end_at까지 모든 날짜에 이벤트 추가
       const current = new Date(startDate);
@@ -152,16 +152,21 @@ const CalendarSection = ({ onTodayEventCount }) => {
     // 닫힐 때 선택된 ID 초기화 (선택 사항, 애니메이션 고려하여 유지 가능)
     // setSelectedEventId(null);
   };
-  //4. 필터 토글 핸들러 (MY는 단독 선택, 카테고리 필터와 상호 배타적)
+  //4. 필터 토글 핸들러
   const handleFilterClick = (key) => {
     setSelectedFilter((prev) => {
+      if (key === "ALL") {
+        // 전체 선택 → 필터 초기화
+        return [];
+      }
       if (key === "MY") {
         // MY 토글: 이미 선택됐으면 해제, 아니면 MY만 단독 선택
-        return prev.includes("MY") ? prev.filter((f) => f !== "MY") : ["MY"];
+        return prev.includes("MY") ? [] : ["MY"];
       }
       // 카테고리 필터 클릭 시: MY 제거 후 해당 필터 토글
       const withoutMY = prev.filter((f) => f !== "MY");
       if (withoutMY.includes(key)) {
+        // 해당 카테고리 해제 → 빈 배열이면 전체로 돌아감
         return withoutMY.filter((f) => f !== key);
       }
       return [...withoutMY, key];
@@ -219,10 +224,13 @@ const CalendarSection = ({ onTodayEventCount }) => {
             <CalendarFilterBar
               selectedFilter={selectedFilter}
               onClick={handleFilterClick}
+              isMyDeptOnly={isMyDeptOnly}
+              onMyDeptOnlyChange={setIsMyDeptOnly}
             />
           }
         />
       </div>
+      <div className="border-t border-gray-200 max-mobile:block hidden" />
       <div className="mb-2 p-1 min-w-0">
         <DaySelectEventList
           events={eventsByDate[currentDate]}
@@ -239,14 +247,14 @@ const CalendarSection = ({ onTodayEventCount }) => {
           isOpen={isBottomSheetOpen}
           onClose={handleCloseBottomSheet}
           articleId={selectedEventId}
-          status={detailData?.status}
+          status={detailData?.deadline_status}
           title={detailData?.title}
           vendors={detailData?.vendors}
-          startDate={detailData?.start_date}
-          dueDate={detailData?.due_date}
-          created_at={detailData?.created_at}
+          startDate={detailData?.starts_on}
+          dueDate={detailData?.ends_on}
+          created_at={detailData?.published_at}
           content={detailData?.content}
-          category_name={detailData?.categories?.category_name}
+          category_name={detailData?.categories?.[0]?.name}
           is_bookmarked={detailData?.is_bookmarked}
           bookmark_count={detailData?.bookmark_count}
         />
