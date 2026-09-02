@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "@/stores/useAuthStore";
@@ -74,6 +74,11 @@ const MYPEditPage = () => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState(new Set());
   const [selectedClubTypeIds, setSelectedClubTypeIds] = useState(new Set());
 
+  // 서버 응답으로 초기화를 최초 1회만 수행하기 위한 플래그
+  const vendorInitialized = useRef(false);
+  const categoryInitialized = useRef(false);
+  const clubTypeInitialized = useRef(false);
+
   // ─── 소속 학과·기관 마스터 목록 (GET /api/v1/vendors?type=SCHOOL) ───────────────
   const {
     data: vendorListData,
@@ -126,22 +131,25 @@ const MYPEditPage = () => {
     queryFn: fetchMyClubTypes,
   });
 
-  // 서버에서 가져온 선택 목록으로 초기 상태 설정
+  // 서버에서 가져온 선택 목록으로 초기 상태 설정 (최초 1회만 실행)
   useEffect(() => {
-    if (myVendorData?.data) {
+    if (myVendorData?.data && !vendorInitialized.current) {
       setSelectedVendorIds(new Set(myVendorData.data.map((v) => v.id)));
+      vendorInitialized.current = true;
     }
   }, [myVendorData]);
 
   useEffect(() => {
-    if (myInterestCategoryData?.data) {
+    if (myInterestCategoryData?.data && !categoryInitialized.current) {
       setSelectedCategoryIds(new Set(myInterestCategoryData.data.map((c) => c.id)));
+      categoryInitialized.current = true;
     }
   }, [myInterestCategoryData]);
 
   useEffect(() => {
-    if (myClubTypeData?.data) {
+    if (myClubTypeData?.data && !clubTypeInitialized.current) {
       setSelectedClubTypeIds(new Set(myClubTypeData.data.map((c) => c.id)));
+      clubTypeInitialized.current = true;
     }
   }, [myClubTypeData]);
 

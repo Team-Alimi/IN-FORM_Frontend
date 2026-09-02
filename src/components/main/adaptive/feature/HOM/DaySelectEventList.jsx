@@ -66,6 +66,7 @@ const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
           <button
             onClick={() => movePrevPage()}
             disabled={page === 0}
+            aria-label="이전 페이지"
             className="ml-2 p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <IoChevronBackOutline className="text-gray-500 text-base" />
@@ -73,6 +74,7 @@ const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
           <button
             onClick={() => moveNextPage()}
             disabled={page === totalPages - 1}
+            aria-label="다음 페이지"
             className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <IoChevronForwardOutline className="text-gray-500 text-base" />

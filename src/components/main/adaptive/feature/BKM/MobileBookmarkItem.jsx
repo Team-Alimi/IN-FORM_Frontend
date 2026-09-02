@@ -80,6 +80,8 @@ const MobileBookmarkItem = ({
       {isEditMode && (
         <button
           onClick={handleCheckboxClick}
+          aria-label={`${title} ${isSelected ? "선택 해제" : "선택"}`}
+          aria-pressed={isSelected}
           className={`shrink-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all ${
             isSelected
               ? "border-[#4068f7] bg-[#4068f7]"
