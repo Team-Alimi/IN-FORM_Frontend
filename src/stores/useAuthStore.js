@@ -18,6 +18,9 @@ const useAuthStore = create(
           userInfo,
         }),
 
+      // 유저 정보만 갱신 (온보딩 완료 후 프로필 업데이트 등)
+      setUserInfo: (userInfo) => set({ userInfo }),
+
       // 로그아웃 시 토큰 및 회원정보 초기화
       logout: () =>
         set({

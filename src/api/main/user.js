@@ -137,6 +137,20 @@ export async function putMyVendors(ids) {
 }
 
 /**
+ * 온보딩 완료 처리 — 3단계 선택 후 최종 호출
+ * @returns {Promise<Object>} { success, data: 갱신된 프로필 }
+ */
+export async function postOnboardingComplete() {
+  try {
+    const res = await api.post("/api/v1/users/me/onboarding/complete");
+    return res.data;
+  } catch (error) {
+    console.error("[API] postOnboardingComplete 에러 발생:", error);
+    throw error;
+  }
+}
+
+/**
  * 회원 탈퇴 (유저 정보 및 연관 데이터 전체 삭제)
  * @returns {Promise}
  */

@@ -1,306 +1,390 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  IoChevronBackOutline,
+  IoChevronForwardOutline,
+  IoBookOutline,
+  IoFootballOutline,
+  IoMusicalNotesOutline,
+  IoHeartOutline,
+  IoBrushOutline,
+  IoBulbOutline,
+  IoBodyOutline,
+  IoLeafOutline,
+} from "react-icons/io5";
+import { fetchCategories, fetchClubTypes, fetchVendors } from "@/api/main/vendors";
+import {
+  putMyInterestCategories,
+  putMyVendors,
+  putMyClubTypes,
+  postOnboardingComplete,
+} from "@/api/main/user";
+import useAuthStore from "@/stores/useAuthStore";
 import { useDeviceStore } from "@/stores/deviceStore";
-import bellIcon from "@/assets/icons/notification.svg";
-import calendarLogo from "@/assets/icons/calendarLogo.png";
+import SearchBar from "@/components/main/adaptive/common/SearchBar";
 
-/**
- * Onboarding Page Component
- * 신규 유저를 위한 서비스 가이드 페이지 (데스크톱 특화 버전)
- */
+// 카테고리 이름 → 이모지 매핑 (API가 이모지를 제공하지 않아 프론트에서 매핑)
+const CATEGORY_EMOJI_MAP = {
+  학사: "🎓",
+  장학금: "💰",
+  "공모전·대회": "🏆",
+  "특강·세미나": "✏️",
+  "취업·인턴십": "💼",
+  "행사·축제": "🎉",
+  봉사활동: "🤝",
+  어학시험: "📝",
+  자격증: "📋",
+  "학술·연구": "🔬",
+  교환학생: "✈️",
+  "창업·스타트업": "🚀",
+  "문화·예술": "🎨",
+  "스포츠·체육": "⚽",
+  "멘토링·네트워킹": "🌐",
+  지원사업: "📢",
+};
+
+// 동아리 유형 이름 → 아이콘 매핑
+const CLUB_TYPE_ICON_MAP = {
+  "학술/IT": IoBookOutline,
+  "체육/스포츠": IoFootballOutline,
+  "음악/공연": IoMusicalNotesOutline,
+  봉사: IoHeartOutline,
+  "문화·예술": IoBrushOutline,
+  창업: IoBulbOutline,
+  댄스: IoBodyOutline,
+  종교: IoLeafOutline,
+};
+
+// 단계별 제목/부제 텍스트
+const STEP_INFO = [
+  {
+    title: "관심 있는 분야를\n선택해 주세요",
+    sub: "중복 선택이 가능해요",
+  },
+  {
+    title: "소속 학교 또는\n관심 기관을 선택해 주세요",
+    sub: "맞춤 공지사항을 불러오기 위해 필요해요",
+  },
+  {
+    title: "어떤 동아리에\n관심이 있으신가요?",
+    sub: "관심사에 맞는 동아리를 추천해 드릴게요",
+  },
+];
+
 const ONBPage = () => {
-    const isMobile = useDeviceStore((state) => state.isMobile);
-    const navigate = useNavigate();
-    const containerRef = useRef(null);
-    const [activeSection, setActiveSection] = useState(0);
+  const navigate = useNavigate();
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const setUserInfo = useAuthStore((state) => state.setUserInfo);
 
-    // 서비스 시작 핸들러
-    const handleStart = () => {
-        navigate("/", { replace: true });
-    };
+  const [step, setStep] = useState(1);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState(new Set());
+  const [selectedVendorIds, setSelectedVendorIds] = useState(new Set());
+  const [selectedClubTypeIds, setSelectedClubTypeIds] = useState(new Set());
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("");
 
-    // 데스크톱 스크롤 핸들러 (100vh 섹션 스냅 기준)
-    const handleDesktopScroll = (e) => {
-        if (isMobile) return;
-        const { scrollTop, offsetHeight } = e.currentTarget;
-        if (offsetHeight === 0) return;
-        const index = Math.round(scrollTop / offsetHeight);
-        if (activeSection !== index) {
-            setActiveSection(index);
-        }
-    };
+  /******** 데이터 조회 ********/
+  const { data: categoriesRes } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 60 * 1000 * 60,
+  });
 
-    // --- 모바일 전용 상태 및 데이터 ---
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const totalSlides = 5;
-    const nextSlide = () => {
-        if (currentSlide < totalSlides - 1) setCurrentSlide(prev => prev + 1);
-    };
-    const prevSlide = () => {
-        if (currentSlide > 0) setCurrentSlide(prev => prev - 1);
-    };
+  const { data: vendorsRes } = useQuery({
+    queryKey: ["vendors", "SCHOOL"],
+    queryFn: () => fetchVendors("SCHOOL"),
+    staleTime: 60 * 1000 * 60,
+  });
 
-    const mobileSlides = [
-        {
-            tag: "WELCOME",
-            title: <>IN:FORM에 오신 것을<br />환영합니다</>,
-            desc: "인하대학교 공지사항을\n가장 스마트하게 확인하는 방법",
-            icon: <img src="/inform-logo.png" className="w-20 h-20" />,
-            bgColor: "bg-[#f8faff]"
-        },
-        {
-            tag: "CALENDAR",
-            title: <>모든 학사일정을<br /><span className="text-primary">한 눈에 쏙</span></>,
-            desc: "실제 공지 게시글과 연동되어\n내 스케줄을 스마트하게 관리하세요",
-            icon: <img src="/assets/onboarding/Mobile_Calendar.jpg" className="w-full h-full object-contain rounded-2xl shadow-md" />,
-            bgColor: "bg-[#f8faff]"
-        },
-        {
-            tag: "BOOKMARK",
-            title: <>나중에 볼 공지는<br /><span className="text-primary">핀으로 고정!</span></>,
-            desc: "장학금, 대회 정보 등\n중요한 소식은 보관함에 담아두세요",
-            icon: <img src="/assets/onboarding/Mobile_Bookmark.jpg" className="w-full h-full object-contain rounded-2xl shadow-md" />,
-            bgColor: "bg-[#f8faff]"
-        },
-        {
-            tag: "CLUBS & EVENTS",
-            title: <>동아리에서 진행하는<br /><span className="text-primary">행사들을 확인해보세요!</span></>,
-            desc: "다채로운 동아리 활동 소식과\n다양한 이벤트 정보를 한 곳에 모았습니다",
-            icon: <img src="/assets/onboarding/Mobile_Club.jpg" className="w-full h-full object-contain rounded-2xl shadow-md" />,
-            bgColor: "bg-[#f8faff]"
-        },
-        {
-            tag: "",
-            title: <>더 똑똑해진<br />학교 생활의 시작</>,
-            desc: "지금 바로 IN:FORM과 함께\n효율적인 캠퍼스 라이프를 즐기세요",
-            icon: <img
-                src="/inform-logo.png"
-                className={`w-28 h-auto transition-all duration-1000 delay-300 ${currentSlide === 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-            />,
-            bgColor: "bg-gray-900",
-            isLast: true
-        }
-    ];
+  const { data: clubTypesRes } = useQuery({
+    queryKey: ["clubTypes"],
+    queryFn: fetchClubTypes,
+    staleTime: 60 * 1000 * 60,
+  });
 
-    // --- 렌더링 로직 ---
-    if (isMobile) {
-        return (
-            <div className={`w-full h-[100dvh] transition-colors duration-500 overflow-hidden flex flex-col ${mobileSlides[currentSlide].bgColor}`}>
-                {/* Progress Indicators */}
-                <div className="flex gap-1.5 justify-center pt-12 px-10">
-                    {[...Array(totalSlides)].map((_, i) => (
-                        <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === currentSlide ? "flex-[2] bg-primary" : "flex-1 bg-gray-200"}`} />
-                    ))}
-                </div>
+  const categories = categoriesRes?.data ?? [];
+  const vendors = vendorsRes?.data ?? [];
+  const clubTypes = clubTypesRes?.data ?? [];
 
-                {/* Slides Container */}
-                <div className="flex-1 relative overflow-hidden">
-                    {mobileSlides.map((slide, index) => (
-                        <div
-                            key={index}
-                            className={`absolute inset-0 flex flex-col items-center justify-center px-8 transition-all duration-500 ease-out
-                                ${index === currentSlide ? "opacity-100 translate-x-0" : index < currentSlide ? "opacity-0 -translate-x-full" : "opacity-0 translate-x-full"}`}
-                        >
-                            <div className="mb-10 w-48 h-48 bg-white/50 rounded-[40px] flex items-center justify-center shadow-inner">
-                                {slide.icon}
-                            </div>
+  // 검색어로 필터링된 기관 목록
+  const filteredVendors = useMemo(() => {
+    const q = vendorSearchQuery.trim();
+    if (!q) return vendors;
+    return vendors.filter((v) => v.name.includes(q));
+  }, [vendors, vendorSearchQuery]);
 
-                            <div className="flex flex-col items-center">
-                                <span className={`text-[11px] font-black tracking-[0.2em] mb-4 
-                                    ${slide.isLast ? "text-blue-400" : "text-primary/60"}`}>
-                                    {slide.tag}
-                                </span>
-                                <h1 className={`text-[28px] font-black leading-tight mb-4 tracking-tight 
-                                    ${slide.isLast ? "text-white" : "text-gray-900"}`}>
-                                    {slide.title}
-                                </h1>
-                                <p className={`text-[15px] font-medium leading-relaxed whitespace-pre-line text-center
-                                    ${slide.isLast ? "text-gray-400" : "text-gray-500"}`}>
-                                    {slide.desc}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+  /******** Mutation ********/
+  const categoryMutation = useMutation({
+    mutationFn: (ids) => putMyInterestCategories([...ids]),
+    onSuccess: () => setStep(2),
+    onError: (e) => console.error("[ONB] putMyInterestCategories 에러:", e),
+  });
 
-                {/* Navigation Buttons */}
-                <div className="px-6 pb-12 flex flex-col gap-3">
-                    {currentSlide === totalSlides - 1 ? (
-                        <button
-                            onClick={handleStart}
-                            className="w-full py-5 bg-blue-600 text-white rounded-[24px] font-black text-lg shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all"
-                        >
-                            IN:FORM 시작하기
-                        </button>
-                    ) : (
-                        <div className="flex gap-2">
-                            {currentSlide > 0 && (
-                                <button
-                                    onClick={prevSlide}
-                                    className="w-16 h-16 flex items-center justify-center bg-gray-100 text-gray-400 rounded-2xl active:scale-95 transition-all"
-                                >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M15 18l-6-6 6-6" />
-                                    </svg>
-                                </button>
-                            )}
-                            <button
-                                onClick={nextSlide}
-                                className="flex-1 py-5 bg-white border border-gray-100 text-gray-900 rounded-[24px] font-bold shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                            >
-                                다음으로
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9 18l6-6-6-6" />
-                                </svg>
-                            </button>
-                        </div>
-                    )}
-                    {currentSlide < totalSlides - 1 && (
-                        <button onClick={handleStart} className="text-[13px] font-bold text-gray-400 py-2 hover:text-gray-500">
-                            건너뛰기
-                        </button>
-                    )}
-                </div>
-            </div>
-        );
+  const vendorMutation = useMutation({
+    mutationFn: (ids) => putMyVendors([...ids]),
+    onSuccess: () => setStep(3),
+    onError: (e) => console.error("[ONB] putMyVendors 에러:", e),
+  });
+
+  const clubTypeMutation = useMutation({
+    mutationFn: async (ids) => {
+      await putMyClubTypes([...ids]);
+      return postOnboardingComplete();
+    },
+    onSuccess: (res) => {
+      if (res?.data) setUserInfo(res.data);
+      navigate("/");
+    },
+    onError: (e) => console.error("[ONB] clubTypes/complete 에러:", e),
+  });
+
+  // 건너뛰기 최종 단계용 — club-types PUT 없이 완료 처리
+  const completeMutation = useMutation({
+    mutationFn: postOnboardingComplete,
+    onSuccess: (res) => {
+      if (res?.data) setUserInfo(res.data);
+      navigate("/");
+    },
+    onError: (e) => console.error("[ONB] onboardingComplete 에러:", e),
+  });
+
+  const isLoading =
+    categoryMutation.isPending ||
+    vendorMutation.isPending ||
+    clubTypeMutation.isPending ||
+    completeMutation.isPending;
+
+  /******** 핸들러 ********/
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+    else navigate(-1);
+  };
+
+  const handleSkip = () => {
+    if (step < 3) setStep(step + 1);
+    else completeMutation.mutate();
+  };
+
+  const handleToggleCategory = (id) => {
+    setSelectedCategoryIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggleVendor = (id) => {
+    setSelectedVendorIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggleClubType = (id) => {
+    setSelectedClubTypeIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleNext = () => {
+    if (step === 1) {
+      if (selectedCategoryIds.size === 0) {
+        alert("최소 1개 이상 선택해주세요.");
+        return;
+      }
+      categoryMutation.mutate(selectedCategoryIds);
+    } else if (step === 2) {
+      if (selectedVendorIds.size === 0) {
+        alert("최소 1개 이상 선택해주세요.");
+        return;
+      }
+      vendorMutation.mutate(selectedVendorIds);
+    } else {
+      if (selectedClubTypeIds.size === 0) {
+        alert("최소 1개 이상 선택해주세요.");
+        return;
+      }
+      clubTypeMutation.mutate(selectedClubTypeIds);
     }
+  };
 
-    // 데스크톱 뷰
-    return (
-        <div
-            className="w-full h-screen overflow-y-auto snap-y snap-mandatory bg-[#f8faff] scroll-smooth"
-            ref={containerRef}
-            onScroll={handleDesktopScroll}
-        >
-            {/* 1. Welcome Section */}
-            <section data-index="0" className="w-full h-screen snap-start flex flex-col items-center justify-center relative overflow-hidden bg-[#f8faff]">
-                <div className={`transition-all duration-1000 transform ${activeSection === 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-                    <div className="w-24 h-24 bg-white rounded-[32px] shadow-2xl flex items-center justify-center mb-10 mx-auto">
-                        <img src="/inform-logo.png" alt="InForm" className="w-16 h-auto" />
-                    </div>
-                    <h1 className="text-6xl font-black text-gray-900 mb-6 tracking-tight text-center leading-tight">
-                        인하대학교 공지사항 큐레이션<br />
-                        <span className="text-primary mt-2 block italic">IN:FORM에 오신 것을 환영합니다</span>
-                    </h1>
-                    <p className="text-2xl text-gray-500 font-medium text-center max-w-3xl leading-relaxed mx-auto">
-                        나에게 꼭 필요한 소식을 이곳에 한번에 찾아보세요.
-                    </p>
-                </div>
-                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-gray-400 animate-bounce">
-                    <span className="text-[11px] font-black tracking-[0.3em] uppercase opacity-60">Scroll Down</span>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
-                    </svg>
-                </div>
-            </section>
+  /******** 렌더링 ********/
+  const { title, sub } = STEP_INFO[step - 1];
 
-            {/* 2. Calendar Section */}
-            <section data-index="1" className="w-full h-screen snap-start flex items-center justify-center px-32 gap-32 bg-[#f8faff]">
-                <div className={`flex-[1.2] flex justify-center transition-all duration-1000 ${activeSection === 1 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-20 scale-95"}`}>
-                    <div className="w-full max-w-2xl bg-white rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden relative">
-                        <img src="/assets/onboarding/Desktop_Calendar.jpg" alt="Calendar Guide" className="w-full h-auto object-cover" />
-                        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[40px]"></div>
-                    </div>
-                </div>
-                <div className={`flex-1 transition-all duration-1000 delay-300 ${activeSection === 1 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
-                    <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-primary rounded-2xl text-xs font-black tracking-widest mb-8 uppercase">
-                        Smart Scheduler
-                    </div>
-                    <h2 className="text-5xl font-black text-gray-900 mb-8 leading-tight">
-                        학사일정을<br />
-                        <span className="text-primary">한 눈에 완벽하게</span>
-                    </h2>
-                    <p className="text-xl text-gray-500 font-medium leading-relaxed">
-                        실제 공지 게시글과 연동되어<br />
-                        클릭 한 번으로 상세 내용까지 바로 확인할 수 있습니다.
-                    </p>
-                </div>
-            </section>
-
-            {/* 3. Bookmark Section */}
-            <section data-index="2" className="w-full h-screen snap-start flex items-center justify-center px-32 gap-32 bg-[#f8faff]">
-                <div className={`flex-1 transition-all duration-1000 ${activeSection === 2 ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}>
-                    <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-50 text-purple-600 rounded-2xl text-xs font-black tracking-widest mb-8 uppercase">
-                        Personal Archive
-                    </div>
-                    <h2 className="text-5xl font-black text-gray-900 mb-8 leading-tight">
-                        중요한 공지는 핀으로!<br />
-                        <span className="text-primary">북마크 기능</span>
-                    </h2>
-                    <p className="text-xl text-gray-500 font-medium leading-relaxed">
-                        장학금, 대회 정보 등 나중에 다시 봐야 할 소식은<br />
-                        북마크 버튼으로 콕 짚어두세요.<br />
-                        마이페이지에서 언제든 확인할 수 있습니다.
-                    </p>
-                </div>
-                <div className={`flex-[1.2] flex justify-center transition-all duration-1000 delay-300 ${activeSection === 2 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-20 scale-95"}`}>
-                    <div className="w-full max-w-2xl bg-white rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden relative">
-                        <img src="/assets/onboarding/Desktop_Bookmark.jpg" alt="Bookmark Guide" className="w-full h-auto object-cover" />
-                        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[40px]"></div>
-                    </div>
-                </div>
-            </section>
-
-            {/* 4. Club Section */}
-            <section data-index="3" className="w-full h-screen snap-start flex items-center justify-center px-32 gap-32 bg-[#f8faff]">
-                <div className={`flex-[1.2] flex justify-center transition-all duration-1000 ${activeSection === 3 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-20 scale-95"}`}>
-                    <div className="w-full max-w-2xl bg-white rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden relative">
-                        <img src="/assets/onboarding/Desktop_club.jpg" alt="Club Guide" className="w-full h-auto object-cover" />
-                        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[40px]"></div>
-                    </div>
-                </div>
-                <div className={`flex-1 transition-all duration-1000 delay-300 ${activeSection === 3 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
-                    <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-50 text-orange-600 rounded-2xl text-xs font-black tracking-widest mb-8 uppercase">
-                        Clubs & Events
-                    </div>
-                    <h2 className="text-5xl font-black text-gray-900 mb-8 leading-tight">
-                        다양한 동아리 활동,<br />
-                        <span className="text-primary">직접 확인해보세요!</span>
-                    </h2>
-                    <p className="text-xl text-gray-500 font-medium leading-relaxed">
-                        다양한 동아리 행사와 소식들을<br />
-                        이제 IN:FORM에서 한 눈에 모아보세요.
-                    </p>
-                </div>
-            </section>
-
-            {/* 5. Start Section */}
-            <section data-index="4" className="w-full h-screen snap-start flex flex-col items-center justify-center bg-gray-900 text-white p-10 overflow-hidden relative">
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
-                <div className={`relative z-10 transition-all duration-1000 ${activeSection === 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-                    <div className="mb-12 flex justify-center">
-                        <img
-                            src="/inform-logo.png"
-                            className={`w-32 h-auto transition-all duration-1000 delay-300 ${activeSection === 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-                            alt="Logo"
-                        />
-                    </div>
-                    <h2 className="text-6xl font-black mb-10 text-center leading-tight tracking-tight">
-                        우리의 캠퍼스 라이프,<br />
-                        <span className="text-blue-400">더 쉽게 시작해볼까요?</span>
-                    </h2>
-                    <p className="text-2xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed font-medium">
-                        모든 준비가 끝났습니다.<br />
-                        지금 바로 즐거운 인하대학교 생활을 시작해보세요.
-                    </p>
-                    <div className="flex justify-center">
-                        <button
-                            onClick={handleStart}
-                            className="group relative px-16 py-6 bg-blue-600 rounded-[28px] text-2xl font-black shadow-[0_20px_50px_rgba(37,99,235,0.4)] hover:bg-blue-500 transition-all hover:scale-[1.03] active:scale-95 flex items-center gap-4"
-                        >
-                            IN:FORM 시작하기
-                            <svg className="w-7 h-7 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5-5 5" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div className="absolute bottom-12 text-gray-600 text-xs font-black tracking-[0.4em] uppercase opacity-40">
-                    © 2026 Team Alimi. All rights reserved.
-                </div>
-            </section>
+  const card = (
+    <div
+      className={`flex flex-col bg-white ${
+        isMobile ? "h-dvh" : "h-[680px] rounded-3xl overflow-hidden"
+      } w-full`}
+    >
+      {/* 헤더: 뒤로가기 + 진행 바 + 건너뛰기 */}
+      <div className="flex items-center justify-between px-5 pt-10 pb-6">
+        <button onClick={handleBack} className="p-1 -ml-1" aria-label="이전 단계">
+          <IoChevronBackOutline className="text-[22px] text-gray-800" />
+        </button>
+        <div className="flex gap-1.5">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`h-1 w-8 rounded-full transition-colors duration-300 ${
+                s <= step ? "bg-gray-900" : "bg-gray-200"
+              }`}
+            />
+          ))}
         </div>
-    );
+        <button
+          onClick={handleSkip}
+          disabled={isLoading}
+          className="text-[14px] text-gray-500 disabled:opacity-40"
+        >
+          건너뛰기
+        </button>
+      </div>
+
+      {/* 제목 */}
+      <div className="px-5 mb-6">
+        <h1 className="text-[24px] font-bold text-gray-900 whitespace-pre-line leading-tight mb-1.5">
+          {title}
+        </h1>
+        <p className="text-[14px] text-gray-400">{sub}</p>
+      </div>
+
+      {/* 선택 영역 */}
+      <div className="flex-1 overflow-y-auto px-5">
+        {/* Step 1 — 관심 분야 pill 칩 */}
+        {step === 1 && (
+          <div className="flex flex-wrap gap-2 pb-4">
+            {categories.map((cat) => {
+              const selected = selectedCategoryIds.has(cat.id);
+              const emoji = CATEGORY_EMOJI_MAP[cat.name] ?? "📌";
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleToggleCategory(cat.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[14px] font-medium transition-colors ${
+                    selected
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  <span>{emoji}</span>
+                  <span>{cat.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Step 2 — 소속 기관 리스트 */}
+        {step === 2 && (
+          <>
+            {/* 검색바 (스크롤 시 상단 고정) */}
+            <div className="sticky top-0 bg-white pb-3 z-10">
+              <SearchBar
+                value={vendorSearchQuery}
+                onChange={(e) => setVendorSearchQuery(e.target.value)}
+                placeholder="학과 또는 기관 이름 검색"
+              />
+            </div>
+            <div className="divide-y divide-gray-100 pb-4">
+              {filteredVendors.length > 0 ? (
+                filteredVendors.map((vendor) => {
+                  const selected = selectedVendorIds.has(vendor.id);
+                  return (
+                    <button
+                      key={vendor.id}
+                      onClick={() => handleToggleVendor(vendor.id)}
+                      className="flex items-center justify-between w-full py-4 text-left"
+                    >
+                      <span
+                        className={`text-[15px] ${
+                          selected ? "text-gray-900 font-medium" : "text-gray-800"
+                        }`}
+                      >
+                        {vendor.name}
+                      </span>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                          selected ? "border-gray-900 bg-gray-900" : "border-gray-300"
+                        }`}
+                      >
+                        {selected && (
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <p className="py-8 text-center text-[14px] text-gray-400">
+                  검색 결과가 없어요
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Step 3 — 동아리 유형 아이콘 카드 */}
+        {step === 3 && (
+          <div className="grid grid-cols-3 gap-3 pb-4">
+            {clubTypes.map((ct) => {
+              const selected = selectedClubTypeIds.has(ct.id);
+              const Icon = CLUB_TYPE_ICON_MAP[ct.name];
+              return (
+                <button
+                  key={ct.id}
+                  onClick={() => handleToggleClubType(ct.id)}
+                  className={`flex flex-col items-center gap-2 py-4 rounded-xl transition-colors ${
+                    selected
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {Icon && <Icon className="text-[24px]" />}
+                  <span className="text-[13px] font-medium">{ct.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 다음 / 시작하기 버튼 (pill, 우측 정렬) */}
+      <div className="flex justify-end px-5 pb-10 pt-4">
+        <button
+          onClick={handleNext}
+          disabled={isLoading}
+          className="flex items-center gap-1 px-6 py-3.5 rounded-full bg-gray-900 text-white text-[15px] font-semibold disabled:opacity-60 transition-opacity"
+        >
+          <span>{isLoading ? "저장 중..." : step === 3 ? "시작하기" : "다음"}</span>
+          {!isLoading && <IoChevronForwardOutline className="text-[16px]" />}
+        </button>
+      </div>
+    </div>
+  );
+
+  if (isMobile) return card;
+
+  return (
+    <div className="min-h-screen bg-[#F4F8FE] flex items-center justify-center">
+      <div className="w-full max-w-[420px]">{card}</div>
+    </div>
+  );
 };
 
 export default ONBPage;
