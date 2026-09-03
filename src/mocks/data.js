@@ -465,6 +465,18 @@ export const MOCK_CATEGORIES = [
   { id: 10, name: "학술·연구", sort_order: 10 },
 ];
 
+// GET /api/v1/club-types 응답 형식 (sort_order 오름차순, 실제 DB ID 기준)
+export const MOCK_CLUB_TYPES = [
+  { id: 1, name: "학술/IT", sort_order: 10 },
+  { id: 4, name: "체육/스포츠", sort_order: 20 },
+  { id: 3, name: "음악/공연", sort_order: 30 },
+  { id: 2, name: "봉사", sort_order: 40 },
+  { id: 5, name: "문화·예술", sort_order: 50 },
+  { id: 6, name: "창업", sort_order: 60 },
+  { id: 10, name: "댄스", sort_order: 70 },
+  { id: 8, name: "종교", sort_order: 80 },
+];
+
 // ─── 페이지 정보 ────────────────────────────────────────────────────────────────
 
 export const MOCK_PAGE_INFO = {

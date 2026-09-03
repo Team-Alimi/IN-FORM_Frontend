@@ -15,6 +15,7 @@
  *   - putMyClubTypes            : 관심 동아리 유형 저장
  *   - fetchMyVendors            : 구독 학과·기관 조회
  *   - putMyVendors              : 구독 학과·기관 저장
+ *   - postOnboardingComplete    : 온보딩 완료 처리
  */
 import { MOCK_VENDORS, MOCK_SCHOOL_VENDORS, MOCK_USER } from "@/mocks/data";
 import useAuthStore from "@/stores/useAuthStore";
@@ -91,9 +92,10 @@ export const putMyInterestCategories = async (ids) => {
 // 관심 동아리 유형 메모리 관리 (초기값: 1, 2번 선택)
 let mockClubTypeIds = [1, 2];
 
+// 실제 DB club_types.id 기준 (GET /api/v1/club-types 응답과 동일)
 const MOCK_CLUB_TYPE_NAMES = {
-  1: "학술/IT", 2: "체육/스포츠", 3: "음악/공연", 4: "봉사",
-  5: "문화·예술", 6: "창업", 7: "댄스", 8: "종교",
+  1: "학술/IT", 2: "봉사", 3: "음악/공연", 4: "체육/스포츠",
+  5: "문화·예술", 6: "창업", 8: "종교", 10: "댄스",
 };
 
 export const fetchMyClubTypes = async () => ({
@@ -117,4 +119,19 @@ export const fetchMyVendors = async () => ({
 export const putMyVendors = async (ids) => {
   mockVendorIds = [...ids];
   return fetchMyVendors();
+};
+
+export const postOnboardingComplete = async () => {
+  const { userInfo } = useAuthStore.getState();
+  return {
+    success: true,
+    data: {
+      id: userInfo?.user_id ?? MOCK_USER.user_id,
+      email: userInfo?.email ?? MOCK_USER.email,
+      name: userInfo?.name ?? MOCK_USER.name,
+      role: "USER",
+      onboarding_completed: true,
+      email_notification_enabled: mockEmailNotificationEnabled,
+    },
+  };
 };

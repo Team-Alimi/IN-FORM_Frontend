@@ -30,3 +30,17 @@ export async function fetchCategories() {
     throw error;
   }
 }
+
+/**
+ * 동아리 유형 목록 조회 — 활성 유형만, sort_order 오름차순
+ * @returns {Promise<Object>} { success, data: [{ id, name, sort_order }] }
+ */
+export async function fetchClubTypes() {
+  try {
+    const res = await api.get("/api/v1/club-types");
+    return res.data;
+  } catch (error) {
+    console.error("[API] fetchClubTypes 에러 발생:", error);
+    throw error;
+  }
+}

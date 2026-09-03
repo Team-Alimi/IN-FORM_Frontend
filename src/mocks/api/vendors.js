@@ -8,8 +8,9 @@
  *   - fetchVendors   : type="SCHOOL" 이면 MOCK_SCHOOL_VENDORS 반환,
  *                      그 외 vendor_type 으로 필터링 (기존 동작 유지)
  *   - fetchCategories: MOCK_CATEGORIES 반환
+ *   - fetchClubTypes : MOCK_CLUB_TYPES 반환
  */
-import { MOCK_VENDORS, MOCK_SCHOOL_VENDORS, MOCK_CATEGORIES } from "@/mocks/data";
+import { MOCK_VENDORS, MOCK_SCHOOL_VENDORS, MOCK_CATEGORIES, MOCK_CLUB_TYPES } from "@/mocks/data";
 
 export const fetchVendors = async (type) => {
   if (type === "SCHOOL") {
@@ -24,4 +25,9 @@ export const fetchVendors = async (type) => {
 export const fetchCategories = async () => ({
   success: true,
   data: MOCK_CATEGORIES,
+});
+
+export const fetchClubTypes = async () => ({
+  success: true,
+  data: MOCK_CLUB_TYPES,
 });
