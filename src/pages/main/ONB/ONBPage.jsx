@@ -215,11 +215,7 @@ const ONBPage = () => {
   const { title, sub } = STEP_INFO[step - 1];
 
   const card = (
-    <div
-      className={`flex flex-col bg-white ${
-        isMobile ? "h-dvh" : "h-[680px] rounded-3xl overflow-hidden"
-      } w-full`}
-    >
+    <div className={`flex flex-col bg-white w-full ${isMobile ? "h-dvh" : "flex-1"}`}>
       {/* 헤더: 뒤로가기 + 진행 바 + 건너뛰기 */}
       <div className="flex items-center justify-between px-5 pt-10 pb-6">
         <button onClick={handleBack} className="p-1 -ml-1" aria-label="이전 단계">
@@ -380,9 +376,27 @@ const ONBPage = () => {
 
   if (isMobile) return card;
 
+  // 데스크톱: 로그인 페이지와 동일한 2단 분할 레이아웃 (좌=브랜딩, 우=폼)
   return (
-    <div className="min-h-screen bg-[#F4F8FE] flex items-center justify-center">
-      <div className="w-full max-w-[420px]">{card}</div>
+    <div className="flex w-full h-dvh">
+      {/* 왼쪽: 브랜딩 패널 — 로그인 페이지와 동일한 디자인 */}
+      <div className="hidden md:flex flex-col w-1/2 bg-[#0056b3] items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
+            <img src="/inform_icon.png" alt="InForm Logo" className="w-16 h-auto" />
+          </div>
+          <h1 className="text-white text-5xl font-black mb-4 tracking-tight">IN:FORM</h1>
+          <p className="text-white/90 text-lg font-medium text-center leading-relaxed">
+            인하대학교의 모든 공지사항을<br />바로 이곳에서 한번에
+          </p>
+        </div>
+      </div>
+      {/* 오른쪽: 폼 패널 — h-full로 컨테이너 높이(dvh)를 채움 */}
+      <div className="flex flex-col w-full md:w-1/2 bg-white h-full overflow-hidden">
+        <div className="flex-1 flex flex-col w-full max-w-[460px] mx-auto min-h-0">{card}</div>
+      </div>
     </div>
   );
 };
