@@ -88,6 +88,7 @@
 |---|---|---|---|---|
 | 카테고리 조회 | GET | `/api/v1/categories` | Not Required | [common/카테고리 조회.md](common/%EC%B9%B4%ED%85%8C%EA%B3%A0%EB%A6%AC%20%EC%A1%B0%ED%9A%8C.md) |
 | 제공처 목록 조회 | GET | `/api/v1/vendors` | Not Required | [common/제공처 목록 조회.md](common/%EC%A0%9C%EA%B3%B5%EC%B2%98%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
+| 동아리 유형 조회 | GET | `/api/v1/club-types` | Not Required | [common/동아리 유형 조회.md](common/%EB%8F%99%EC%95%84%EB%A6%AC%20%EC%9C%A0%ED%98%95%20%EC%A1%B0%ED%9A%8C.md) |
 
 ## 알림
 
