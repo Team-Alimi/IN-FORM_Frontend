@@ -24,7 +24,7 @@ const STATUS_OPTIONS = [
 const getChipClass = (value, isSelected) => {
   if (value === "ALL") {
     return isSelected
-      ? "bg-blue-500 text-white border-blue-500"
+      ? "bg-primary text-white border-primary"
       : "bg-white text-gray-600 border-gray-300";
   }
   const opt = STATE_OPTIONS.find((o) => o.key === API_TO_STATE_KEY[value]);
@@ -218,7 +218,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
                 onClick={() => toggleVendor(v.vendor_id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected
-                    ? "bg-blue-500 text-white border-blue-500"
+                    ? "bg-primary text-white border-primary"
                     : "bg-white text-gray-600 border-gray-300"
                 }`}
               >
@@ -239,7 +239,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         </button>
         <button
           onClick={handleApply}
-          className="flex-1 bg-blue-500 text-white rounded-xl py-3 text-sm font-semibold"
+          className="flex-1 bg-primary text-white rounded-xl py-3 text-sm font-semibold"
         >
           {previewCount != null ? `${previewCount}개 항목 보기` : "항목 보기"}
         </button>

@@ -29,7 +29,7 @@ const CalendarFilterBar = ({
         <button
           onClick={() => onClick("ALL")}
           className={`text-sm font-medium py-1.5 px-4 rounded-full shrink-0 transition-colors ${
-            selectedFilter.length === 0 ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-600"
+            selectedFilter.length === 0 ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
           }`}
         >
           전체

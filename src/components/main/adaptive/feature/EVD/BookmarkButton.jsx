@@ -32,7 +32,7 @@ const BookmarkButton = ({ articleId, articleType = "SCHOOL", isBookmarked = fals
       className={`w-10 h-10 flex items-center justify-center transition-all ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
     >
       {bookmarked
-        ? <BsBookmarkFill size={22} color="#1e3a5f" />
+        ? <BsBookmarkFill size={22} className="text-primary" />
         : <BsBookmark size={22} color="#9ca3af" />
       }
     </button>

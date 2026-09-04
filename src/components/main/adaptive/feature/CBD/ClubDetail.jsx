@@ -271,10 +271,10 @@ const MobileLayout = ({ title, status, vendors, categories, startDate, dueDate, 
         {(hashtags.length > 0 || categoryName) && (
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             {hashtags.map((tag, i) => (
-              <span key={i} className="text-sm text-[#4068f7]">#{tag}</span>
+              <span key={i} className="text-sm text-primary">#{tag}</span>
             ))}
             {categoryName && (
-              <span className="text-sm text-[#4068f7]">#{categoryName}</span>
+              <span className="text-sm text-primary">#{categoryName}</span>
             )}
           </div>
         )}
@@ -480,7 +480,7 @@ const DesktopLayout = ({ title, vendors, startDate, dueDate, created_at, summary
             href={linkUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full max-w-md inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors shadow-sm bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className="w-full max-w-md inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors shadow-sm bg-primary text-white hover:bg-primary/90"
           >
             <img src={urlIcon} alt="지원 링크" className="w-5 h-5" />
             지원하러 가기
