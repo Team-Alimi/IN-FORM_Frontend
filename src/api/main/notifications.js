@@ -1,13 +1,14 @@
 import api from "@/api/axios";
 
 /**
- * 알림 목록 조회
- * @returns {Promise} 알림 데이터 배열 (notification_id, title, message, article_type, article_id, is_read, created_at 포함)
+ * 알림 목록 조회 (최신순, 페이지네이션)
+ * @param {number} page - 페이지 번호 (1부터 시작, 기본값 1)
+ * @returns {Promise<{ content: Array, page_info: Object }>}
  */
-export const fetchNotifications = async () => {
+export const fetchNotifications = async (page = 1) => {
   try {
-    const res = await api.get("/api/v1/notifications");
-    return res.data.data;
+    const res = await api.get("/api/v1/notifications", { params: { page, size: 20 } });
+    return res.data.data; // { content: [...], page_info: {...} }
   } catch (error) {
     console.error("알림 목록 조회 실패:", error);
     throw error;
@@ -16,7 +17,7 @@ export const fetchNotifications = async () => {
 
 /**
  * 안 읽은 알림 개수 조회 (배지용)
- * @returns {Promise} unread_count를 포함한 객체
+ * @returns {Promise<{ unread_count: number }>}
  */
 export const fetchUnreadCount = async () => {
   try {
@@ -29,15 +30,30 @@ export const fetchUnreadCount = async () => {
 };
 
 /**
+ * 알림 개별 읽음 처리
+ * @param {number} notificationId - 읽음 처리할 알림 ID
+ * @returns {Promise}
+ */
+export const readNotification = async (notificationId) => {
+  try {
+    const res = await api.patch(`/api/v1/notifications/${notificationId}/read`);
+    return res.data;
+  } catch (error) {
+    console.error("알림 개별 읽음 처리 실패:", error);
+    throw error;
+  }
+};
+
+/**
  * 전체 알림 읽음 처리
- * @returns {Promise} 성공 여부
+ * @returns {Promise<{ read_count: number }>}
  */
 export const readAllNotifications = async () => {
   try {
     const res = await api.patch("/api/v1/notifications/read-all");
     return res.data;
   } catch (error) {
-    console.error("알림 읽음 처리 실패:", error);
+    console.error("알림 전체 읽음 처리 실패:", error);
     throw error;
   }
 };

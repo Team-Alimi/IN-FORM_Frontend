@@ -390,33 +390,34 @@ export const MOCK_BOOKMARKS = [
 
 // ─── 알림 ────────────────────────────────────────────────────────────────────────
 
+// 새 API 스펙: id, type, title, message, article_id, read, created_at
 export const MOCK_NOTIFICATIONS = [
   {
-    notification_id: 1,
-    title: "마감 임박 알림",
-    message: "북마크한 '하계 현장실습 참여 학생 모집'이 3일 후 마감됩니다.",
-    article_type: "SCHOOL",
+    id: 1,
+    type: "DEADLINE_D1",
+    title: "2026-1학기 국가장학금 신청 마감",
+    message: "국가장학금 신청 마감! 국가장학금 신청 마감! 국가장학금 신청 마감!",
     article_id: 102,
-    is_read: false,
-    created_at: "2026-08-04T08:00:00",
+    read: false,
+    created_at: "2026-09-04T11:50:00+09:00",
   },
   {
-    notification_id: 2,
-    title: "새 공지사항",
-    message: "컴퓨터공학과에 새 공지사항이 등록되었습니다.",
-    article_type: "SCHOOL",
+    id: 2,
+    type: "DEADLINE_D1",
+    title: "컴퓨터공학과 학과 설명회",
+    message: "오늘 오후 2시 공학관 101호에서 진행됩니다. 궁금이 즐격",
     article_id: 103,
-    is_read: false,
-    created_at: "2026-08-03T14:30:00",
+    read: false,
+    created_at: "2026-09-04T11:00:00+09:00",
   },
   {
-    notification_id: 3,
-    title: "마감 임박 알림",
-    message: "북마크한 '창업 아이디어 공모전'의 마감이 2주 남았습니다.",
-    article_type: "SCHOOL",
+    id: 3,
+    type: "DEADLINE_D1",
+    title: "북마크한 'IUPC 해커톤' 일정 등록 완료",
+    message: "9월 12일~14일 일정이 캘린더에 자동 추가되었습니다.",
     article_id: 107,
-    is_read: true,
-    created_at: "2026-08-01T09:00:00",
+    read: true,
+    created_at: "2026-09-03T09:00:00+09:00",
   },
 ];
 
