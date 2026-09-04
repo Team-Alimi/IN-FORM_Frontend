@@ -39,8 +39,8 @@ const CalendarCell = ({
   // - 오늘: 진한 primary 원 (항상 유지)
   // - 다른 날짜 선택: 연한 primary 원 추가 (오늘 원은 그대로)
   let circleBg = "";
-  if (isToday) circleBg = "bg-primary text-white hover:bg-[#004d96]";
-  else if (isSelected && inCurrentMonth) circleBg = "bg-[#4D95D1] text-white hover:bg-[#3D87C8]";
+  if (isToday) circleBg = "bg-primary text-white hover:bg-primary-dark";
+  else if (isSelected && inCurrentMonth) circleBg = "bg-primary-light text-white hover:bg-primary-light-hover";
   else circleBg = `${textColor} hover:bg-gray-100`;
 
   return (

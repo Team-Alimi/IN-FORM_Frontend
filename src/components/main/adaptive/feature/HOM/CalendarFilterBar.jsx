@@ -15,7 +15,7 @@ const CalendarFilterBar = ({
             type="checkbox"
             checked={isMyDeptOnly}
             onChange={(e) => onMyDeptOnlyChange?.(e.target.checked)}
-            className="w-3.5 h-3.5 accent-[#4068f7] cursor-pointer"
+            className="w-3.5 h-3.5 accent-primary cursor-pointer"
           />
           <span className="text-[13px] text-gray-500 font-medium select-none">
             관심학과만 보기
