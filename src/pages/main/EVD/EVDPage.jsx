@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import EventDetail from "@/components/main/adaptive/feature/EVD/EventDetail";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import ShareButton from "@/components/main/adaptive/feature/EVD/ShareButton";

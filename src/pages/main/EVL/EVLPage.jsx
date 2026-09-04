@@ -16,7 +16,6 @@ import { useDeviceStore } from "@/stores/deviceStore";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import useEVLFilterStore from "@/stores/useEVLFilterStore";
-import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import useSearchHistory from "@/hooks/useSearchHistory";
 
 const EVLPage = () => {
@@ -333,12 +332,7 @@ const EVLPage = () => {
           </main>
         </div>
       </div>
-      {isMobile ? (
-        <>
-          <MobileFooter />
-          <MobileTabBar activeIndex={1} />
-        </>
-      ) : <Footer />}
+      {isMobile ? <MobileTabBar activeIndex={1} /> : <Footer />}
       <FilterBottomSheet
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
