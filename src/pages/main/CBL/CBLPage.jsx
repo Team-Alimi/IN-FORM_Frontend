@@ -1,7 +1,6 @@
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
 import MiniCalendarSet from "@/components/main/desktop/common/MiniCalendarSet";
@@ -40,12 +39,7 @@ const CBLPage = () => {
         </div>
       </div>
 
-      {isMobile ? (
-        <>
-          <MobileFooter />
-          <MobileTabBar activeIndex={2} />
-        </>
-      ) : <Footer />}
+      {isMobile ? <MobileTabBar activeIndex={2} /> : <Footer />}
     </div>
   );
 };

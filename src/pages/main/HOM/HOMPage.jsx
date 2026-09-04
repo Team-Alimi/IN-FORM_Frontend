@@ -6,7 +6,6 @@ import HotEventList from "@/components/main/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import MobileFooter from "@/components/main/mobile/common/MobileFooter";
 import { useState, useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchClubs } from "@/api/main/articles";
@@ -82,12 +81,7 @@ const HOMPage = () => {
         </div>
       </div>
 
-      {isMobile ? (
-        <>
-          <MobileFooter />
-          <MobileTabBar activeIndex={0} />
-        </>
-      ) : <Footer />}
+      {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
     </div>
   );
 };
