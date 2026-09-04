@@ -153,10 +153,11 @@ const NotificationModal = ({ isOpen, onClose }) => {
             {notifications.map((item) => {
               const badge = TYPE_BADGE[item.type] ?? DEFAULT_BADGE;
               return (
-                <div
+                <button
+                  type="button"
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  className="relative flex gap-3 px-1 py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="relative flex gap-3 px-1 py-4 w-full text-left hover:bg-gray-50 transition-colors"
                 >
                   {/* 안 읽음 표시 점 */}
                   <div className="mt-1.5 shrink-0 w-2">
@@ -188,7 +189,7 @@ const NotificationModal = ({ isOpen, onClose }) => {
                     {/* 경과 시간 */}
                     <p className="text-[12px] text-gray-400">{getRelativeTime(item.created_at)}</p>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
