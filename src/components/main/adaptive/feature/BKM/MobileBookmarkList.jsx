@@ -166,7 +166,7 @@ const MobileBookmarkList = () => {
               onClick={() => setSourceFilter(tab.value)}
               className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
                 sourceFilter === tab.value
-                  ? "bg-[#4068f7] text-white"
+                  ? "bg-primary text-white"
                   : "bg-gray-100 text-gray-500"
               }`}
             >
@@ -193,7 +193,7 @@ const MobileBookmarkList = () => {
                     <div
                       className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-all ${
                         isAllSelected
-                          ? "border-[#4068f7] bg-[#4068f7]"
+                          ? "border-primary bg-primary"
                           : "border-gray-300 bg-white"
                       }`}
                     >
@@ -212,7 +212,7 @@ const MobileBookmarkList = () => {
                     전체 선택
                   </button>
                   {selectedIds.size > 0 && (
-                    <span className="text-[13px] text-[#4068f7] font-medium">
+                    <span className="text-[13px] text-primary font-medium">
                       {selectedIds.size}개 선택됨
                     </span>
                   )}
@@ -287,7 +287,7 @@ const MobileBookmarkList = () => {
             </p>
             <button
               onClick={() => navigate("/login")}
-              className="bg-[#4068f7] text-white font-bold py-3 px-8 rounded-xl"
+              className="bg-primary text-white font-bold py-3 px-8 rounded-xl"
             >
               로그인하기
             </button>

@@ -32,7 +32,7 @@ const Chip = ({ label, selected, onClick }) => (
     onClick={onClick}
     className={`px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors border ${
       selected
-        ? "bg-[#4068f7] text-white border-[#4068f7]"
+        ? "bg-primary text-white border-primary"
         : "bg-white text-gray-500 border-gray-200"
     }`}
   >
@@ -45,7 +45,7 @@ const SectionTitle = ({ title, subtitle, count }) => (
   <div className="px-4 pt-6 pb-3">
     <div className="flex items-center justify-between">
       <h2 className="text-[15px] font-bold text-gray-900">{title}</h2>
-      <span className="text-[13px] text-[#4068f7] font-medium">{count}개 선택됨</span>
+      <span className="text-[13px] text-primary font-medium">{count}개 선택됨</span>
     </div>
     <p className="text-[13px] text-gray-400 mt-1">{subtitle}</p>
   </div>
@@ -231,7 +231,7 @@ const MYPEditPage = () => {
         <p className="text-[14px] text-gray-500">정보를 불러오지 못했습니다.</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-[13px] text-[#4068f7] font-medium"
+          className="text-[13px] text-primary font-medium"
         >
           돌아가기
         </button>
@@ -370,7 +370,7 @@ const MYPEditPage = () => {
           <button
             onClick={handleSave}
             disabled={saveMutation.isPending}
-            className="w-full py-3.5 rounded-2xl font-bold text-[15px] bg-gray-900 text-white disabled:opacity-50 transition-all active:scale-[0.98]"
+            className="w-full py-3.5 rounded-2xl font-bold text-[15px] bg-primary text-white disabled:opacity-50 transition-all active:scale-[0.98]"
           >
             {saveMutation.isPending ? "저장 중..." : "저장"}
           </button>

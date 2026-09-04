@@ -226,7 +226,7 @@ const ONBPage = () => {
             <div
               key={s}
               className={`h-1 w-8 rounded-full transition-colors duration-300 ${
-                s <= step ? "bg-gray-900" : "bg-gray-200"
+                s <= step ? "bg-primary" : "bg-gray-200"
               }`}
             />
           ))}
@@ -262,7 +262,7 @@ const ONBPage = () => {
                   onClick={() => handleToggleCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[14px] font-medium transition-colors ${
                     selected
-                      ? "bg-gray-900 text-white"
+                      ? "bg-primary text-white"
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
@@ -304,7 +304,7 @@ const ONBPage = () => {
                       </span>
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                          selected ? "border-gray-900 bg-gray-900" : "border-gray-300"
+                          selected ? "border-primary bg-primary" : "border-gray-300"
                         }`}
                       >
                         {selected && (
@@ -347,7 +347,7 @@ const ONBPage = () => {
                   onClick={() => handleToggleClubType(ct.id)}
                   className={`flex flex-col items-center gap-2 py-4 rounded-xl transition-colors ${
                     selected
-                      ? "bg-gray-900 text-white"
+                      ? "bg-primary text-white"
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
@@ -365,7 +365,7 @@ const ONBPage = () => {
         <button
           onClick={handleNext}
           disabled={isLoading}
-          className="flex items-center gap-1 px-6 py-3.5 rounded-full bg-gray-900 text-white text-[15px] font-semibold disabled:opacity-60 transition-opacity"
+          className="flex items-center gap-1 px-6 py-3.5 rounded-full bg-primary text-white text-[15px] font-semibold disabled:opacity-60 transition-opacity"
         >
           <span>{isLoading ? "저장 중..." : step === 3 ? "시작하기" : "다음"}</span>
           {!isLoading && <IoChevronForwardOutline className="text-[16px]" />}

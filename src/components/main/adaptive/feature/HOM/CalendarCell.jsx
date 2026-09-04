@@ -36,9 +36,11 @@ const CalendarCell = ({
   }
 
   // 원형 배경 색상
+  // - 오늘: 진한 primary 원 (항상 유지)
+  // - 다른 날짜 선택: 연한 primary 원 추가 (오늘 원은 그대로)
   let circleBg = "";
-  if (isToday) circleBg = "bg-blue-500 text-white";
-  else if (isSelected && inCurrentMonth) circleBg = "bg-blue-300 text-white";
+  if (isToday) circleBg = "bg-primary text-white hover:bg-primary-dark";
+  else if (isSelected && inCurrentMonth) circleBg = "bg-primary-light text-white hover:bg-primary-light-hover";
   else circleBg = `${textColor} hover:bg-gray-100`;
 
   return (
@@ -49,8 +51,6 @@ const CalendarCell = ({
       <div
         className={`${circleSizeStyle} flex items-center justify-center rounded-full transition-colors
           ${circleBg}
-          ${isToday && inCurrentMonth ? "hover:bg-blue-600" : ""}
-          ${isSelected && !isToday && inCurrentMonth ? "hover:bg-blue-400" : ""}
         `}
       >
         <span className={`${cellTextStyle} max-mobile:text-[12px]`}>

@@ -103,7 +103,7 @@ const CBDPage = () => {
               href={applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center py-2.5 rounded-xl font-medium text-sm bg-[#4068f7] text-white"
+              className="flex-1 flex items-center justify-center py-2.5 rounded-xl font-medium text-sm bg-primary text-white"
             >
               지원하러 가기
             </a>

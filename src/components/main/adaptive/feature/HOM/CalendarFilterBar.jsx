@@ -15,7 +15,7 @@ const CalendarFilterBar = ({
             type="checkbox"
             checked={isMyDeptOnly}
             onChange={(e) => onMyDeptOnlyChange?.(e.target.checked)}
-            className="w-3.5 h-3.5 accent-[#4068f7] cursor-pointer"
+            className="w-3.5 h-3.5 accent-primary cursor-pointer"
           />
           <span className="text-[13px] text-gray-500 font-medium select-none">
             관심학과만 보기
@@ -29,7 +29,7 @@ const CalendarFilterBar = ({
         <button
           onClick={() => onClick("ALL")}
           className={`text-sm font-medium py-1.5 px-4 rounded-full shrink-0 transition-colors ${
-            selectedFilter.length === 0 ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-600"
+            selectedFilter.length === 0 ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
           }`}
         >
           전체

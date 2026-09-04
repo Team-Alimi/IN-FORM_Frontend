@@ -44,7 +44,9 @@ const MobileHeader = ({ title, greeting = false, subtitle }) => {
           {/* 좌측: 타이틀 또는 인사말 */}
           <div className="flex flex-col">
             <span className="text-[24px] font-bold text-gray-900 leading-tight">
-              {leftText}
+              {greeting ? (
+                <>안녕하세요, <span className="text-primary">{userName}</span>님!</>
+              ) : title}
             </span>
             {subtitle && (
               <span className="text-[14px] text-gray-400 mt-1">{subtitle}</span>
