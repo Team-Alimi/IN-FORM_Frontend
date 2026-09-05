@@ -57,6 +57,7 @@ instance.interceptors.response.use(
 
       // 이미 갱신 중이면 대기열에 추가 후 갱신 완료 시 재시도
       if (isRefreshing) {
+        originalRequest._retry = true; // 대기 요청도 재시도 방지 플래그 설정
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
