@@ -87,6 +87,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
         id: article.id,
         title: article.title,
         category_name: article.categories?.[0]?.name || null,
+        source_type: article.source_type,
         starts_on: article.starts_on,
         ends_on: article.ends_on,
       };

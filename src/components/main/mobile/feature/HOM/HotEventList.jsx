@@ -81,6 +81,7 @@ const HotEventList = () => {
             article_id={item.id}
             key={item.id}
             category={item.categories?.[0]?.name}
+            sourceType={item.source_type}
             title={item.title}
             onArticleClick={handleArticleClick}
           />

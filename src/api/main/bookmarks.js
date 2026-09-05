@@ -60,17 +60,3 @@ export async function deleteAllBookmarks(params) {
   }
 }
 
-// ─── v1 호환 (BookmarkButton에서 계속 사용) ───────────────────────────────────
-
-/**
- * @deprecated v2에서 addBookmark / deleteBookmark 로 분리됨
- */
-export async function postBookmark(article_type, article_id) {
-  try {
-    const res = await api.post("/api/v1/bookmarks", { article_type, article_id });
-    return res.data.data;
-  } catch (error) {
-    console.error("북마크 처리 실패:", error);
-    throw error;
-  }
-}

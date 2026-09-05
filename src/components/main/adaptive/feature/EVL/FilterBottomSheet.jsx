@@ -53,16 +53,22 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   // 필터 변경 시 미리 카운트 조회 (날짜 입력은 300ms 디바운스)
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
+
+    // 상태 필터가 선택된 경우 서버에서 정확한 개수를 알 수 없으므로 표시 안 함
+    if (!selectedStatuses.includes("ALL") && selectedStatuses.length > 0) {
+      setPreviewCount(null);
+      return;
+    }
+
     timerRef.current = setTimeout(async () => {
       try {
         const params = {
           page: 1,
           size: 1,
           keyword: keyword || undefined,
-          start_date: startDate || undefined,
-          end_date: endDate || undefined,
+          starts_from: startDate || undefined,
+          ends_to: endDate || undefined,
           vendor_id: selectedVendorIds.length > 0 ? selectedVendorIds.join(",") : undefined,
-          status: selectedStatuses.includes("ALL") ? undefined : selectedStatuses.join(","),
           category_id: selectedCategoryIds.length > 0 ? selectedCategoryIds.join(",") : undefined,
         };
         const res = await fetchEvents(params);
@@ -211,18 +217,18 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         </p>
         <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto">
           {vendors.map((v) => {
-            const isSelected = selectedVendorIds.includes(v.vendor_id);
+            const isSelected = selectedVendorIds.includes(v.id);
             return (
               <button
-                key={v.vendor_id}
-                onClick={() => toggleVendor(v.vendor_id)}
+                key={v.id}
+                onClick={() => toggleVendor(v.id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected
                     ? "bg-primary text-white border-primary"
                     : "bg-white text-gray-600 border-gray-300"
                 }`}
               >
-                {v.vendor_name}
+                {v.name}
               </button>
             );
           })}

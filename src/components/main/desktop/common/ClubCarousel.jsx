@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import api from "@/api/axios";
+import { fetchClubs } from "@/api/main/articles";
 
 const ClubCarousel = () => {
   const [images, setImages] = useState([]); // 포스터 URL 목록
@@ -15,9 +15,9 @@ const ClubCarousel = () => {
         setLoading(true);
         setError(null);
 
-        const res = await api.get("api/v1/club_articles/random");
+        const res = await fetchClubs({ size: 5 });
 
-        const articles = res.data.club_articles || res.data || [];
+        const articles = res.data?.data?.content || [];
 
         const posters = articles
           .map((article) => article.attachment_url)
