@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchVendors } from "@/api/main/vendors";
 import { fetchMyVendors, putMyVendors } from "@/api/main/user";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
@@ -11,6 +11,7 @@ import BottomSheet from "@/components/main/mobile/common/BottomSheet";
  */
 const DepartmentEditSheet = ({ isOpen, onClose }) => {
     const [selectedMajorId, setSelectedMajorId] = useState("");
+    const queryClient = useQueryClient();
 
     // 1. 학과(SCHOOL) 벤더 목록 조회
     const { data: vendorsData, isLoading: isVendorsLoading } = useQuery({
@@ -40,7 +41,8 @@ const DepartmentEditSheet = ({ isOpen, onClose }) => {
     // 3. 학과 수정 Mutation
     const updateMajorMutation = useMutation({
         mutationFn: (vendorId) => putMyVendors([Number(vendorId)]),
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["myVendors"] });
             alert("학과가 성공적으로 변경되었습니다.");
             onClose();
         },
