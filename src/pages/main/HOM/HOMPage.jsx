@@ -33,7 +33,7 @@ const HOMPage = () => {
       queryFn: async () => {
         const res = await fetchClubs({ page: 1, size: 4 });
         return {
-          clubList: res.data.data.club_articles,
+          clubList: res.data.data.content,
           pageInfo: res.data.data.page_info,
         };
       },

@@ -94,7 +94,6 @@ const CBDPage = () => {
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 px-4 py-3 flex items-center gap-3">
           <BookmarkButton
             articleId={club.id}
-            articleType="CLUB"
             isBookmarked={club.is_bookmarked}
             onToggle={handleBookmarkToggle}
           />
