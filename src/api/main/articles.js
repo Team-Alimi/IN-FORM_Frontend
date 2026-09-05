@@ -4,12 +4,14 @@ import api from "@/api/axios";
 
 /**
  * 학교 공지사항 목록 조회
- * @param {Object} params - page, size, vendor_id, keyword, start_date, end_date 등
+ * @param {Object} params - page, size, vendor_id, keyword, starts_from, ends_to, category_id, interest_only, has_deadline, sort
  * @returns {Promise}
  */
 export const fetchEvents = async (params) => {
   try {
-    const res = await api.get("/api/v1/school_articles", { params });
+    const res = await api.get("/api/v1/articles", {
+      params: { ...params, source_type: "SCHOOL" },
+    });
     return res;
   } catch (error) {
     console.error("행사 목록 조회 실패:", error);
@@ -24,7 +26,7 @@ export const fetchEvents = async (params) => {
  */
 export const fetchEventDetail = async (id) => {
   try {
-    const res = await api.get(`/api/v1/school_articles/${id}`);
+    const res = await api.get(`/api/v1/articles/${id}`);
     return res.data.data;
   } catch (error) {
     console.error("행사 상세 조회 실패:", error);
@@ -33,26 +35,15 @@ export const fetchEventDetail = async (id) => {
 };
 
 /**
- * 마감 임박 학교 공지사항 목록 조회
+ * 인기 공지사항 목록 조회 (북마크 수 기준)
+ * @param {number} limit - 조회 개수 (기본 5, 최대 20)
  * @returns {Promise}
  */
-export const fetchImminentEvents = async () => {
+export const fetchHotEvents = async (limit = 5) => {
   try {
-    const res = await api.get("/api/v1/deadline/school_articles");
-    return res;
-  } catch (error) {
-    console.error("마감임박 행사 조회 실패:", error);
-    throw error;
-  }
-};
-
-/**
- * 인기 학교 공지사항 목록 조회
- * @returns {Promise}
- */
-export const fetchHotEvents = async () => {
-  try {
-    const res = await api.get("/api/v1/school_articles/hot");
+    const res = await api.get("/api/v1/articles/popular", {
+      params: { limit },
+    });
     return res.data;
   } catch (error) {
     console.error("[API] 에러 발생:", error);
@@ -69,7 +60,9 @@ export const fetchHotEvents = async () => {
  */
 export const fetchClubs = async (params) => {
   try {
-    const res = await api.get("/api/v1/club_articles", { params });
+    const res = await api.get("/api/v1/articles", {
+      params: { ...params, source_type: "CLUB" },
+    });
     return res;
   } catch (error) {
     console.error("API 호출 오류", error);
@@ -84,7 +77,7 @@ export const fetchClubs = async (params) => {
  */
 export const fetchClubDetail = async (id) => {
   try {
-    const res = await api.get(`/api/v1/club_articles/${id}`);
+    const res = await api.get(`/api/v1/articles/${id}`);
     return res.data.data;
   } catch (error) {
     console.error("동아리 상세 조회 실패:", error);

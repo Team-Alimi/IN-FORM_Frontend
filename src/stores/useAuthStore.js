@@ -18,6 +18,9 @@ const useAuthStore = create(
           userInfo,
         }),
 
+      // 토큰만 갱신 (axios 인터셉터의 토큰 재발급 후 호출)
+      setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
+
       // 유저 정보만 갱신 (온보딩 완료 후 프로필 업데이트 등)
       setUserInfo: (userInfo) => set({ userInfo }),
 
