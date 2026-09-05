@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import { postBookmark } from "@/api/main/bookmarks";
+import { addBookmark, deleteBookmark } from "@/api/main/bookmarks";
 
-const BookmarkButton = ({ articleId, articleType = "SCHOOL", isBookmarked = false, onToggle }) => {
+const BookmarkButton = ({ articleId, isBookmarked = false, onToggle }) => {
   const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [loading, setLoading] = useState(false);
 
@@ -14,9 +14,15 @@ const BookmarkButton = ({ articleId, articleType = "SCHOOL", isBookmarked = fals
     if (loading) return;
     try {
       setLoading(true);
-      const result = await postBookmark(articleType, articleId);
-      setBookmarked(result);
-      onToggle?.(result);
+      if (bookmarked) {
+        await deleteBookmark(articleId);
+        setBookmarked(false);
+        onToggle?.(false);
+      } else {
+        await addBookmark(articleId);
+        setBookmarked(true);
+        onToggle?.(true);
+      }
     } catch (err) {
       console.error("북마크 처리 실패:", err);
     } finally {

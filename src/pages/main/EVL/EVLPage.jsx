@@ -18,6 +18,14 @@ import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import useEVLFilterStore from "@/stores/useEVLFilterStore";
 import useSearchHistory from "@/hooks/useSearchHistory";
 
+// FilterBottomSheet selectedStatuses 값 → API deadline_status 값 매핑
+const STATUS_TO_DEADLINE = {
+  OPEN: "OPEN",
+  ENDING_SOON: "CLOSING_SOON",
+  UPCOMING: "UPCOMING",
+  CLOSED: "CLOSED",
+};
+
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
@@ -64,15 +72,12 @@ const EVLPage = () => {
           page: currentPage,
           size: pageSize,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
-          start_date: activeFilters.startDate || undefined,
-          end_date: activeFilters.endDate || undefined,
+          starts_from: activeFilters.startDate || undefined,
+          ends_to: activeFilters.endDate || undefined,
           vendor_id:
             activeFilters.vendorIds.length > 0
               ? activeFilters.vendorIds.join(",")
               : undefined,
-          status: activeFilters.selectedStatuses.includes("ALL")
-            ? undefined
-            : activeFilters.selectedStatuses.join(","),
           category_id:
             activeFilters.categoryIds.length > 0
               ? activeFilters.categoryIds.join(",")
@@ -113,7 +118,7 @@ const EVLPage = () => {
 
   const totalPages = pageInfo.total_pages || 1;
 
-  // 서버에서 status 필터링되어 오므로 정렬만 수행
+  // deadline_status 기준 정렬
   const sortedEvents = useMemo(() => {
     if (!events) return [];
 
@@ -126,6 +131,20 @@ const EVLPage = () => {
 
     return [...events].sort((a, b) => score(b.deadline_status) - score(a.deadline_status));
   }, [events]);
+
+  // 상태 필터 클라이언트 적용 (서버가 deadline_status 파라미터 미지원)
+  const filteredEvents = useMemo(() => {
+    if (
+      activeFilters.selectedStatuses.includes("ALL") ||
+      activeFilters.selectedStatuses.length === 0
+    ) {
+      return sortedEvents;
+    }
+    const allowed = activeFilters.selectedStatuses
+      .map((key) => STATUS_TO_DEADLINE[key])
+      .filter(Boolean);
+    return sortedEvents.filter((e) => allowed.includes(e.deadline_status));
+  }, [sortedEvents, activeFilters.selectedStatuses]);
 
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
@@ -221,8 +240,8 @@ const EVLPage = () => {
 
               {/* 리스트 출력 */}
               <div className="space-y-1">
-                {sortedEvents.length > 0 ? (
-                  sortedEvents.map((event) => {
+                {filteredEvents.length > 0 ? (
+                  filteredEvents.map((event) => {
                     const statusResult = getStatus(event.deadline_status);
                     if (isMobile) {
                       return (

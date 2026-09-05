@@ -4,7 +4,7 @@ const DAY_ABBR = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) => {
   const handleEventClick = () => {
-    onArticleClick(event.id, event.category_name);
+    onArticleClick(event.id, event.source_type);
   };
 
   const option = FILTER_OPTIONS.find(

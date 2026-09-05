@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import useAuthStore from "@/stores/useAuthStore";
 import { fetchVendors } from "@/api/main/vendors";
-import { patchUserMajor } from "@/api/main/user";
+import { fetchMyVendors, putMyVendors } from "@/api/main/user";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 
 /**
@@ -11,10 +10,7 @@ import BottomSheet from "@/components/main/mobile/common/BottomSheet";
  * @param {function} onClose - 시트 닫기 함수
  */
 const DepartmentEditSheet = ({ isOpen, onClose }) => {
-    const { userInfo, login, accessToken, refreshToken } = useAuthStore();
-    const [selectedMajorId, setSelectedMajorId] = useState(
-        userInfo?.major?.vendor_id || ""
-    );
+    const [selectedMajorId, setSelectedMajorId] = useState("");
 
     // 1. 학과(SCHOOL) 벤더 목록 조회
     const { data: vendorsData, isLoading: isVendorsLoading } = useQuery({
@@ -24,27 +20,32 @@ const DepartmentEditSheet = ({ isOpen, onClose }) => {
         enabled: isOpen, // 시트가 열릴 때만 조회
     });
 
+    // 2. 현재 구독 학과 조회 (초기값 세팅용)
+    const { data: myVendorsData } = useQuery({
+        queryKey: ["myVendors"],
+        queryFn: fetchMyVendors,
+        staleTime: 1000 * 60 * 5,
+        enabled: isOpen,
+    });
+
     const vendors = vendorsData?.data || [];
 
-    // 2. 학과 수정 Mutation
+    // 현재 설정된 학과로 초기값 세팅
+    useEffect(() => {
+        const currentVendorId = myVendorsData?.data?.[0]?.id;
+        if (currentVendorId) setSelectedMajorId(currentVendorId);
+    }, [myVendorsData]);
+
+    // 3. 학과 수정 Mutation
     const updateMajorMutation = useMutation({
-        mutationFn: (majorId) => patchUserMajor(userInfo?.user_id, majorId),
-        onSuccess: (_, majorId) => {
-            const newMajor = vendors.find((v) => v.vendor_id === Number(majorId));
-            if (newMajor && userInfo) {
-                const updatedUserInfo = {
-                    ...userInfo,
-                    major: newMajor,
-                };
-                login(accessToken, refreshToken, updatedUserInfo);
-                alert("학과가 성공적으로 변경되었습니다.");
-                onClose();
-            }
+        mutationFn: (vendorId) => putMyVendors([Number(vendorId)]),
+        onSuccess: () => {
+            alert("학과가 성공적으로 변경되었습니다.");
+            onClose();
         },
         onError: (error) => {
             console.error("학과 변경 실패:", error);
             alert("학과 변경 중 오류가 발생했습니다.");
-            setSelectedMajorId(userInfo?.major?.vendor_id || "");
         }
     });
 
@@ -80,8 +81,8 @@ const DepartmentEditSheet = ({ isOpen, onClose }) => {
                                     {isVendorsLoading ? "학과 목록을 불러오는 중..." : "학과를 선택하세요"}
                                 </option>
                                 {vendors.map((vendor) => (
-                                    <option key={vendor.vendor_id} value={vendor.vendor_id}>
-                                        {vendor.vendor_name}
+                                    <option key={vendor.id} value={vendor.id}>
+                                        {vendor.name}
                                     </option>
                                 ))}
                             </select>
@@ -102,7 +103,7 @@ const DepartmentEditSheet = ({ isOpen, onClose }) => {
                         </button>
                         <button
                             onClick={handleSave}
-                            disabled={updateMajorMutation.isPending || (Number(selectedMajorId) === userInfo?.major?.vendor_id)}
+                            disabled={updateMajorMutation.isPending || (Number(selectedMajorId) === myVendorsData?.data?.[0]?.id)}
                             className="flex-1 py-4 text-[15px] font-bold text-white bg-[#294D7C] rounded-2xl hover:bg-[#1e3a5f] transition-colors shadow-lg shadow-blue-900/10 disabled:bg-gray-300 disabled:shadow-none active:scale-95"
                         >
                             {updateMajorMutation.isPending ? "저장 중..." : "저장하기"}
