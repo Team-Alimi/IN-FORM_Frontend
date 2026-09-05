@@ -132,7 +132,9 @@ const EVLPage = () => {
     return [...events].sort((a, b) => score(b.deadline_status) - score(a.deadline_status));
   }, [events]);
 
-  // 상태 필터 클라이언트 적용 (서버가 deadline_status 파라미터 미지원)
+  // 상태 필터 클라이언트 적용
+  // TODO: 서버에서 deadline_status 파라미터 지원 시 params에 추가하고 이 useMemo 제거
+  // 현재는 현재 페이지 데이터에만 필터가 적용되므로, 페이지 수/전체 개수는 필터 결과와 일치하지 않음
   const filteredEvents = useMemo(() => {
     if (
       activeFilters.selectedStatuses.includes("ALL") ||
