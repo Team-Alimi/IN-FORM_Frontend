@@ -25,11 +25,12 @@ const DepartmentEditModal = ({ isOpen, onClose }) => {
 
     const vendors = vendorsData?.data || [];
 
-    // 현재 설정된 학과로 초기값 세팅
+    // 모달이 열릴 때마다 서버 값으로 초기화 (취소 후 재오픈 시 미저장 값 제거)
     useEffect(() => {
+        if (!isOpen) return;
         const currentVendorId = myVendorsData?.data?.[0]?.id;
         if (currentVendorId) setSelectedMajorId(currentVendorId);
-    }, [myVendorsData]);
+    }, [myVendorsData, isOpen]);
 
     const updateMajorMutation = useMutation({
         mutationFn: (vendorId) => putMyVendors([Number(vendorId)]),
