@@ -53,6 +53,13 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   // 필터 변경 시 미리 카운트 조회 (날짜 입력은 300ms 디바운스)
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
+
+    // 상태 필터가 선택된 경우 서버에서 정확한 개수를 알 수 없으므로 표시 안 함
+    if (!selectedStatuses.includes("ALL") && selectedStatuses.length > 0) {
+      setPreviewCount(null);
+      return;
+    }
+
     timerRef.current = setTimeout(async () => {
       try {
         const params = {
