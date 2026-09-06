@@ -1,8 +1,7 @@
 // 카테고리 한글명 → 배지/필터 색상 매핑
-// articles API가 영어 코드를 반환하는 경우를 대비해 CATEGORY_CODE_TO_NAME_MAP로 먼저 변환 후 사용
+// GET /api/v1/categories 의 name 값과 1:1 대응 (고정값, 변경 시 관리자 설정 변경)
 // 색상 HEX 미확정 — Tailwind 임시 색상 사용 (백엔드 HEX 확정 시 업데이트)
 export const CATEGORY_NAME_COLOR_MAP = {
-  // --- /categories API 반환 이름 (필터칩 기준) ---
   "학사":        { bg: "bg-blue-50",    text: "text-blue-600",    border: "border-blue-200",    dot: "bg-blue-400" },
   "대외활동":    { bg: "bg-green-50",   text: "text-green-600",   border: "border-green-200",   dot: "bg-green-400" },
   "취업·인턴십": { bg: "bg-orange-50",  text: "text-orange-600",  border: "border-orange-200",  dot: "bg-orange-400" },
@@ -15,10 +14,6 @@ export const CATEGORY_NAME_COLOR_MAP = {
   "장학금":      { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", dot: "bg-emerald-400" },
   "봉사활동":    { bg: "bg-rose-50",    text: "text-rose-600",    border: "border-rose-200",    dot: "bg-rose-400" },
   "기타":        { bg: "bg-slate-100",  text: "text-slate-500",   border: "border-slate-200",   dot: "bg-slate-400" },
-  // --- 한글 별칭 (API 버전에 따라 다른 이름이 올 수 있음) ---
-  "어학시험":    { bg: "bg-cyan-50",    text: "text-cyan-600",    border: "border-cyan-200",    dot: "bg-cyan-400" },
-  "장학":        { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", dot: "bg-emerald-400" },
-  "봉사":        { bg: "bg-rose-50",    text: "text-rose-600",    border: "border-rose-200",    dot: "bg-rose-400" },
 };
 
 // 매핑에 없는 카테고리의 기본 색상
