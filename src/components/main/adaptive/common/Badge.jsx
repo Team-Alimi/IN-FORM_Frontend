@@ -1,15 +1,14 @@
-import { CATEGORY_BADGE_MAP } from "@/constants/filterOption";
+import { CATEGORY_NAME_COLOR_MAP, CATEGORY_CODE_TO_NAME_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
-// category: CATEGORY_BADGE_MAP에서 배경색·텍스트색·라벨 자동 결정
-// hasOwnProperty로 프로토타입 체인 상속 속성(toString 등)과 구분
+// category: 카테고리명 (한글 또는 영어 코드). 영어 코드는 자동으로 한글명으로 변환
+// color: category 없을 때 직접 지정하는 bg 클래스
 const Badge = ({ color, text, category, className }) => {
-  const resolved =
-    category && Object.prototype.hasOwnProperty.call(CATEGORY_BADGE_MAP, category)
-      ? CATEGORY_BADGE_MAP[category]
-      : null;
-  const bgClass = resolved ? resolved.bg : color;
-  const textClass = resolved ? resolved.text : "";
-  const label = resolved ? resolved.label : text;
+  // 영어 코드("SCHOLAR" 등) → 한글명("장학금")으로 변환. 이미 한글이면 그대로 통과
+  const resolvedName = category ? (CATEGORY_CODE_TO_NAME_MAP[category] ?? category) : null;
+  const colorInfo = resolvedName ? (CATEGORY_NAME_COLOR_MAP[resolvedName] ?? DEFAULT_CATEGORY_COLOR) : null;
+  const bgClass = colorInfo ? colorInfo.bg : (color ?? "bg-gray-100");
+  const textClass = colorInfo ? colorInfo.text : "";
+  const label = resolvedName ?? text;
 
   return (
     <span
