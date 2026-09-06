@@ -1,4 +1,9 @@
-import { FILTER_OPTIONS } from '@/constants/filterOption';
+import { CATEGORY_NAME_COLOR_MAP } from '@/constants/filterOption';
+
+const CATEGORY_LIST = Object.entries(CATEGORY_NAME_COLOR_MAP).map(([name, colors]) => ({
+  label: name,
+  color: colors.dot,
+}));
 
 interface CategoryFilterProp {
   selectedCategory: string;
@@ -8,7 +13,7 @@ interface CategoryFilterProp {
 const CategoryFilter = ({ selectedCategory, onChange }: CategoryFilterProp) => {
   return (
     <>
-      {FILTER_OPTIONS.map((item) => (
+      {CATEGORY_LIST.map((item) => (
         <button
           type="button"
           key={item.label}

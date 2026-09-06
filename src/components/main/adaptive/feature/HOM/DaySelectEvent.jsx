@@ -1,4 +1,4 @@
-import { FILTER_OPTIONS } from "@/constants/filterOption";
+import { CATEGORY_NAME_COLOR_MAP, CATEGORY_CODE_TO_NAME_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
 const DAY_ABBR = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
@@ -7,10 +7,10 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
     onArticleClick(event.id, event.source_type);
   };
 
-  const option = FILTER_OPTIONS.find(
-    (o) => o.key === event.category_name?.toUpperCase(),
-  );
-  const category = option?.label ?? "기타";
+  // 영어 코드("CONTEST")가 올 수 있으므로 한글명으로 변환 후 색상 결정
+  const rawName = event.category_name ?? "기타";
+  const categoryName = CATEGORY_CODE_TO_NAME_MAP[rawName] ?? rawName;
+  const colorInfo = CATEGORY_NAME_COLOR_MAP[categoryName] ?? DEFAULT_CATEGORY_COLOR;
 
   if (isMini) {
     return (
@@ -19,9 +19,7 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
         onClick={handleEventClick}
       >
         {/* 카테고리 원형 배지 */}
-        <div
-          className={`w-2 h-2 rounded-full flex items-center ${option?.color ?? "bg-gray-400"}`}
-        ></div>
+        <div className={`w-2 h-2 rounded-full shrink-0 ${colorInfo.dot}`} />
 
         {/* 이벤트 제목 */}
         <div className="text-[10px] font-normal text-gray-800">
@@ -54,9 +52,9 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
       {/* 오른쪽: 카테고리 배지 + 행사 제목 */}
       <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
         <span
-          className={`inline-flex items-center self-start px-2 py-0.5 rounded-md text-[11px] font-semibold ${option?.tagBg ?? "bg-gray-100"} ${option?.textColor ?? "text-gray-500"}`}
+          className={`inline-flex items-center self-start px-2 py-0.5 rounded-md text-[11px] font-semibold ${colorInfo.bg} ${colorInfo.text}`}
         >
-          {category}
+          {categoryName}
         </span>
         <span className="text-[13px] font-medium text-gray-800 wrap-break-word">
           {event.title}

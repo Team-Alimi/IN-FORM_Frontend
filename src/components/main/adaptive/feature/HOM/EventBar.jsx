@@ -1,11 +1,10 @@
-import { FILTER_OPTIONS } from "@/constants/filterOption";
-// 이벤트 카테고리에 따른 색상 반환
+import { CATEGORY_NAME_COLOR_MAP, CATEGORY_CODE_TO_NAME_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
+// 이벤트 카테고리에 따른 dot 색상 반환 (영어 코드·한글명 모두 처리)
 const getEventColor = (event) => {
-  const categoryName = event?.category_name;
-  const selectevent = FILTER_OPTIONS.find(
-    (item) => item.key === categoryName?.toUpperCase(),
-  );
-  return selectevent?.color || "bg-gray-200";
+  const rawName = event?.category_name;
+  const categoryName = CATEGORY_CODE_TO_NAME_MAP[rawName] ?? rawName;
+  const colorInfo = CATEGORY_NAME_COLOR_MAP[categoryName] ?? DEFAULT_CATEGORY_COLOR;
+  return colorInfo.dot;
 };
 /**
  * EventBar - 이벤트를 나타내는 가로 바
