@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 import { fetchVendors, fetchCategories } from "@/api/main/vendors";
 import { fetchEvents } from "@/api/main/articles";
+import { fetchMyInterestCategories, fetchMyVendors } from "@/api/main/user";
 import { STATE_OPTIONS, CATEGORY_NAME_COLOR_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
 const API_TO_STATE_KEY = {
@@ -38,10 +39,22 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
+  const [interestOnly, setInterestOnly] = useState(false);
+  const [interestEmptyMsg, setInterestEmptyMsg] = useState("");
   const [selectedVendorIds, setSelectedVendorIds] = useState([]);
+  const [interestVendorOnly, setInterestVendorOnly] = useState(false);
+  const [vendorEmptyMsg, setVendorEmptyMsg] = useState("");
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
+  // 체크박스 ON 직전 수동 선택 상태 저장 (OFF 시 복원)
+  const prevCategoryIdsRef = useRef([]);
+  const prevVendorIdsRef = useRef([]);
+  // race condition 방지: await 완료 후 체크 상태가 여전히 활성인지 확인
+  const interestOnlyActiveRef = useRef(false);
+  const interestVendorOnlyActiveRef = useRef(false);
 
   // 카테고리 목록 동적 조회
   const { data: categoriesData } = useQuery({
@@ -80,7 +93,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         };
         const res = await fetchEvents(params);
         const apiData = res.data?.data;
-        const count = apiData?.page_info?.total_articles ?? apiData?.school_articles?.length ?? 0;
+        const count = apiData?.page_info?.total_items ?? 0;
         setPreviewCount(count);
       } catch {
         // 실패 시 이전 카운트 유지
@@ -116,12 +129,88 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     );
   };
 
+  // '관심분야만 보기' 체크 시 관심 카테고리 ID를 자동으로 선택
+  // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
+  const handleInterestOnlyChange = async (checked) => {
+    setInterestOnly(checked);
+    interestOnlyActiveRef.current = checked;
+    if (checked) {
+      prevCategoryIdsRef.current = selectedCategoryIds; // 체크 전 상태 저장
+      try {
+        const res = await fetchMyInterestCategories();
+        // await 사이에 체크가 해제됐으면 결과 무시
+        if (!interestOnlyActiveRef.current) return;
+        const ids = (res?.data || []).map((c) => c.id);
+        if (ids.length === 0) {
+          setInterestOnly(false);
+          interestOnlyActiveRef.current = false;
+          prevCategoryIdsRef.current = [];
+          setInterestEmptyMsg("관심 분야가 없습니다. 마이페이지에서 설정해 주세요.");
+        } else {
+          setSelectedCategoryIds(ids); // 관심분야로 대체
+          setInterestEmptyMsg("");
+        }
+      } catch {
+        // 조회 실패 시 체크박스 원상 복구
+        setInterestOnly(false);
+        interestOnlyActiveRef.current = false;
+        prevCategoryIdsRef.current = [];
+      }
+    } else {
+      setSelectedCategoryIds(prevCategoryIdsRef.current); // 체크 전 상태 복원
+      prevCategoryIdsRef.current = [];
+      setInterestEmptyMsg("");
+    }
+  };
+
+  // '구독한 학과만 보기' 체크 시 구독 학과 ID를 자동으로 선택
+  // 해제 시 체크 전 수동 선택 상태 복원
+  const handleInterestVendorOnlyChange = async (checked) => {
+    setInterestVendorOnly(checked);
+    interestVendorOnlyActiveRef.current = checked;
+    if (checked) {
+      prevVendorIdsRef.current = selectedVendorIds; // 체크 전 상태 저장
+      try {
+        const res = await fetchMyVendors();
+        // await 사이에 체크가 해제됐으면 결과 무시
+        if (!interestVendorOnlyActiveRef.current) return;
+        const ids = (res?.data || []).map((v) => v.id);
+        if (ids.length === 0) {
+          setInterestVendorOnly(false);
+          interestVendorOnlyActiveRef.current = false;
+          prevVendorIdsRef.current = [];
+          setVendorEmptyMsg("구독한 학과가 없습니다. 마이페이지에서 설정해 주세요.");
+        } else {
+          setSelectedVendorIds(ids); // 구독 학과로 대체
+          setVendorEmptyMsg("");
+        }
+      } catch {
+        // 조회 실패 시 체크박스 원상 복구
+        setInterestVendorOnly(false);
+        interestVendorOnlyActiveRef.current = false;
+        prevVendorIdsRef.current = [];
+      }
+    } else {
+      setSelectedVendorIds(prevVendorIdsRef.current); // 체크 전 상태 복원
+      prevVendorIdsRef.current = [];
+      setVendorEmptyMsg("");
+    }
+  };
+
   const handleReset = () => {
     setStartDate("");
     setEndDate("");
     setSelectedStatuses(["ALL"]);
     setSelectedCategoryIds([]);
+    setInterestOnly(false);
+    setInterestEmptyMsg("");
+    interestOnlyActiveRef.current = false;
+    prevCategoryIdsRef.current = [];
     setSelectedVendorIds([]);
+    setInterestVendorOnly(false);
+    setVendorEmptyMsg("");
+    interestVendorOnlyActiveRef.current = false;
+    prevVendorIdsRef.current = [];
   };
 
   const handleApply = () => {
@@ -135,46 +224,52 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[13px] font-semibold text-gray-800">
-            일정 기간 <span className="text-gray-500 font-normal">Schedule Period</span>
+            기간 <span className="text-gray-500 font-normal">Schedule Period</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
-              <span className="text-sm">📅</span>
-              <span className={`text-sm ${startDate ? "text-gray-800" : "text-gray-400"}`}>
-                {startDate || "시작일"}
-              </span>
-            </div>
+          <button
+            type="button"
+            onClick={() => startDateRef.current?.showPicker?.()}
+            className="flex flex-1 min-w-0 items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 cursor-pointer"
+          >
+            <span className="text-sm">📅</span>
+            <span className={`text-sm ${startDate ? "text-gray-800" : "text-gray-400"}`}>
+              {startDate || "시작일"}
+            </span>
             <input
+              ref={startDateRef}
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full"
+              className="sr-only"
             />
-          </div>
+          </button>
           <span className="text-gray-400 text-sm shrink-0">~</span>
-          <div className="relative flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
-              <span className="text-sm">📅</span>
-              <span className={`text-sm ${endDate ? "text-gray-800" : "text-gray-400"}`}>
-                {endDate || "종료일"}
-              </span>
-            </div>
+          <button
+            type="button"
+            onClick={() => endDateRef.current?.showPicker?.()}
+            className="flex flex-1 min-w-0 items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 cursor-pointer"
+          >
+            <span className="text-sm">📅</span>
+            <span className={`text-sm ${endDate ? "text-gray-800" : "text-gray-400"}`}>
+              {endDate || "종료일"}
+            </span>
             <input
+              ref={endDateRef}
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full"
+              className="sr-only"
             />
-          </div>
+          </button>
         </div>
       </div>
 
       {/* 글 상태 */}
       <div className="mb-6">
         <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          글 상태 <span className="text-gray-500 font-normal">Progress</span>
+          상태 <span className="text-gray-500 font-normal">Progress</span>
         </p>
         <div className="flex flex-wrap gap-2">
           {STATUS_OPTIONS.map((opt) => {
@@ -194,9 +289,23 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
 
       {/* 카테고리 */}
       <div className="mb-6">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          카테고리 <span className="text-gray-500 font-normal">Category</span>
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[13px] font-semibold text-gray-800">
+            카테고리 <span className="text-gray-500 font-normal">Category</span>
+          </p>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={interestOnly}
+              onChange={(e) => handleInterestOnlyChange(e.target.checked)}
+              className="w-3.5 h-3.5 accent-primary cursor-pointer"
+            />
+            <span className="text-[12px] text-gray-500">관심분야만 보기</span>
+          </label>
+        </div>
+        {interestEmptyMsg && (
+          <p className="text-[11px] text-amber-500 mb-2">{interestEmptyMsg}</p>
+        )}
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => {
             const isSelected = selectedCategoryIds.includes(cat.id);
@@ -220,9 +329,23 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
 
       {/* 학과 */}
       <div className="mb-4">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          학과 <span className="text-gray-500 font-normal">Department</span>
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[13px] font-semibold text-gray-800">
+            학과 <span className="text-gray-500 font-normal">Department</span>
+          </p>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={interestVendorOnly}
+              onChange={(e) => handleInterestVendorOnlyChange(e.target.checked)}
+              className="w-3.5 h-3.5 accent-primary cursor-pointer"
+            />
+            <span className="text-[12px] text-gray-500">구독한 학과만 보기</span>
+          </label>
+        </div>
+        {vendorEmptyMsg && (
+          <p className="text-[11px] text-amber-500 mb-2">{vendorEmptyMsg}</p>
+        )}
         <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto">
           {vendors.map((v) => {
             const isSelected = selectedVendorIds.includes(v.id);

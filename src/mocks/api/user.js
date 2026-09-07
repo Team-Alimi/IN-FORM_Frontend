@@ -70,8 +70,13 @@ export const deleteAccount = async () => {
   return { data: { success: true } };
 };
 
+// ★ 빈 관심분야/구독학과 테스트:
+//   - true  → 관심분야·구독학과 없음 (안내 문구 표시 확인용)
+//   - false → 기본값 사용 (관심분야: 1·3번, 구독학과: 10·20번)
+const MOCK_EMPTY_INTERESTS = false;
+
 // 관심 공지 분야 메모리 관리 (초기값: 1, 3번 선택)
-let mockInterestCategoryIds = [1, 3];
+let mockInterestCategoryIds = MOCK_EMPTY_INTERESTS ? [] : [1, 3];
 
 const MOCK_CATEGORY_NAMES = {
   1: "학사", 2: "장학금", 3: "공모전·대회", 4: "특강·세미나",
@@ -109,7 +114,7 @@ export const putMyClubTypes = async (ids) => {
 };
 
 // 구독 학과·기관 메모리 관리 (초기값: 10, 20번 선택)
-let mockVendorIds = [10, 20];
+let mockVendorIds = MOCK_EMPTY_INTERESTS ? [] : [10, 20];
 
 export const fetchMyVendors = async () => ({
   success: true,

@@ -34,7 +34,7 @@ const EVLPage = () => {
   const [pageInfo, setPageInfo] = useState({
     current_page: 1,
     total_pages: 1,
-    total_articles: 0,
+    total_items: 0,
   });
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);

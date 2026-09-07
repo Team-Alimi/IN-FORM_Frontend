@@ -21,10 +21,31 @@ import {
 } from "@/mocks/data";
 
 export const fetchEvents = async (params) => {
-  const { page = 1, size = 8, keyword = "" } = params || {};
-  const filtered = keyword
-    ? MOCK_SCHOOL_ARTICLES.filter((a) => a.title.includes(keyword))
-    : MOCK_SCHOOL_ARTICLES;
+  const { page = 1, size = 8, keyword = "", category_id, vendor_id } = params || {};
+
+  // category_id: "1,3" 형태 또는 undefined
+  const categoryIds = category_id
+    ? String(category_id).split(",").map(Number).filter(Boolean)
+    : [];
+  const vendorIds = vendor_id
+    ? String(vendor_id).split(",").map(Number).filter(Boolean)
+    : [];
+
+  let filtered = MOCK_SCHOOL_ARTICLES;
+  if (keyword) {
+    filtered = filtered.filter((a) => a.title.includes(keyword));
+  }
+  if (categoryIds.length > 0) {
+    filtered = filtered.filter((a) =>
+      a.categories?.some((c) => categoryIds.includes(c.id))
+    );
+  }
+  if (vendorIds.length > 0) {
+    filtered = filtered.filter((a) =>
+      a.vendors?.some((v) => vendorIds.includes(v.id))
+    );
+  }
+
   const start = (page - 1) * size;
   const paginated = filtered.slice(start, start + size);
   return {
