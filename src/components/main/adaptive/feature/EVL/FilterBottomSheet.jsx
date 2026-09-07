@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
 import { fetchVendors, fetchCategories } from "@/api/main/vendors";
 import { fetchEvents } from "@/api/main/articles";
+import { fetchMyInterestCategories, fetchMyVendors } from "@/api/main/user";
 import { STATE_OPTIONS, CATEGORY_NAME_COLOR_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
 const API_TO_STATE_KEY = {
@@ -38,7 +39,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
+  const [interestOnly, setInterestOnly] = useState(false);
   const [selectedVendorIds, setSelectedVendorIds] = useState([]);
+  const [interestVendorOnly, setInterestVendorOnly] = useState(false);
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
@@ -116,12 +119,42 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     );
   };
 
+  // '관심분야만 보기' 체크 시 관심 카테고리 ID를 자동으로 선택
+  const handleInterestOnlyChange = async (checked) => {
+    setInterestOnly(checked);
+    if (checked) {
+      try {
+        const res = await fetchMyInterestCategories();
+        const ids = (res?.data || []).map((c) => c.id);
+        setSelectedCategoryIds(ids);
+      } catch {
+        // 조회 실패 시 무시
+      }
+    }
+  };
+
+  // '구독한 학과만 보기' 체크 시 구독 학과 ID를 자동으로 선택
+  const handleInterestVendorOnlyChange = async (checked) => {
+    setInterestVendorOnly(checked);
+    if (checked) {
+      try {
+        const res = await fetchMyVendors();
+        const ids = (res?.data || []).map((v) => v.id);
+        setSelectedVendorIds(ids);
+      } catch {
+        // 조회 실패 시 무시
+      }
+    }
+  };
+
   const handleReset = () => {
     setStartDate("");
     setEndDate("");
     setSelectedStatuses(["ALL"]);
     setSelectedCategoryIds([]);
+    setInterestOnly(false);
     setSelectedVendorIds([]);
+    setInterestVendorOnly(false);
   };
 
   const handleApply = () => {
@@ -135,7 +168,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[13px] font-semibold text-gray-800">
-            일정 기간 <span className="text-gray-500 font-normal">Schedule Period</span>
+            기간 <span className="text-gray-500 font-normal">Schedule Period</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,7 +207,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       {/* 글 상태 */}
       <div className="mb-6">
         <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          글 상태 <span className="text-gray-500 font-normal">Progress</span>
+          상태 <span className="text-gray-500 font-normal">Progress</span>
         </p>
         <div className="flex flex-wrap gap-2">
           {STATUS_OPTIONS.map((opt) => {
@@ -194,9 +227,20 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
 
       {/* 카테고리 */}
       <div className="mb-6">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          카테고리 <span className="text-gray-500 font-normal">Category</span>
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[13px] font-semibold text-gray-800">
+            카테고리 <span className="text-gray-500 font-normal">Category</span>
+          </p>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={interestOnly}
+              onChange={(e) => handleInterestOnlyChange(e.target.checked)}
+              className="w-3.5 h-3.5 accent-primary cursor-pointer"
+            />
+            <span className="text-[12px] text-gray-500">관심분야만 보기</span>
+          </label>
+        </div>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => {
             const isSelected = selectedCategoryIds.includes(cat.id);
@@ -220,9 +264,20 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
 
       {/* 학과 */}
       <div className="mb-4">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          학과 <span className="text-gray-500 font-normal">Department</span>
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[13px] font-semibold text-gray-800">
+            학과 <span className="text-gray-500 font-normal">Department</span>
+          </p>
+          <label className="flex items-center gap-1.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={interestVendorOnly}
+              onChange={(e) => handleInterestVendorOnlyChange(e.target.checked)}
+              className="w-3.5 h-3.5 accent-primary cursor-pointer"
+            />
+            <span className="text-[12px] text-gray-500">구독한 학과만 보기</span>
+          </label>
+        </div>
         <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto">
           {vendors.map((v) => {
             const isSelected = selectedVendorIds.includes(v.id);
