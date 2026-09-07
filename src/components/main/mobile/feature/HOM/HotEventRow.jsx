@@ -12,7 +12,7 @@ const HotEventRow = ({
   return (
     <div className="m-1 w-60 shrink-0">
       <div
-        className="bg-white p-4 rounded-xl flex flex-col gap-1 shadow-sm max-mobile:h-24 h-26"
+        className="bg-white p-4 rounded-xl flex flex-col gap-1 shadow-sm h-28 overflow-hidden cursor-pointer"
         onClick={() => onArticleClick(article_id, sourceType)}
       >
         <Badge category={category} className="self-start text-xs px-2 py-0.5 font-medium mb-1" />
