@@ -83,7 +83,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         };
         const res = await fetchEvents(params);
         const apiData = res.data?.data;
-        const count = apiData?.page_info?.total_articles ?? apiData?.school_articles?.length ?? 0;
+        const count = apiData?.page_info?.total_items ?? 0;
         setPreviewCount(count);
       } catch {
         // 실패 시 이전 카운트 유지
