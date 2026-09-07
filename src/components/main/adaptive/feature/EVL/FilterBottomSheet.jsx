@@ -45,6 +45,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
+  // 체크박스로 자동 선택된 ID 추적 (해제 시 해당 칩만 선택 취소)
+  const autoSelectedCategoryIdsRef = useRef([]);
+  const autoSelectedVendorIdsRef = useRef([]);
 
   // 카테고리 목록 동적 조회
   const { data: categoriesData } = useQuery({
@@ -120,30 +123,42 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   };
 
   // '관심분야만 보기' 체크 시 관심 카테고리 ID를 자동으로 선택
+  // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
   const handleInterestOnlyChange = async (checked) => {
     setInterestOnly(checked);
     if (checked) {
       try {
         const res = await fetchMyInterestCategories();
         const ids = (res?.data || []).map((c) => c.id);
+        autoSelectedCategoryIdsRef.current = ids;
         setSelectedCategoryIds(ids);
       } catch {
         // 조회 실패 시 무시
       }
+    } else {
+      const ids = autoSelectedCategoryIdsRef.current;
+      setSelectedCategoryIds((prev) => prev.filter((id) => !ids.includes(id)));
+      autoSelectedCategoryIdsRef.current = [];
     }
   };
 
   // '구독한 학과만 보기' 체크 시 구독 학과 ID를 자동으로 선택
+  // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
   const handleInterestVendorOnlyChange = async (checked) => {
     setInterestVendorOnly(checked);
     if (checked) {
       try {
         const res = await fetchMyVendors();
         const ids = (res?.data || []).map((v) => v.id);
+        autoSelectedVendorIdsRef.current = ids;
         setSelectedVendorIds(ids);
       } catch {
         // 조회 실패 시 무시
       }
+    } else {
+      const ids = autoSelectedVendorIdsRef.current;
+      setSelectedVendorIds((prev) => prev.filter((id) => !ids.includes(id)));
+      autoSelectedVendorIdsRef.current = [];
     }
   };
 
@@ -153,8 +168,10 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setSelectedStatuses(["ALL"]);
     setSelectedCategoryIds([]);
     setInterestOnly(false);
+    autoSelectedCategoryIdsRef.current = [];
     setSelectedVendorIds([]);
     setInterestVendorOnly(false);
+    autoSelectedVendorIdsRef.current = [];
   };
 
   const handleApply = () => {
