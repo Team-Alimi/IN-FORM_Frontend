@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
-import { FILTER_OPTIONS, STATE_OPTIONS } from "@/constants/filterOption";
+import {
+  CATEGORY_NAME_COLOR_MAP,
+  DEFAULT_CATEGORY_COLOR,
+  STATE_OPTIONS,
+} from "@/constants/filterOption";
 
-// MY(북마크) 제외한 카테고리 목록
-const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.key !== "MY");
-
-// API deadline_status → STATE_OPTIONS key 매핑
+// API deadline_status 값 → STATE_OPTIONS key 매핑
 const DEADLINE_API_TO_STATE_KEY = {
-  OPEN: "OnGoing",
+  OPEN:         "OnGoing",
   CLOSING_SOON: "EndingSoon",
-  UPCOMING: "UpComing",
-  CLOSED: "Ended",
+  UPCOMING:     "UpComing",
+  CLOSED:       "Ended",
 };
 
 const DEADLINE_STATUS_OPTIONS = [
@@ -35,36 +36,34 @@ const getDeadlineChipClass = (key, isSelected) => {
 
 /**
  * 홈 캘린더 필터 바텀시트
- * @param {boolean} isOpen - 열림 여부
- * @param {function} onClose - 닫기 핸들러
- * @param {string[]} selectedCategories - 현재 선택된 카테고리 key 배열 (FILTER_OPTIONS.key)
- * @param {boolean} isMyDeptOnly - 내 학과만 보기 여부
- * @param {string[]} selectedDeadlineStatuses - 선택된 마감 상태 배열 (OPEN | CLOSING_SOON | UPCOMING | CLOSED)
- * @param {function} onApply - ({ categories, isMyDeptOnly, deadlineStatuses }) => void
+ * @param {boolean}  isOpen                - 열림 여부
+ * @param {function} onClose               - 닫기 핸들러
+ * @param {Array}    categories            - API 카테고리 목록 [{ id, name }]
+ * @param {number[]} selectedCategoryIds   - 현재 선택된 카테고리 ID 배열
+ * @param {string[]} selectedDeadlineStatuses - 선택된 마감 상태 배열
+ * @param {function} onApply              - ({ categoryIds, deadlineStatuses }) => void
  */
 const CalendarFilterSheet = ({
   isOpen,
   onClose,
-  selectedCategories,
-  isMyDeptOnly,
+  categories = [],
+  selectedCategoryIds,
   selectedDeadlineStatuses,
   onApply,
 }) => {
-  const [localCategories, setLocalCategories] = useState(selectedCategories);
-  const [localIsMyDeptOnly, setLocalIsMyDeptOnly] = useState(isMyDeptOnly);
+  const [localCategoryIds, setLocalCategoryIds] = useState(selectedCategoryIds);
   const [localDeadlineStatuses, setLocalDeadlineStatuses] = useState(selectedDeadlineStatuses);
 
   // 바텀시트 열릴 때 현재 적용된 필터 값으로 동기화
   useEffect(() => {
     if (!isOpen) return;
-    setLocalCategories(selectedCategories);
-    setLocalIsMyDeptOnly(isMyDeptOnly);
+    setLocalCategoryIds(selectedCategoryIds);
     setLocalDeadlineStatuses(selectedDeadlineStatuses);
   }, [isOpen]);
 
-  const toggleCategory = (key) => {
-    setLocalCategories((prev) =>
-      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+  const toggleCategory = (id) => {
+    setLocalCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
   };
 
@@ -75,15 +74,13 @@ const CalendarFilterSheet = ({
   };
 
   const handleReset = () => {
-    setLocalCategories([]);
-    setLocalIsMyDeptOnly(false);
+    setLocalCategoryIds([]);
     setLocalDeadlineStatuses([]);
   };
 
   const handleApply = () => {
     onApply({
-      categories: localCategories,
-      isMyDeptOnly: localIsMyDeptOnly,
+      categoryIds: localCategoryIds,
       deadlineStatuses: localDeadlineStatuses,
     });
     onClose();
@@ -93,7 +90,7 @@ const CalendarFilterSheet = ({
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-5">
-        <p className="text-[15px] font-bold text-gray-900">필터</p>
+        <p className="text-[15px] font-bold text-gray-900">행사 필터</p>
         <button
           type="button"
           onClick={handleReset}
@@ -131,40 +128,25 @@ const CalendarFilterSheet = ({
           카테고리 <span className="text-gray-500 font-normal">Category</span>
         </p>
         <div className="flex flex-wrap gap-2">
-          {CATEGORY_OPTIONS.map((opt) => {
-            const isSelected = localCategories.includes(opt.key);
+          {categories.map((cat) => {
+            const isSelected = localCategoryIds.includes(cat.id);
+            const colorInfo = CATEGORY_NAME_COLOR_MAP[cat.name] ?? DEFAULT_CATEGORY_COLOR;
             return (
               <button
-                key={opt.key}
+                key={cat.id}
                 type="button"
-                onClick={() => toggleCategory(opt.key)}
+                onClick={() => toggleCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected
-                    ? `${opt.tagBg} ${opt.textColor} ${opt.borderColor}`
+                    ? `${colorInfo.dot} text-white border-transparent`
                     : "bg-white text-gray-500 border-gray-200"
                 }`}
               >
-                {opt.label}
+                {cat.name}
               </button>
             );
           })}
         </div>
-      </div>
-
-      {/* 내 학과 공지만 보기 */}
-      <div className="mb-6">
-        <p className="text-[13px] font-semibold text-gray-800 mb-2">
-          내 학과 공지만 보기 <span className="text-gray-500 font-normal">My Department</span>
-        </p>
-        <label className="flex items-center gap-2 cursor-pointer w-fit">
-          <input
-            type="checkbox"
-            checked={localIsMyDeptOnly}
-            onChange={(e) => setLocalIsMyDeptOnly(e.target.checked)}
-            className="w-4 h-4 rounded accent-primary"
-          />
-          <span className="text-sm text-gray-700">관심학과 공지만 표시</span>
-        </label>
       </div>
 
       {/* 적용 버튼 */}

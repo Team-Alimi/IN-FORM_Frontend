@@ -1,6 +1,7 @@
 // 미니 캘린더와 거의 유사
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { IoChevronBackOutline, IoChevronForwardOutline, IoChevronDownOutline } from "react-icons/io5";
+import { RiEqualizerLine } from "react-icons/ri";
 import WeekRow from "@/components/main/adaptive/feature/HOM/WeekRow";
 import { generateWeeks } from "@/utils/calendarUtil";
 import { useDeviceStore } from "@/stores/deviceStore";
@@ -14,6 +15,7 @@ const MainCalendar = ({
   onSelectDate,
   onMonthChange,
   onOverflowClick,
+  onFilterOpen,
   filterBarSlot,
 }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -96,61 +98,75 @@ const MainCalendar = ({
       {/* 상단: 월 네비게이션 */}
       <div className="flex items-center justify-between mb-4 md:mb-5 max-mobile:mb-2">
         {isMobile ? (
-          // 모바일: 드롭다운 방식
-          <div className="relative" ref={dropdownRef}>
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-1 text-[17px] font-bold text-gray-900"
-            >
-              {month + 1}월
-              <IoChevronDownOutline
-                className={`text-gray-600 text-base transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
-              />
-            </button>
+          // 모바일: 드롭다운 방식 + 필터 아이콘
+          <>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-1 text-[17px] font-bold text-gray-900"
+              >
+                {month + 1}월
+                <IoChevronDownOutline
+                  className={`text-gray-600 text-base transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 z-20 mt-2 bg-white shadow-xl rounded-2xl p-3 min-w-[196px] border border-gray-100">
-                {/* 년도 네비게이션 */}
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <button
-                    type="button"
-                    onClick={() => handleYearChange(-1)}
-                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <IoChevronBackOutline className="text-gray-500 text-sm" />
-                  </button>
-                  <span className="text-sm font-semibold text-gray-700">{year}년</span>
-                  <button
-                    type="button"
-                    onClick={() => handleYearChange(+1)}
-                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <IoChevronForwardOutline className="text-gray-500 text-sm" />
-                  </button>
-                </div>
-                {/* 1~12월 그리드 */}
-                <div className="grid grid-cols-4 gap-1">
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 z-20 mt-2 bg-white shadow-xl rounded-2xl p-3 min-w-[196px] border border-gray-100">
+                  {/* 년도 네비게이션 */}
+                  <div className="flex items-center justify-between mb-3 px-1">
                     <button
-                      key={m}
                       type="button"
-                      onClick={() => handleMonthSelect(m)}
-                      className={`py-1.5 rounded-lg text-sm font-medium transition-colors
-                        ${m === month + 1
-                          ? "bg-primary text-white"
-                          : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                      onClick={() => handleYearChange(-1)}
+                      className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                     >
-                      {m}월
+                      <IoChevronBackOutline className="text-gray-500 text-sm" />
                     </button>
-                  ))}
+                    <span className="text-sm font-semibold text-gray-700">{year}년</span>
+                    <button
+                      type="button"
+                      onClick={() => handleYearChange(+1)}
+                      className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                    >
+                      <IoChevronForwardOutline className="text-gray-500 text-sm" />
+                    </button>
+                  </div>
+                  {/* 1~12월 그리드 */}
+                  <div className="grid grid-cols-4 gap-1">
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => handleMonthSelect(m)}
+                        className={`py-1.5 rounded-lg text-sm font-medium transition-colors
+                          ${m === month + 1
+                            ? "bg-primary text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                      >
+                        {m}월
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* 필터 아이콘 버튼 */}
+            {onFilterOpen && (
+              <button
+                type="button"
+                onClick={onFilterOpen}
+                className="p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                aria-label="필터"
+              >
+                <RiEqualizerLine className="text-xl" />
+              </button>
             )}
-          </div>
+          </>
         ) : (
-          // 데스크톱: 기존 이전/다음 버튼 방식
+          // 데스크톱: 기존 이전/다음 버튼 방식 + 필터 아이콘
           <>
             <button
               type="button"
@@ -160,8 +176,21 @@ const MainCalendar = ({
               <IoChevronBackOutline className="text-gray-500 text-lg sm:text-xl" />
             </button>
 
-            <div className="text-base sm:text-base md:text-lg font-semibold text-gray-800">
-              {year}년 {month + 1}월
+            <div className="flex items-center gap-2">
+              <div className="text-base sm:text-base md:text-lg font-semibold text-gray-800">
+                {year}년 {month + 1}월
+              </div>
+              {/* 필터 아이콘 버튼 */}
+              {onFilterOpen && (
+                <button
+                  type="button"
+                  onClick={onFilterOpen}
+                  className="p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+                  aria-label="필터"
+                >
+                  <RiEqualizerLine className="text-lg" />
+                </button>
+              )}
             </div>
 
             <button

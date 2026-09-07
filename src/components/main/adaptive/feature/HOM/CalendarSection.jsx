@@ -12,6 +12,7 @@ import { fetchCategories } from "@/api/main/vendors";
 import { fetchEventDetail, fetchClubDetail } from "@/api/main/articles";
 import MainCalendar from "@/components/main/adaptive/feature/HOM/MainCalendar";
 import CalendarFilterBar from "@/components/main/adaptive/feature/HOM/CalendarFilterBar";
+import CalendarFilterSheet from "@/components/main/adaptive/feature/HOM/CalendarFilterSheet";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileEventDetail from "@/components/main/adaptive/feature/EVD/MobileEventDetail";
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
@@ -19,6 +20,8 @@ import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
 const CalendarSection = ({ onTodayEventCount }) => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]); // 선택된 카테고리 ID 배열
   const [isMyDeptOnly, setIsMyDeptOnly] = useState(false);
+  const [selectedDeadlineStatuses, setSelectedDeadlineStatuses] = useState([]); // 클라이언트 필터
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
 
@@ -63,7 +66,6 @@ const CalendarSection = ({ onTodayEventCount }) => {
   // 상세 데이터 페칭 (바텀시트용)
   const {
     data: detailData,
-    isLoading: isDetailLoading,
     isFetching: isDetailFetching,
   } = useQuery({
     queryKey: ["eventDetail", selectedEventId, selectedCategory],
@@ -75,12 +77,18 @@ const CalendarSection = ({ onTodayEventCount }) => {
     staleTime: 60 * 1000 * 5,
   });
 
+  // deadline_status 클라이언트 사이드 필터링
+  const filteredArticles = useMemo(() => {
+    const articles = data?.articles ?? [];
+    if (selectedDeadlineStatuses.length === 0) return articles;
+    return articles.filter((a) => selectedDeadlineStatuses.includes(a.deadline_status));
+  }, [data, selectedDeadlineStatuses]);
+
   // 2. eventsByDate : 일별로 이벤트 매핑
   const eventsByDate = useMemo(() => {
     const eventMap = {};
-    const articles = data?.articles ?? [];
 
-    articles.forEach((article) => {
+    filteredArticles.forEach((article) => {
       const startDate = parseDate(article.starts_on);
       const endDate = parseDate(article.ends_on);
       if (!startDate || !endDate) return;
@@ -107,7 +115,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
       }
     });
     return eventMap;
-  }, [data]); // data가 변경될 때만 재계산
+  }, [filteredArticles]);
 
   // 오늘 일정 개수를 부모(HOMPage)로 전달
   useEffect(() => {
@@ -149,12 +157,11 @@ const CalendarSection = ({ onTodayEventCount }) => {
     setCurrentDate(formatDateKey(newDate));
   };
 
-  // 4. 바텀시트 닫기 핸들러
+  // 바텀시트 닫기 핸들러
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
-    // 닫힐 때 선택된 ID 초기화 (선택 사항, 애니메이션 고려하여 유지 가능)
-    // setSelectedEventId(null);
   };
+
   // 카테고리 칩 클릭 핸들러 (id: number | null)
   // null → 전체 선택(초기화), number → 해당 ID 토글
   const handleCategoryClick = (id) => {
@@ -166,6 +173,13 @@ const CalendarSection = ({ onTodayEventCount }) => {
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
   };
+
+  // 필터 바텀시트 적용 핸들러
+  const handleFilterSheetApply = ({ categoryIds, deadlineStatuses }) => {
+    setSelectedCategoryIds(categoryIds);
+    setSelectedDeadlineStatuses(deadlineStatuses);
+  };
+
   /**로딩 상태 처리*/
   if (isLoading) {
     return (
@@ -214,6 +228,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
           onSelectDate={handleDateClick}
           onMonthChange={handleMonthChange}
           onOverflowClick={handleOverflowClick}
+          onFilterOpen={() => setIsFilterSheetOpen(true)}
           filterBarSlot={
             <CalendarFilterBar
               categories={categories}
@@ -254,6 +269,16 @@ const CalendarSection = ({ onTodayEventCount }) => {
           bookmark_count={detailData?.bookmark_count}
         />
       )}
+
+      {/* 캘린더 필터 바텀시트 */}
+      <CalendarFilterSheet
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+        categories={categories}
+        selectedCategoryIds={selectedCategoryIds}
+        selectedDeadlineStatuses={selectedDeadlineStatuses}
+        onApply={handleFilterSheetApply}
+      />
     </div>
   );
 };
