@@ -145,8 +145,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           interestOnlyActiveRef.current = false;
           setInterestEmptyMsg("관심 분야가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
-          autoSelectedCategoryIdsRef.current = ids;
-          setSelectedCategoryIds(ids);
+          // 기존 수동 선택과 합집합 저장, ref에는 새로 추가된 ID만 보관
+          setSelectedCategoryIds((prev) => {
+            const newlyAdded = ids.filter((id) => !prev.includes(id));
+            autoSelectedCategoryIdsRef.current = newlyAdded;
+            return [...prev, ...newlyAdded];
+          });
           setInterestEmptyMsg("");
         }
       } catch {
@@ -178,8 +182,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           interestVendorOnlyActiveRef.current = false;
           setVendorEmptyMsg("구독한 학과가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
-          autoSelectedVendorIdsRef.current = ids;
-          setSelectedVendorIds(ids);
+          // 기존 수동 선택과 합집합 저장, ref에는 새로 추가된 ID만 보관
+          setSelectedVendorIds((prev) => {
+            const newlyAdded = ids.filter((id) => !prev.includes(id));
+            autoSelectedVendorIdsRef.current = newlyAdded;
+            return [...prev, ...newlyAdded];
+          });
           setVendorEmptyMsg("");
         }
       } catch {
