@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
-import { FILTER_OPTIONS } from '@/constants/filterOption';
+import { CATEGORY_NAME_COLOR_MAP } from '@/constants/filterOption';
+import { fetchCategories } from '@/api/main/vendors';
 import VendorAddModal from './VendorAddModal';
 import AttachmentAddModal from './AttachmentAddModal';
 import AlertModal from '@/components/manage/common/AlertModal';
@@ -34,6 +35,13 @@ const ArticleEditorSection = ({
     queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
     enabled: isEditing, //isEditing이 true일때만 내용을 실행하라.
   });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+    staleTime: 60 * 60 * 1000,
+  });
+  const categories = (categoriesData?.data ?? []) as { id: number; name: string }[];
 
   const [venderModalOpen, setVendorModalOpen] = useState(false); //vendor모달 토글 상태 관리
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false); //attachment모달 토글 상태 관리
@@ -203,28 +211,28 @@ const ArticleEditorSection = ({
     <div>
       <form onSubmit={handleSubmit}>
         <div>
-          {FILTER_OPTIONS.map((option) => {
-            if (option.label === '북마크') return null;
-            const isSelected = option.category_id === form.category_id;
+          {categories.map((cat) => {
+            const isSelected = cat.id === form.category_id;
+            const colorBg = CATEGORY_NAME_COLOR_MAP[cat.name]?.dot ?? 'bg-gray-400';
             return (
-              <label key={option.key}>
+              <label key={cat.id}>
                 <input
                   type="radio"
                   name="category"
-                  value={option.category_id ?? ''}
+                  value={cat.id}
                   checked={isSelected}
                   onChange={() =>
                     setForm((prev) => ({
                       ...prev,
-                      category_id: option.category_id ?? 0,
+                      category_id: cat.id,
                     }))
                   }
                   className="hidden"
                 />
                 <span
-                  className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? `${option.color} text-white` : 'bg-gray-100 text-gray-600'}`}
+                  className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? `${colorBg} text-white` : 'bg-gray-100 text-gray-600'}`}
                 >
-                  {option.label}
+                  {cat.name}
                 </span>
               </label>
             );

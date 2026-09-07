@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
-import { fetchVendors } from "@/api/main/vendors";
+import { fetchVendors, fetchCategories } from "@/api/main/vendors";
 import { fetchEvents } from "@/api/main/articles";
-import { STATE_OPTIONS, FILTER_OPTIONS } from "@/constants/filterOption";
-
-const CATEGORY_OPTIONS = FILTER_OPTIONS.filter((opt) => opt.category_id !== null);
+import { STATE_OPTIONS, CATEGORY_NAME_COLOR_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
 const API_TO_STATE_KEY = {
   OPEN: "OnGoing",
@@ -43,6 +42,14 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
+
+  // 카테고리 목록 동적 조회
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 60 * 1000 * 60, // 1시간 (관리자가 바꾸지 않는 한 변동 없음)
+  });
+  const categories = categoriesData?.data || [];
 
   useEffect(() => {
     fetchVendors("SCHOOL")
@@ -191,19 +198,20 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           카테고리 <span className="text-gray-500 font-normal">Category</span>
         </p>
         <div className="flex flex-wrap gap-2">
-          {CATEGORY_OPTIONS.map((opt) => {
-            const isSelected = selectedCategoryIds.includes(opt.category_id);
+          {categories.map((cat) => {
+            const isSelected = selectedCategoryIds.includes(cat.id);
+            const colorInfo = CATEGORY_NAME_COLOR_MAP[cat.name] ?? DEFAULT_CATEGORY_COLOR;
             return (
               <button
-                key={opt.category_id}
-                onClick={() => toggleCategory(opt.category_id)}
+                key={cat.id}
+                onClick={() => toggleCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected
-                    ? `${opt.tagBg} ${opt.textColor} ${opt.borderColor}`
+                    ? `${colorInfo.dot} text-white border-transparent`
                     : "bg-white text-gray-500 border-gray-200"
                 }`}
               >
-                {opt.label}
+                {cat.name}
               </button>
             );
           })}
