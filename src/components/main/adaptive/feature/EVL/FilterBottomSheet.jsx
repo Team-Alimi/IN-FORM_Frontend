@@ -45,6 +45,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
   // 체크박스로 자동 선택된 ID 추적 (해제 시 해당 칩만 선택 취소)
   const autoSelectedCategoryIdsRef = useRef([]);
   const autoSelectedVendorIdsRef = useRef([]);
@@ -189,35 +191,41 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
-              <span className="text-sm">📅</span>
-              <span className={`text-sm ${startDate ? "text-gray-800" : "text-gray-400"}`}>
-                {startDate || "시작일"}
-              </span>
-            </div>
+          <button
+            type="button"
+            onClick={() => startDateRef.current?.showPicker?.()}
+            className="flex flex-1 min-w-0 items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 cursor-pointer"
+          >
+            <span className="text-sm">📅</span>
+            <span className={`text-sm ${startDate ? "text-gray-800" : "text-gray-400"}`}>
+              {startDate || "시작일"}
+            </span>
             <input
+              ref={startDateRef}
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full"
+              className="sr-only"
             />
-          </div>
+          </button>
           <span className="text-gray-400 text-sm shrink-0">~</span>
-          <div className="relative flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 pointer-events-none">
-              <span className="text-sm">📅</span>
-              <span className={`text-sm ${endDate ? "text-gray-800" : "text-gray-400"}`}>
-                {endDate || "종료일"}
-              </span>
-            </div>
+          <button
+            type="button"
+            onClick={() => endDateRef.current?.showPicker?.()}
+            className="flex flex-1 min-w-0 items-center gap-1.5 bg-gray-100 rounded-xl px-3 py-2.5 cursor-pointer"
+          >
+            <span className="text-sm">📅</span>
+            <span className={`text-sm ${endDate ? "text-gray-800" : "text-gray-400"}`}>
+              {endDate || "종료일"}
+            </span>
             <input
+              ref={endDateRef}
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer w-full"
+              className="sr-only"
             />
-          </div>
+          </button>
         </div>
       </div>
 
