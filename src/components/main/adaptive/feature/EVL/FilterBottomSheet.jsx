@@ -52,6 +52,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   // 체크박스로 자동 선택된 ID 추적 (해제 시 해당 칩만 선택 취소)
   const autoSelectedCategoryIdsRef = useRef([]);
   const autoSelectedVendorIdsRef = useRef([]);
+  // race condition 방지: await 완료 후 체크 상태가 여전히 활성인지 확인
+  const interestOnlyActiveRef = useRef(false);
+  const interestVendorOnlyActiveRef = useRef(false);
 
   // 카테고리 목록 동적 조회
   const { data: categoriesData } = useQuery({
@@ -130,12 +133,16 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
   const handleInterestOnlyChange = async (checked) => {
     setInterestOnly(checked);
+    interestOnlyActiveRef.current = checked;
     if (checked) {
       try {
         const res = await fetchMyInterestCategories();
+        // await 사이에 체크가 해제됐으면 결과 무시
+        if (!interestOnlyActiveRef.current) return;
         const ids = (res?.data || []).map((c) => c.id);
         if (ids.length === 0) {
           setInterestOnly(false);
+          interestOnlyActiveRef.current = false;
           setInterestEmptyMsg("관심 분야가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
           autoSelectedCategoryIdsRef.current = ids;
@@ -145,6 +152,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestOnly(false);
+        interestOnlyActiveRef.current = false;
       }
     } else {
       const ids = autoSelectedCategoryIdsRef.current;
@@ -158,12 +166,16 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
   const handleInterestVendorOnlyChange = async (checked) => {
     setInterestVendorOnly(checked);
+    interestVendorOnlyActiveRef.current = checked;
     if (checked) {
       try {
         const res = await fetchMyVendors();
+        // await 사이에 체크가 해제됐으면 결과 무시
+        if (!interestVendorOnlyActiveRef.current) return;
         const ids = (res?.data || []).map((v) => v.id);
         if (ids.length === 0) {
           setInterestVendorOnly(false);
+          interestVendorOnlyActiveRef.current = false;
           setVendorEmptyMsg("구독한 학과가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
           autoSelectedVendorIdsRef.current = ids;
@@ -173,6 +185,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestVendorOnly(false);
+        interestVendorOnlyActiveRef.current = false;
       }
     } else {
       const ids = autoSelectedVendorIdsRef.current;
@@ -189,10 +202,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setSelectedCategoryIds([]);
     setInterestOnly(false);
     setInterestEmptyMsg("");
+    interestOnlyActiveRef.current = false;
     autoSelectedCategoryIdsRef.current = [];
     setSelectedVendorIds([]);
     setInterestVendorOnly(false);
     setVendorEmptyMsg("");
+    interestVendorOnlyActiveRef.current = false;
     autoSelectedVendorIdsRef.current = [];
   };
 
