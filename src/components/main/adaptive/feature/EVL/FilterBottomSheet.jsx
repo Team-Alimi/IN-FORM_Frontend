@@ -49,9 +49,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const timerRef = useRef(null);
   const startDateRef = useRef(null);
   const endDateRef = useRef(null);
-  // 체크박스로 자동 선택된 ID 추적 (해제 시 해당 칩만 선택 취소)
-  const autoSelectedCategoryIdsRef = useRef([]);
-  const autoSelectedVendorIdsRef = useRef([]);
+  // 체크박스 ON 직전 수동 선택 상태 저장 (OFF 시 복원)
+  const prevCategoryIdsRef = useRef([]);
+  const prevVendorIdsRef = useRef([]);
   // race condition 방지: await 완료 후 체크 상태가 여전히 활성인지 확인
   const interestOnlyActiveRef = useRef(false);
   const interestVendorOnlyActiveRef = useRef(false);
@@ -135,6 +135,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setInterestOnly(checked);
     interestOnlyActiveRef.current = checked;
     if (checked) {
+      prevCategoryIdsRef.current = selectedCategoryIds; // 체크 전 상태 저장
       try {
         const res = await fetchMyInterestCategories();
         // await 사이에 체크가 해제됐으면 결과 무시
@@ -143,35 +144,32 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         if (ids.length === 0) {
           setInterestOnly(false);
           interestOnlyActiveRef.current = false;
+          prevCategoryIdsRef.current = [];
           setInterestEmptyMsg("관심 분야가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
-          // 기존 수동 선택과 합집합 저장, ref에는 새로 추가된 ID만 보관
-          setSelectedCategoryIds((prev) => {
-            const newlyAdded = ids.filter((id) => !prev.includes(id));
-            autoSelectedCategoryIdsRef.current = newlyAdded;
-            return [...prev, ...newlyAdded];
-          });
+          setSelectedCategoryIds(ids); // 관심분야로 대체
           setInterestEmptyMsg("");
         }
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestOnly(false);
         interestOnlyActiveRef.current = false;
+        prevCategoryIdsRef.current = [];
       }
     } else {
-      const ids = autoSelectedCategoryIdsRef.current;
-      setSelectedCategoryIds((prev) => prev.filter((id) => !ids.includes(id)));
-      autoSelectedCategoryIdsRef.current = [];
+      setSelectedCategoryIds(prevCategoryIdsRef.current); // 체크 전 상태 복원
+      prevCategoryIdsRef.current = [];
       setInterestEmptyMsg("");
     }
   };
 
   // '구독한 학과만 보기' 체크 시 구독 학과 ID를 자동으로 선택
-  // 해제 시 자동 선택됐던 칩만 취소 (수동 선택 칩은 유지)
+  // 해제 시 체크 전 수동 선택 상태 복원
   const handleInterestVendorOnlyChange = async (checked) => {
     setInterestVendorOnly(checked);
     interestVendorOnlyActiveRef.current = checked;
     if (checked) {
+      prevVendorIdsRef.current = selectedVendorIds; // 체크 전 상태 저장
       try {
         const res = await fetchMyVendors();
         // await 사이에 체크가 해제됐으면 결과 무시
@@ -180,25 +178,21 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         if (ids.length === 0) {
           setInterestVendorOnly(false);
           interestVendorOnlyActiveRef.current = false;
+          prevVendorIdsRef.current = [];
           setVendorEmptyMsg("구독한 학과가 없습니다. 마이페이지에서 설정해 주세요.");
         } else {
-          // 기존 수동 선택과 합집합 저장, ref에는 새로 추가된 ID만 보관
-          setSelectedVendorIds((prev) => {
-            const newlyAdded = ids.filter((id) => !prev.includes(id));
-            autoSelectedVendorIdsRef.current = newlyAdded;
-            return [...prev, ...newlyAdded];
-          });
+          setSelectedVendorIds(ids); // 구독 학과로 대체
           setVendorEmptyMsg("");
         }
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestVendorOnly(false);
         interestVendorOnlyActiveRef.current = false;
+        prevVendorIdsRef.current = [];
       }
     } else {
-      const ids = autoSelectedVendorIdsRef.current;
-      setSelectedVendorIds((prev) => prev.filter((id) => !ids.includes(id)));
-      autoSelectedVendorIdsRef.current = [];
+      setSelectedVendorIds(prevVendorIdsRef.current); // 체크 전 상태 복원
+      prevVendorIdsRef.current = [];
       setVendorEmptyMsg("");
     }
   };
@@ -211,12 +205,12 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setInterestOnly(false);
     setInterestEmptyMsg("");
     interestOnlyActiveRef.current = false;
-    autoSelectedCategoryIdsRef.current = [];
+    prevCategoryIdsRef.current = [];
     setSelectedVendorIds([]);
     setInterestVendorOnly(false);
     setVendorEmptyMsg("");
     interestVendorOnlyActiveRef.current = false;
-    autoSelectedVendorIdsRef.current = [];
+    prevVendorIdsRef.current = [];
   };
 
   const handleApply = () => {
