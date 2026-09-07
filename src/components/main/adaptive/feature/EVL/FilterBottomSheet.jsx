@@ -40,8 +40,10 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
   const [interestOnly, setInterestOnly] = useState(false);
+  const [interestEmptyMsg, setInterestEmptyMsg] = useState("");
   const [selectedVendorIds, setSelectedVendorIds] = useState([]);
   const [interestVendorOnly, setInterestVendorOnly] = useState(false);
+  const [vendorEmptyMsg, setVendorEmptyMsg] = useState("");
   const [vendors, setVendors] = useState([]);
   const [previewCount, setPreviewCount] = useState(totalCount);
   const timerRef = useRef(null);
@@ -132,8 +134,14 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       try {
         const res = await fetchMyInterestCategories();
         const ids = (res?.data || []).map((c) => c.id);
-        autoSelectedCategoryIdsRef.current = ids;
-        setSelectedCategoryIds(ids);
+        if (ids.length === 0) {
+          setInterestOnly(false);
+          setInterestEmptyMsg("관심 분야가 없습니다. 마이페이지에서 설정해 주세요.");
+        } else {
+          autoSelectedCategoryIdsRef.current = ids;
+          setSelectedCategoryIds(ids);
+          setInterestEmptyMsg("");
+        }
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestOnly(false);
@@ -142,6 +150,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       const ids = autoSelectedCategoryIdsRef.current;
       setSelectedCategoryIds((prev) => prev.filter((id) => !ids.includes(id)));
       autoSelectedCategoryIdsRef.current = [];
+      setInterestEmptyMsg("");
     }
   };
 
@@ -153,8 +162,14 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       try {
         const res = await fetchMyVendors();
         const ids = (res?.data || []).map((v) => v.id);
-        autoSelectedVendorIdsRef.current = ids;
-        setSelectedVendorIds(ids);
+        if (ids.length === 0) {
+          setInterestVendorOnly(false);
+          setVendorEmptyMsg("구독한 학과가 없습니다. 마이페이지에서 설정해 주세요.");
+        } else {
+          autoSelectedVendorIdsRef.current = ids;
+          setSelectedVendorIds(ids);
+          setVendorEmptyMsg("");
+        }
       } catch {
         // 조회 실패 시 체크박스 원상 복구
         setInterestVendorOnly(false);
@@ -163,6 +178,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
       const ids = autoSelectedVendorIdsRef.current;
       setSelectedVendorIds((prev) => prev.filter((id) => !ids.includes(id)));
       autoSelectedVendorIdsRef.current = [];
+      setVendorEmptyMsg("");
     }
   };
 
@@ -172,9 +188,11 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
     setSelectedStatuses(["ALL"]);
     setSelectedCategoryIds([]);
     setInterestOnly(false);
+    setInterestEmptyMsg("");
     autoSelectedCategoryIdsRef.current = [];
     setSelectedVendorIds([]);
     setInterestVendorOnly(false);
+    setVendorEmptyMsg("");
     autoSelectedVendorIdsRef.current = [];
   };
 
@@ -268,6 +286,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
             <span className="text-[12px] text-gray-500">관심분야만 보기</span>
           </label>
         </div>
+        {interestEmptyMsg && (
+          <p className="text-[11px] text-amber-500 mb-2">{interestEmptyMsg}</p>
+        )}
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => {
             const isSelected = selectedCategoryIds.includes(cat.id);
@@ -305,6 +326,9 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
             <span className="text-[12px] text-gray-500">구독한 학과만 보기</span>
           </label>
         </div>
+        {vendorEmptyMsg && (
+          <p className="text-[11px] text-amber-500 mb-2">{vendorEmptyMsg}</p>
+        )}
         <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto">
           {vendors.map((v) => {
             const isSelected = selectedVendorIds.includes(v.id);
