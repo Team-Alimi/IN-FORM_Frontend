@@ -135,7 +135,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         autoSelectedCategoryIdsRef.current = ids;
         setSelectedCategoryIds(ids);
       } catch {
-        // 조회 실패 시 무시
+        // 조회 실패 시 체크박스 원상 복구
+        setInterestOnly(false);
       }
     } else {
       const ids = autoSelectedCategoryIdsRef.current;
@@ -155,7 +156,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
         autoSelectedVendorIdsRef.current = ids;
         setSelectedVendorIds(ids);
       } catch {
-        // 조회 실패 시 무시
+        // 조회 실패 시 체크박스 원상 복구
+        setInterestVendorOnly(false);
       }
     } else {
       const ids = autoSelectedVendorIdsRef.current;
