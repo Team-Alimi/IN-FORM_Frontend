@@ -17,15 +17,9 @@ const MobileEventRow = ({ status, category, title, vendors = [], date, bookmarkC
         <p className="flex-1 font-bold text-gray-900 text-[15px] leading-snug line-clamp-2">
           {title}
         </p>
-        <div className="flex flex-col items-end gap-1 shrink-0">
+        <div className="flex flex-col items-end gap-2 shrink-0">
           {category && <Badge category={category} />}
-          {status && (
-            <Badge
-              text={status.text}
-              color={status.color}
-              className="text-xs px-2 py-0.5 font-medium"
-            />
-          )}
+          {status && <Badge text={status.text} color={status.color} />}
         </div>
       </div>
 

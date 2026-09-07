@@ -12,7 +12,7 @@ const Badge = ({ color, text, category, className }) => {
 
   return (
     <span
-      className={`shrink-0 px-2.5 py-1 text-xs font-medium rounded-full border-0 shadow-[0px_4px_6px_0px_rgba(0,0,0,0.03)] ${bgClass} ${textClass} ${className ?? ""}`}
+      className={`shrink-0 px-3 py-1.5 text-xs font-medium rounded-full border-0 shadow-[0px_4px_6px_0px_rgba(0,0,0,0.03)] ${bgClass} ${textClass} ${className ?? ""}`}
     >
       {label}
     </span>

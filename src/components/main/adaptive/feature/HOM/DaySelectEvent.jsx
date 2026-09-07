@@ -1,3 +1,4 @@
+import Badge from "@/components/main/adaptive/common/Badge";
 import { CATEGORY_NAME_COLOR_MAP, CATEGORY_CODE_TO_NAME_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
 
 const DAY_ABBR = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -51,11 +52,7 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
 
       {/* 오른쪽: 카테고리 배지 + 행사 제목 */}
       <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
-        <span
-          className={`inline-flex items-center self-start px-2 py-0.5 rounded-md text-[11px] font-semibold ${colorInfo.bg} ${colorInfo.text}`}
-        >
-          {categoryName}
-        </span>
+        <Badge category={event.category_name} className="self-start" />
         <span className="text-[13px] font-medium text-gray-800 wrap-break-word">
           {event.title}
         </span>
