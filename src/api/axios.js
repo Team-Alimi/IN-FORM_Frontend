@@ -1,13 +1,10 @@
 import axios from "axios";
 import useAuthStore from "@/stores/useAuthStore";
 
-const BASE_URL = "https://inha-inform.today/";
+const BASE_URL = "https://api.inha-inform.today/";
 
 const instance = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "ngrok-skip-browser-warning": "true",
-  },
 });
 
 // 토큰 갱신 중 중복 요청 방지 (single-flight)
