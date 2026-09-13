@@ -13,6 +13,7 @@ import {
 } from "@/api/main/user";
 import { fetchVendors, fetchCategories } from "@/api/main/vendors";
 import TabBar from "@/components/main/desktop/common/TabBar";
+import { saveInterestChanges } from "@/utils/saveInterestChanges";
 
 // ─── 관심 동아리 유형 마스터 목록 (공개 API 없음, 하드코딩 유지) ─────────────────────
 const INTEREST_CLUB_TYPE_LIST = [
@@ -78,6 +79,7 @@ const MYPEditPage = () => {
   const vendorInitialized = useRef(false);
   const categoryInitialized = useRef(false);
   const clubTypeInitialized = useRef(false);
+  const savedSelections = useRef({ vendors: new Set(), categories: new Set(), clubTypes: new Set() });
 
   // ─── 소속 학과·기관 마스터 목록 (GET /api/v1/vendors?type=SCHOOL) ───────────────
   const {
@@ -135,6 +137,7 @@ const MYPEditPage = () => {
   useEffect(() => {
     if (myVendorData?.data && !vendorInitialized.current) {
       setSelectedVendorIds(new Set(myVendorData.data.map((v) => v.id)));
+      savedSelections.current.vendors = new Set(myVendorData.data.map((v) => v.id));
       vendorInitialized.current = true;
     }
   }, [myVendorData]);
@@ -142,6 +145,7 @@ const MYPEditPage = () => {
   useEffect(() => {
     if (myInterestCategoryData?.data && !categoryInitialized.current) {
       setSelectedCategoryIds(new Set(myInterestCategoryData.data.map((c) => c.id)));
+      savedSelections.current.categories = new Set(myInterestCategoryData.data.map((c) => c.id));
       categoryInitialized.current = true;
     }
   }, [myInterestCategoryData]);
@@ -149,6 +153,7 @@ const MYPEditPage = () => {
   useEffect(() => {
     if (myClubTypeData?.data && !clubTypeInitialized.current) {
       setSelectedClubTypeIds(new Set(myClubTypeData.data.map((c) => c.id)));
+      savedSelections.current.clubTypes = new Set(myClubTypeData.data.map((c) => c.id));
       clubTypeInitialized.current = true;
     }
   }, [myClubTypeData]);
@@ -184,16 +189,23 @@ const MYPEditPage = () => {
 
   // ─── 저장 mutation ─────────────────────────────────────────────────────────────
   const saveMutation = useMutation({
-    mutationFn: () =>
-      Promise.all([
-        putMyVendors([...selectedVendorIds]),
-        putMyInterestCategories([...selectedCategoryIds]),
-        putMyClubTypes([...selectedClubTypeIds]),
-      ]),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myVendors"] });
-      queryClient.invalidateQueries({ queryKey: ["myInterestCategories"] });
-      queryClient.invalidateQueries({ queryKey: ["myClubTypes"] });
+    mutationFn: () => saveInterestChanges([
+      { key: "vendors", label: "소속 학과·기관", selectedIds: selectedVendorIds, savedIds: savedSelections.current.vendors, save: putMyVendors, queryKey: ["myVendors"] },
+      { key: "categories", label: "관심 공지 분야", selectedIds: selectedCategoryIds, savedIds: savedSelections.current.categories, save: putMyInterestCategories, queryKey: ["myInterestCategories"] },
+      { key: "clubTypes", label: "관심 동아리 카테고리", selectedIds: selectedClubTypeIds, savedIds: savedSelections.current.clubTypes, save: putMyClubTypes, queryKey: ["myClubTypes"] },
+    ], (section, ids) => {
+      savedSelections.current[section.key] = new Set(ids);
+      queryClient.invalidateQueries({ queryKey: section.queryKey });
+    }),
+    onSuccess: (failures) => {
+      if (failures.length > 0) {
+        const details = failures.map(({ label, error }) => {
+          const message = error.response?.data?.error?.message || "다시 시도해 주세요.";
+          return `${label}: ${message}`;
+        });
+        alert(`일부 항목을 저장하지 못했습니다.\n${details.join("\n")}\n실패한 항목을 확인하고 다시 저장해 주세요.`);
+        return;
+      }
       navigate(-1);
     },
     onError: (error) => {
@@ -277,7 +289,7 @@ const MYPEditPage = () => {
       )}
 
       {/* 본문 */}
-      <div className="flex flex-col pb-28">
+      <fieldset disabled={saveMutation.isPending} className="flex flex-col pb-28">
 
         {/* ─── 프로필 정보 ── */}
         <div className="mx-4 mt-2 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-5 py-5">
@@ -362,7 +374,7 @@ const MYPEditPage = () => {
             ))}
           </div>
         </div>
-      </div>
+      </fieldset>
 
       {/* ─── 고정 저장 버튼 ── */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-100 px-4 py-3">

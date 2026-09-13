@@ -23,6 +23,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - 사용자 페이지는 `src/pages/main/[CODE]/`, 관리자 페이지는 `src/pages/manage/[CODE]/`에 둔다. 오류 UI는 `src/pages/NOT/`에 둔다.
 - 전역 클라이언트 상태는 `src/stores/`, 재사용 동작은 `src/hooks/`, 유틸리티는 `src/utils/`, 고정 옵션은 `src/constants/`에 둔다.
 - `src/`를 기준으로 하는 import에는 `@/` 별칭을 사용한다.
+- 테스트 파일은 루트 `tests/` 아래에 소스의 하위 구조를 따라 배치한다. Node 직접 실행 테스트의 소스 import는 상대 경로를 사용한다.
 
 ## Feature Code System
 
