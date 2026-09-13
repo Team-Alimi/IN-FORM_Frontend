@@ -324,8 +324,8 @@ const DesktopLayout = ({
         <div className="flex justify-between items-start gap-4 mb-2">
           <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">{title}</h1>
           <div className="shrink-0 flex items-center gap-2">
-            <AddToCalendar event={eventData} />
             <ShareButton title={title} />
+            <AddToCalendar event={eventData} />
           </div>
         </div>
         {Array.isArray(vendors) && vendors.length > 0 && (

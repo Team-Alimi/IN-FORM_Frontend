@@ -49,39 +49,6 @@ const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
           : "bg-white rounded-2xl p-6 max-mobile:p-4 sm:p-8 md:p-10 w-full min-w-0"
       }
     >
-      {/* dot 인디케이터: 페이지 2개 이상일 때만 */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1 mb-3">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <div
-              key={i}
-              onClick={() => setPage(i)}
-              className={`rounded-full transition-all duration-300 cursor-pointer ${
-                i === page
-                  ? "w-4 h-1.5 bg-blue-500"
-                  : "w-1.5 h-1.5 bg-gray-300"
-              }`}
-            />
-          ))}
-          <button
-            onClick={() => movePrevPage()}
-            disabled={page === 0}
-            aria-label="이전 페이지"
-            className="ml-2 p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <IoChevronBackOutline className="text-gray-500 text-base" />
-          </button>
-          <button
-            onClick={() => moveNextPage()}
-            disabled={page === totalPages - 1}
-            aria-label="다음 페이지"
-            className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <IoChevronForwardOutline className="text-gray-500 text-base" />
-          </button>
-        </div>
-      )}
-
       {/* 콘텐츠: 슬라이드 애니메이션 */}
       {!events || events.length === 0 ? (
         <p className="p-4 text-center text-gray-500 text-sm sm:text-base">
@@ -106,6 +73,39 @@ const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* 페이지 이동: 이전 · 인디케이터 · 다음 */}
+      {totalPages > 1 && (
+        <div className="mt-1 flex items-center justify-center gap-1">
+          <button
+            onClick={() => movePrevPage()}
+            disabled={page === 0}
+            aria-label="이전 페이지"
+            className="mr-2 p-1 rounded-full hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+          >
+            <IoChevronBackOutline className="text-base text-gray-500" />
+          </button>
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <div
+              key={i}
+              onClick={() => setPage(i)}
+              className={`cursor-pointer rounded-full transition-all duration-300 ${
+                i === page
+                  ? "h-1.5 w-4 bg-blue-500"
+                  : "h-1.5 w-1.5 bg-gray-300"
+              }`}
+            />
+          ))}
+          <button
+            onClick={() => moveNextPage()}
+            disabled={page === totalPages - 1}
+            aria-label="다음 페이지"
+            className="ml-2 p-1 rounded-full hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 transition-colors"
+          >
+            <IoChevronForwardOutline className="text-base text-gray-500" />
+          </button>
         </div>
       )}
     </div>

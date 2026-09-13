@@ -17,8 +17,8 @@ const DetailInfoTitle = ({ status, category_name, title, eventData, vendors, cre
         {title}
       </h1>
       <div className="shrink-0 flex items-center gap-2">
-        <AddToCalendar event={eventData} />
         <ShareButton title={title} />
+        <AddToCalendar event={eventData} />
       </div>
     </div>
     {Array.isArray(vendors) && vendors.length > 0 && (

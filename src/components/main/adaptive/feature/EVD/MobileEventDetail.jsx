@@ -59,7 +59,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
       <div className="min-h-[100px]">
         <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">{content}</div>
       </div>
-      <div className="mt-6 flex justify-center">
+      <div className="mt-6 flex justify-end">
         <BookmarkButton
           articleId={articleId}
           isBookmarked={isBookmarkedState}

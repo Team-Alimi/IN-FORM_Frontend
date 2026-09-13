@@ -14,6 +14,8 @@
   /* 선택 날짜(오늘 제외) - 연한 primary */
   --color-primary-light-hover: #3D87C8;
   /* 연한 primary hover 상태 */
+  --color-bookmark: #FFD691;
+  /* 북마크 활성 상태 */
   --color-secondary: #e6e7f5;
   /* 핵심 요소 배경 - 하늘색 */
   --color-text-main: #15171a;
@@ -25,12 +27,55 @@
   --color-background: #ffffff;
   /* 흰색 */
 
-  /* 캘린더 카테고리별 색상 */
-  --color-contest: #ff5c00;
-  --color-lecture: #7c3aed;
-  --color-scholar: #10b981;
-  --color-activity: #eaa72b;
-  --color-my: #fb7185;
+  /* 카테고리 색상: 배경·텍스트·테두리·점 */
+  --color-category-academic-bg: #EFF5FE;
+  --color-category-academic-text: #3182F6;
+  --color-category-academic-border: #CFE3FD;
+  --color-category-academic-dot: #3182F6;
+  --color-category-activity-bg: #EFFCF9;
+  --color-category-activity-text: #14B8A6;
+  --color-category-activity-border: #BCEFE7;
+  --color-category-activity-dot: #14B8A6;
+  --color-category-career-bg: #FFF4EB;
+  --color-category-career-text: #F97316;
+  --color-category-career-border: #FED7AA;
+  --color-category-career-dot: #F97316;
+  --color-category-certification-bg: #FFFAE8;
+  --color-category-certification-text: #CA8A04;
+  --color-category-certification-border: #FDE68A;
+  --color-category-certification-dot: #CA8A04;
+  --color-category-contest-bg: #FEF0F0;
+  --color-category-contest-text: #EF4444;
+  --color-category-contest-border: #FECACA;
+  --color-category-contest-dot: #EF4444;
+  --color-category-event-bg: #FDF1F8;
+  --color-category-event-text: #EC4899;
+  --color-category-event-border: #FBCFE8;
+  --color-category-event-dot: #EC4899;
+  --color-category-foreign-bg: #EFFBFE;
+  --color-category-foreign-text: #06B6D4;
+  --color-category-foreign-border: #A5F3FC;
+  --color-category-foreign-dot: #06B6D4;
+  --color-category-lecture-bg: #F6F2FE;
+  --color-category-lecture-text: #8B5CF6;
+  --color-category-lecture-border: #DDD0FE;
+  --color-category-lecture-dot: #8B5CF6;
+  --color-category-research-bg: #F0FDFA;
+  --color-category-research-text: #0F766E;
+  --color-category-research-border: #99F6E4;
+  --color-category-research-dot: #0F766E;
+  --color-category-scholarship-bg: #FEF7EB;
+  --color-category-scholarship-text: #F59E0B;
+  --color-category-scholarship-border: #FDE7C3;
+  --color-category-scholarship-dot: #F59E0B;
+  --color-category-volunteer-bg: #FFF1F3;
+  --color-category-volunteer-text: #F43F5E;
+  --color-category-volunteer-border: #FECDD3;
+  --color-category-volunteer-dot: #F43F5E;
+  --color-category-etc-bg: #F3F6F9;
+  --color-category-etc-text: #64748B;
+  --color-category-etc-border: #E2E8F0;
+  --color-category-etc-dot: #64748B;
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoing: #dcfce7;

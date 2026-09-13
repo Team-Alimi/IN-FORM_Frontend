@@ -47,7 +47,7 @@ const HotEventList = () => {
     <div className={isMobile ? "py-2" : "bg-gray-50 rounded-2xl"}>
       {/* 섹션 타이틀 + 데스크톱 스크롤 버튼 */}
       <div className="flex flex-row items-center justify-between px-1 mb-2">
-        <p className="text-[15px] font-bold text-gray-800">지금 뜨는 공지</p>
+        <p className="text-[15px] font-bold text-gray-800">지금 뜨는 공지 🔥</p>
         <div className="flex flex-row max-mobile:hidden">
           <button className="p-2" onClick={handleScrollBack}>
             <img src={backIcon} className="h-4 w-4 cursor-pointer" alt="이전" />
