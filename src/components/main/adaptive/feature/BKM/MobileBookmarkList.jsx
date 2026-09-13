@@ -149,7 +149,7 @@ const MobileBookmarkList = () => {
       {/* 본문 */}
       <div className="flex flex-col pb-32">
         {/* 검색바 */}
-        <div className="px-4 pt-1 pb-3">
+        <div className="px-4 pt-4 pb-3">
           <SearchBar
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
