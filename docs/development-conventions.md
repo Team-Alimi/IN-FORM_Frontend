@@ -55,4 +55,6 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 
 ## 검증 가이드
 
+테스트 파일은 `src/`와 분리하여 루트 `tests/` 아래에 둔다. 예를 들어 `src/utils/saveInterestChanges.js`의 테스트는 `tests/utils/saveInterestChanges.test.js`에 저장한다. Node 내장 테스트 러너는 Vite의 `@/` 별칭을 해석하지 않으므로 테스트에서 소스를 가져올 때는 상대 경로를 사용한다. 해당 테스트는 `node --test tests/utils/saveInterestChanges.test.js`로 실행한다.
+
 소스 변경 후 `npm run lint`를 실행한다. 컴파일·라우팅·번들·배포에 영향을 줄 수 있는 변경에는 `npm run build`도 실행한다. 반응형 UI 변경은 데스크톱과 430px 모바일 레이아웃을 모두 확인하고, 로그인 처리 변경은 인앱 브라우저 외부 전환 경로도 확인한다. `npm run format`은 파일을 변경하므로 의도적으로 실행하고, 결과 변경도 함께 검토한다.
