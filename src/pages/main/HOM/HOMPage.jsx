@@ -6,12 +6,9 @@ import HotEventList from "@/components/main/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import { useState, useCallback, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { fetchClubs } from "@/api/main/articles";
+import { useState, useCallback } from "react";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const queryClient = useQueryClient();
   const [todayEventCount, setTodayEventCount] = useState(null);
 
   const handleTodayEventCount = useCallback((count) => {
@@ -27,19 +24,6 @@ const HOMPage = () => {
         : `오늘은 ${todayEventCount}개의 일정이 있어요.`
     : undefined;
 
-  useEffect(() => {
-    queryClient.prefetchQuery({
-      queryKey: ["clubs", "", 1], // 1단계에서 정한 key와 동일
-      queryFn: async () => {
-        const res = await fetchClubs({ page: 1, size: 4 });
-        return {
-          clubList: res.data.data.content,
-          pageInfo: res.data.data.page_info,
-        };
-      },
-      staleTime: 60 * 1000 * 5,
-    });
-  }, [queryClient]);
   return (
     <div
       className={
