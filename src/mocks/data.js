@@ -1,0 +1,500 @@
+/**
+ * 더미 데이터 (백엔드 없이 UI 확인용)
+ * 실제 API 응답 구조와 동일하게 맞춰져 있음
+ */
+
+// ─── 사용자 정보 ────────────────────────────────────────────────────────────────
+
+export const MOCK_USER = {
+  user_id: 1,
+  email: "mock_user@example.com",
+  name: "테스트 유저",
+  major: {
+    vendor_id: 10,
+    vendor_name: "컴퓨터공학과",
+    vendor_type: "DEPARTMENT",
+  },
+};
+
+// ─── 학교 공지사항 ───────────────────────────────────────────────────────────────
+
+export const MOCK_SCHOOL_ARTICLES = [
+  {
+    id: 101,
+    source_type: "SCHOOL",
+    title: "2026학년도 1학기 수강신청 안내",
+    deadline_status: "CLOSED",
+    starts_on: "2026-07-01",
+    ends_on: "2026-08-20",
+    published_at: "2026-07-01T09:00:00+09:00",
+    categories: [{ id: 4, name: "특강·세미나" }],
+    vendors: [{ id: 20, name: "학사지원팀", initial: "학사", type: "SCHOOL" }],
+    bookmark_count: 42,
+    view_count: 1234,
+    comment_count: 3,
+    is_bookmarked: false,
+    has_attachment: false,
+    under_review: false,
+  },
+  {
+    id: 102,
+    source_type: "SCHOOL",
+    title: "2026 하계 현장실습 참여 학생 모집",
+    deadline_status: "CLOSING_SOON",
+    starts_on: "2026-07-10",
+    ends_on: "2026-08-28",
+    published_at: "2026-07-10T10:00:00+09:00",
+    categories: [{ id: 2, name: "장학금" }],
+    vendors: [{ id: 21, name: "취업지원센터", initial: "취업", type: "SCHOOL" }],
+    bookmark_count: 27,
+    view_count: 856,
+    comment_count: 5,
+    is_bookmarked: true,
+    has_attachment: false,
+    under_review: false,
+  },
+  {
+    id: 103,
+    source_type: "SCHOOL",
+    title: "교내 소프트웨어 해커톤 참가자 모집",
+    deadline_status: "OPEN",
+    starts_on: "2026-07-15",
+    ends_on: "2026-08-30",
+    published_at: "2026-07-15T11:00:00+09:00",
+    categories: [{ id: 3, name: "공모전·대회" }],
+    vendors: [{ id: 10, name: "컴퓨터공학과", initial: "컴공", type: "SCHOOL" }],
+    bookmark_count: 35,
+    view_count: 2341,
+    comment_count: 12,
+    is_bookmarked: false,
+    has_attachment: true,
+    under_review: false,
+  },
+  {
+    id: 104,
+    source_type: "SCHOOL",
+    title: "도서관 하계방학 운영시간 변경 안내",
+    deadline_status: "CLOSING_SOON",
+    starts_on: "2026-07-20",
+    ends_on: "2026-08-27",
+    published_at: "2026-07-20T09:00:00+09:00",
+    categories: [{ id: 11, name: "대외활동" }],
+    vendors: [{ id: 23, name: "도서관", initial: "도서관", type: "SCHOOL" }],
+    bookmark_count: 18,
+    view_count: 412,
+    comment_count: 1,
+    is_bookmarked: false,
+    has_attachment: false,
+    under_review: false,
+  },
+  {
+    id: 105,
+    source_type: "SCHOOL",
+    title: "2026년 하반기 교내 인턴십 모집 공고",
+    deadline_status: "OPEN",
+    starts_on: "2026-07-22",
+    ends_on: "2026-09-01",
+    published_at: "2026-07-22T10:30:00+09:00",
+    categories: [{ id: 2, name: "장학금" }],
+    vendors: [{ id: 21, name: "취업지원센터", initial: "취업", type: "SCHOOL" }],
+    bookmark_count: 53,
+    view_count: 3021,
+    comment_count: 8,
+    is_bookmarked: false,
+    has_attachment: true,
+    under_review: false,
+  },
+  {
+    id: 106,
+    source_type: "SCHOOL",
+    title: "교내 건강검진 실시 안내",
+    deadline_status: "CLOSED",
+    starts_on: "2026-06-01",
+    ends_on: "2026-07-15",
+    published_at: "2026-06-01T08:00:00+09:00",
+    categories: [{ id: 11, name: "대외활동" }],
+    vendors: [{ id: 24, name: "학생처", initial: "학생처", type: "SCHOOL" }],
+    bookmark_count: 11,
+    view_count: 289,
+    comment_count: 0,
+    is_bookmarked: false,
+    has_attachment: false,
+    under_review: false,
+  },
+  {
+    id: 107,
+    source_type: "SCHOOL",
+    title: "제7회 창업 아이디어 공모전 안내",
+    deadline_status: "OPEN",
+    starts_on: "2026-07-25",
+    ends_on: "2026-09-10",
+    published_at: "2026-07-25T09:00:00+09:00",
+    categories: [{ id: 3, name: "공모전·대회" }],
+    vendors: [{ id: 22, name: "창업지원단", initial: "창업", type: "SCHOOL" }],
+    bookmark_count: 40,
+    view_count: 1876,
+    comment_count: 7,
+    is_bookmarked: true,
+    has_attachment: false,
+    under_review: false,
+  },
+  {
+    id: 108,
+    source_type: "SCHOOL",
+    title: "외국어교육원 집중 어학과정 수강생 모집",
+    deadline_status: "UPCOMING",
+    starts_on: "2026-09-01",
+    ends_on: "2026-09-20",
+    published_at: "2026-07-28T10:00:00+09:00",
+    categories: [{ id: 4, name: "특강·세미나" }],
+    vendors: [{ id: 25, name: "외국어교육원", initial: "외국어", type: "SCHOOL" }],
+    bookmark_count: 22,
+    view_count: 634,
+    comment_count: 2,
+    is_bookmarked: false,
+    has_attachment: false,
+    under_review: false,
+  },
+];
+
+// 공지사항 상세 - ID를 key로 하는 맵 (fetchEventDetail 용)
+// content, attachments 등 목록에는 없는 상세 전용 필드만 포함
+export const MOCK_SCHOOL_ARTICLE_DETAILS = {
+  101: {
+    content:
+      "2026학년도 1학기 수강신청이 아래와 같이 진행됩니다.\n\n[수강신청 일정]\n- 수강신청 기간: 2026.08.01 ~ 2026.08.10\n- 수강변경 기간: 2026.08.15 ~ 2026.08.20\n\n[유의사항]\n1. 수강신청 전 교과과정을 반드시 확인하시기 바랍니다.\n2. 시간표 중복 등록 시 자동으로 취소됩니다.\n3. 문의사항은 학사지원팀(내선 1234)으로 연락 바랍니다.",
+    summary: "8월 1~10일 수강신청, 8월 15~20일 수강변경 기간. 수강신청 전 교과과정 확인 필수, 시간표 중복 등록 시 자동 취소됩니다.",
+    attachments: [],
+  },
+  102: {
+    content:
+      "2026년 하계 현장실습 참여 학생을 모집합니다.\n\n[모집 기간]\n2026.07.10 ~ 2026.08.10\n\n[지원 자격]\n- 2학년 이상 재학생\n- 전공 관련 기업 또는 기관에서 4주 이상 실습 가능한 자\n\n[신청 방법]\n취업지원센터 방문 또는 온라인 신청서 제출\n\n문의: 취업지원센터 (내선 2345)",
+    attachments: [],
+  },
+  103: {
+    content:
+      "교내 소프트웨어 해커톤에 참가자를 모집합니다.\n\n[행사 일정]\n- 접수: 2026.07.15 ~ 2026.08.15\n- 본선: 2026.08.28 ~ 2026.08.30 (2박 3일)\n\n[참가 자격]\n재학생 누구나 (1~4인 팀 구성)\n\n[시상]\n- 대상: 100만원 (1팀)\n- 최우수상: 50만원 (2팀)\n- 우수상: 30만원 (3팀)\n\n문의: 컴퓨터공학과 사무실",
+    attachments: [],
+  },
+  104: {
+    content:
+      "하계방학 기간 도서관 운영시간이 아래와 같이 변경됩니다.\n\n[변경 운영 시간]\n- 평일: 09:00 ~ 18:00\n- 토요일: 09:00 ~ 14:00\n- 일요일 및 공휴일: 휴관\n\n[기간]\n2026.07.20 ~ 2026.08.25\n\n이용에 불편을 드려 죄송합니다.",
+    attachments: [],
+  },
+  105: {
+    content:
+      "2026년 하반기 교내 인턴십 참여 학생을 모집합니다.\n\n[참여 기업 분야]\n- IT / 소프트웨어\n- 경영 / 마케팅\n- 디자인 / 콘텐츠\n\n[모집 기간]\n2026.07.22 ~ 2026.09.01\n\n[지원 방법]\n취업지원센터 홈페이지에서 온라인 지원\n\n[혜택]\n- 학점 인정 가능\n- 인턴십 장학금 지급 (최대 100만원)\n\n문의: 취업지원센터 (내선 2345)",
+    attachments: [],
+  },
+  106: {
+    content:
+      "2026년 교내 건강검진이 아래와 같이 실시되었습니다.\n\n[검진 기간]\n2026.06.01 ~ 2026.07.15\n\n[검진 항목]\n- 기본 신체검사\n- 혈액 검사\n- 흉부 X-ray\n\n검진을 받지 못한 학생은 가까운 지정 의료기관을 이용해 주세요.\n\n문의: 학생처 (내선 3456)",
+    attachments: [],
+  },
+  107: {
+    content:
+      "제7회 창업 아이디어 공모전을 개최합니다.\n\n[접수 기간]\n2026.07.25 ~ 2026.09.10\n\n[참가 자격]\n재학생 및 졸업 1년 이내 졸업생 (1~5인 팀)\n\n[심사 기준]\n- 아이디어 독창성 30%\n- 시장성 및 실현 가능성 40%\n- 발표 능력 30%\n\n[시상 내역]\n- 대상 (1팀): 500만원 + 창업 인큐베이팅 지원\n- 금상 (2팀): 200만원\n- 은상 (3팀): 100만원\n\n문의: 창업지원단 (내선 5678)",
+    attachments: [],
+  },
+  108: {
+    content:
+      "외국어교육원 하계 집중 어학과정 수강생을 모집합니다.\n\n[개설 과정]\n- 영어 집중 회화 (초·중·고급)\n- 일본어 기초\n- 중국어 기초\n\n[수강 기간]\n2026.08.10 ~ 2026.08.31 (3주)\n\n[수강료]\n과정당 15만원 (장학금 지원 가능)\n\n[접수 기간]\n2026.07.28 ~ 2026.08.08\n\n문의: 외국어교육원 (내선 6789)",
+    attachments: [],
+  },
+};
+
+// ─── 인기 공지사항 (Hot) ────────────────────────────────────────────────────────
+
+export const MOCK_HOT_ARTICLES = [
+  {
+    id: 105,
+    categories: [{ id: 2, name: "장학금" }],
+    title: "2026년 하반기 교내 인턴십 모집 공고",
+  },
+  {
+    id: 101,
+    categories: [{ id: 4, name: "특강·세미나" }],
+    title: "2026학년도 1학기 수강신청 안내",
+  },
+  {
+    id: 107,
+    categories: [{ id: 3, name: "공모전·대회" }],
+    title: "제7회 창업 아이디어 공모전 안내",
+  },
+  {
+    id: 108,
+    source_type: "SCHOOL",
+    categories: [{ id: 5, name: "취업·인턴십" }],
+    title: "2026년 하반기 삼성전자·LG전자·SK하이닉스 채용연계형 인턴십 모집 공고 및 지원 안내",
+  },
+];
+
+// ─── 동아리 공지사항 ────────────────────────────────────────────────────────────
+
+export const MOCK_CLUB_ARTICLES = [
+  {
+    id: 201,
+    source_type: "CLUB",
+    title: "UX/UI 디자인 스터디 멤버 모집",
+    published_at: "2026-07-05T10:00:00+09:00",
+    starts_on: "2026-07-05",
+    ends_on: "2026-08-28",
+    deadline_status: "CLOSING_SOON",
+    categories: [{ id: 11, name: "대외활동" }],
+    vendors: [{ id: 41, name: "디자인 연구회", initial: "디자인", type: "CLUB", source_url: "https://forms.gle/example" }],
+    bookmark_count: 15,
+    view_count: 312,
+    comment_count: 2,
+    is_bookmarked: false,
+    has_attachment: true,
+    under_review: false,
+  },
+  {
+    id: 202,
+    source_type: "CLUB",
+    title: "알고리즘 스터디 신규 멤버 모집",
+    published_at: "2026-07-08T09:00:00+09:00",
+    starts_on: "2026-07-08",
+    ends_on: "2026-09-05",
+    deadline_status: "OPEN",
+    categories: [{ id: 3, name: "공모전·대회" }],
+    vendors: [{ id: 42, name: "ICPC 알고리즘 팀", initial: "ICPC", type: "CLUB" }],
+    bookmark_count: 30,
+    view_count: 874,
+    comment_count: 5,
+    is_bookmarked: true,
+    has_attachment: true,
+    under_review: false,
+  },
+  {
+    id: 203,
+    source_type: "CLUB",
+    title: "밴드 동아리 신입 부원 오디션 공지",
+    published_at: "2026-07-10T11:00:00+09:00",
+    starts_on: "2026-07-10",
+    ends_on: "2026-09-10",
+    deadline_status: "OPEN",
+    categories: [{ id: 11, name: "대외활동" }],
+    vendors: [{ id: 43, name: "락밴드 BEAT", initial: "BEAT", type: "CLUB" }],
+    bookmark_count: 20,
+    view_count: 541,
+    comment_count: 3,
+    is_bookmarked: false,
+    has_attachment: true,
+    under_review: false,
+  },
+  {
+    id: 204,
+    source_type: "CLUB",
+    title: "인공지능 프로젝트팀 팀원 모집",
+    published_at: "2026-07-12T14:00:00+09:00",
+    starts_on: "2026-07-12",
+    ends_on: "2026-09-15",
+    deadline_status: "OPEN",
+    categories: [{ id: 3, name: "공모전·대회" }],
+    vendors: [{ id: 44, name: "AI 연구 동아리", initial: "AI", type: "CLUB", source_url: "mailto:ai.club@example.com" }],
+    bookmark_count: 45,
+    view_count: 1203,
+    comment_count: 8,
+    is_bookmarked: false,
+    has_attachment: false,
+    under_review: false,
+  },
+];
+
+// 동아리 상세 - ID를 key로 하는 맵 (fetchClubDetail 용)
+// content, original_url, attachments 등 상세 전용 필드만 포함
+export const MOCK_CLUB_ARTICLE_DETAILS = {
+  201: {
+    content:
+      "안녕하세요! 디자인 연구회에서 UX/UI 스터디 멤버를 모집합니다.\n\n[모집 대상]\n- UX/UI 디자인에 관심 있는 재학생 누구나\n- Figma 기초 사용법을 알고 있는 분\n\n[활동 내용]\n1. 매주 화/목 오후 6시 정기 모임\n2. 포트폴리오 제작 지원\n3. 디자인 챌린지 참여\n\n[지원 방법]\n구글 폼을 통해 지원해주세요.",
+    summary: "디자인 연구회 UX/UI 스터디 모집. Figma 기초 필수, 매주 화·목 오후 6시 진행. 구글 폼으로 지원.",
+    attachments: [
+      { id: 1, file_url: "https://picsum.photos/seed/design/800/500" },
+      { id: 2, file_url: "https://picsum.photos/seed/uxui/800/500" },
+      { id: 3, file_url: "https://picsum.photos/seed/figma/800/500" },
+    ],
+  },
+  202: {
+    content:
+      "ICPC 알고리즘 팀에서 신규 스터디 멤버를 모집합니다.\n\n[모집 대상]\n- 알고리즘 문제 풀이에 관심 있는 재학생\n- 주 2회 이상 참여 가능한 분\n\n[스터디 방식]\n1. 매주 월/수 오후 7시 온·오프라인 병행\n2. BOJ, Codeforces 문제 풀이 및 해설\n3. 교내외 대회 참가 지원\n\n[지원 방법]\n오픈채팅방 참여 후 신청서 제출",
+    attachments: [
+      { id: 2, file_url: "https://picsum.photos/seed/algorithm/800/500" },
+    ],
+  },
+  203: {
+    content:
+      "락밴드 BEAT에서 신입 부원을 모집합니다!\n\n[오디션 일정]\n2026.08.01 ~ 2026.08.05 (사전 신청 필수)\n\n[모집 파트]\n- 보컬\n- 기타 (일렉/베이스)\n- 드럼\n- 키보드\n\n[자격 요건]\n파트별 6개월 이상 경력자 (초보자 지원 불가)\n\n[활동 내용]\n매주 토요일 오후 2시 정기 합주, 연 2회 공연 참가",
+    attachments: [
+      { id: 3, file_url: "https://picsum.photos/seed/band/800/500" },
+    ],
+  },
+  204: {
+    content:
+      "AI 연구 동아리에서 인공지능 프로젝트팀 팀원을 모집합니다.\n\n[프로젝트 주제]\n- 자연어 처리 (NLP) 기반 챗봇 개발\n- 컴퓨터 비전 이미지 분류 모델\n\n[모집 인원]\n각 팀당 3~5명\n\n[지원 자격]\n- Python 기본 문법 이해\n- PyTorch 또는 TensorFlow 사용 경험 우대\n\n[활동 기간]\n2026.08.01 ~ 2026.12.31 (5개월)\n\n[지원 방법]\n이메일로 이력서 및 포트폴리오 제출",
+    attachments: [
+      { id: 4, file_url: "https://picsum.photos/seed/ai/800/500" },
+    ],
+  },
+};
+
+// ─── 북마크 ─────────────────────────────────────────────────────────────────────
+
+export const MOCK_BOOKMARKS = [
+  {
+    id: 102,
+    source_type: "SCHOOL",
+    title: "2026 하계 현장실습 참여 학생 모집",
+    categories: [{ id: 2, name: "장학금" }],
+    vendors: [{ id: 10, name: "취업지원센터", initial: "취업", type: "SCHOOL" }],
+    starts_on: "2026-07-10",
+    ends_on: "2026-08-28",
+    deadline_status: "CLOSING_SOON",
+    bookmark_count: 27,
+    view_count: 342,
+    comment_count: 3,
+    is_bookmarked: true,
+    has_attachment: false,
+    under_review: false,
+    published_at: "2026-07-09T09:00:00+09:00",
+  },
+  {
+    id: 107,
+    source_type: "SCHOOL",
+    title: "제7회 창업 아이디어 공모전 안내",
+    categories: [{ id: 3, name: "공모전·대회" }],
+    vendors: [{ id: 11, name: "창업지원단", initial: "창업", type: "SCHOOL" }],
+    starts_on: "2026-07-25",
+    ends_on: "2026-09-10",
+    deadline_status: "OPEN",
+    bookmark_count: 40,
+    view_count: 891,
+    comment_count: 7,
+    is_bookmarked: true,
+    has_attachment: true,
+    under_review: false,
+    published_at: "2026-07-24T14:00:00+09:00",
+  },
+  {
+    id: 201,
+    source_type: "CLUB",
+    title: "UX/UI 디자인 동아리 새내기 부원 모집",
+    categories: [],
+    vendors: [{ id: 41, name: "디자인 씽크탱크", initial: "씽크", type: "CLUB" }],
+    starts_on: "2026-08-01",
+    ends_on: "2026-09-15",
+    deadline_status: "OPEN",
+    bookmark_count: 15,
+    view_count: 210,
+    comment_count: 2,
+    is_bookmarked: true,
+    has_attachment: false,
+    under_review: false,
+    published_at: "2026-07-31T10:00:00+09:00",
+  },
+];
+
+// ─── 알림 ────────────────────────────────────────────────────────────────────────
+
+// 새 API 스펙: id, type, title, message, article_id, read, created_at
+export const MOCK_NOTIFICATIONS = [
+  {
+    id: 1,
+    type: "DEADLINE_D1",
+    title: "2026-1학기 국가장학금 신청 마감",
+    message: "국가장학금 신청 마감! 국가장학금 신청 마감! 국가장학금 신청 마감!",
+    article_id: 102,
+    read: false,
+    created_at: "2026-09-04T11:50:00+09:00",
+  },
+  {
+    id: 2,
+    type: "DEADLINE_D1",
+    title: "컴퓨터공학과 학과 설명회",
+    message: "오늘 오후 2시 공학관 101호에서 진행됩니다. 궁금이 즐격",
+    article_id: 103,
+    read: false,
+    created_at: "2026-09-04T11:00:00+09:00",
+  },
+  {
+    id: 3,
+    type: "DEADLINE_D1",
+    title: "북마크한 'IUPC 해커톤' 일정 등록 완료",
+    message: "9월 12일~14일 일정이 캘린더에 자동 추가되었습니다.",
+    article_id: 107,
+    read: true,
+    created_at: "2026-09-03T09:00:00+09:00",
+  },
+];
+
+// ─── 학과/제공처 목록 ───────────────────────────────────────────────────────────
+
+export const MOCK_VENDORS = [
+  { vendor_id: 10, vendor_name: "컴퓨터공학과", vendor_type: "DEPARTMENT" },
+  { vendor_id: 11, vendor_name: "전자공학과", vendor_type: "DEPARTMENT" },
+  { vendor_id: 12, vendor_name: "기계공학과", vendor_type: "DEPARTMENT" },
+  { vendor_id: 13, vendor_name: "경영학과", vendor_type: "DEPARTMENT" },
+  { vendor_id: 14, vendor_name: "국어국문학과", vendor_type: "DEPARTMENT" },
+  { vendor_id: 20, vendor_name: "학사지원팀", vendor_type: "ORGANIZATION" },
+  { vendor_id: 21, vendor_name: "취업지원센터", vendor_type: "ORGANIZATION" },
+  { vendor_id: 22, vendor_name: "창업지원단", vendor_type: "ORGANIZATION" },
+  { vendor_id: 23, vendor_name: "도서관", vendor_type: "ORGANIZATION" },
+  { vendor_id: 24, vendor_name: "학생처", vendor_type: "ORGANIZATION" },
+  { vendor_id: 25, vendor_name: "외국어교육원", vendor_type: "ORGANIZATION" },
+];
+
+// GET /api/v1/vendors?type=SCHOOL 응답 형식 (id, name 필드 사용)
+export const MOCK_SCHOOL_VENDORS = [
+  { id: 10, name: "컴퓨터공학과", type: "SCHOOL" },
+  { id: 11, name: "전자공학과", type: "SCHOOL" },
+  { id: 12, name: "기계공학과", type: "SCHOOL" },
+  { id: 13, name: "경영학과", type: "SCHOOL" },
+  { id: 14, name: "국어국문학과", type: "SCHOOL" },
+  { id: 20, name: "학사지원팀", type: "SCHOOL" },
+  { id: 21, name: "취업지원센터", type: "SCHOOL" },
+  { id: 22, name: "창업지원단", type: "SCHOOL" },
+  { id: 23, name: "도서관", type: "SCHOOL" },
+  { id: 24, name: "학생처", type: "SCHOOL" },
+  { id: 25, name: "외국어교육원", type: "SCHOOL" },
+];
+
+// GET /api/v1/categories 응답 형식
+export const MOCK_CATEGORIES = [
+  { id: 1,  name: "학사",        sort_order: 1  },
+  { id: 2,  name: "장학금",      sort_order: 2  },
+  { id: 3,  name: "공모전·대회", sort_order: 3  },
+  { id: 4,  name: "특강·세미나", sort_order: 4  },
+  { id: 5,  name: "취업·인턴십", sort_order: 5  },
+  { id: 6,  name: "행사·축제",   sort_order: 6  },
+  { id: 7,  name: "봉사활동",    sort_order: 7  },
+  { id: 8,  name: "어학",        sort_order: 8  },
+  { id: 9,  name: "자격증",      sort_order: 9  },
+  { id: 10, name: "학술·연구",   sort_order: 10 },
+  { id: 11, name: "대외활동",    sort_order: 11 },
+];
+
+// GET /api/v1/club-types 응답 형식 (sort_order 오름차순, 실제 DB ID 기준)
+export const MOCK_CLUB_TYPES = [
+  { id: 1, name: "학술/IT", sort_order: 10 },
+  { id: 4, name: "체육/스포츠", sort_order: 20 },
+  { id: 3, name: "음악/공연", sort_order: 30 },
+  { id: 2, name: "봉사", sort_order: 40 },
+  { id: 5, name: "문화·예술", sort_order: 50 },
+  { id: 6, name: "창업", sort_order: 60 },
+  { id: 10, name: "댄스", sort_order: 70 },
+  { id: 8, name: "종교", sort_order: 80 },
+];
+
+// ─── 페이지 정보 ────────────────────────────────────────────────────────────────
+
+export const MOCK_PAGE_INFO = {
+  current_page: 1,
+  total_pages: 2,
+  total_articles: MOCK_SCHOOL_ARTICLES.length,
+};
+
+export const MOCK_CLUB_PAGE_INFO = {
+  current_page: 1,
+  total_pages: 1,
+  total_articles: MOCK_CLUB_ARTICLES.length,
+};

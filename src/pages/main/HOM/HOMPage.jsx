@@ -1,0 +1,70 @@
+import Footer from "@/components/main/desktop/common/Footer";
+import TabBar from "@/components/main/desktop/common/TabBar";
+import ServiceLinkList from "@/components/main/desktop/common/ServiceLinkList";
+import CalendarSection from "@/components/main/adaptive/feature/HOM/CalendarSection";
+import HotEventList from "@/components/main/mobile/feature/HOM/HotEventList";
+import { useDeviceStore } from "@/stores/deviceStore";
+import MobileHeader from "@/components/main/mobile/common/MobileHeader";
+import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
+import { useState, useCallback } from "react";
+const HOMPage = () => {
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const [todayEventCount, setTodayEventCount] = useState(null);
+
+  const handleTodayEventCount = useCallback((count) => {
+    setTodayEventCount(count);
+  }, []);
+
+  // subtitle 계산: 로딩 중(null)이면 undefined, 0개면 없어요, n개면 n개
+  const subtitle = isMobile
+    ? todayEventCount === null
+      ? undefined
+      : todayEventCount === 0
+        ? "오늘의 일정이 없어요."
+        : `오늘은 ${todayEventCount}개의 일정이 있어요.`
+    : undefined;
+
+  return (
+    <div
+      className={
+        isMobile
+          ? "min-h-screen flex flex-col bg-white"
+          : "min-h-screen flex flex-col bg-[#f8f9fa]"
+      }
+    >
+      {isMobile ? (
+        <>
+          <MobileHeader greeting subtitle={subtitle} />
+        </>
+      ) : (
+        <div className="max-mobile:hidden">
+          <TabBar />
+          <div className="w-full flex justify-center px-4 ">
+            <img
+              src="/assets/header/header.png"
+              alt="HOM 배너"
+              className="w-full max-w-6xl h-auto"
+            />
+          </div>
+        </div>
+      )}
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pt-2 max-mobile:pb-24 flex flex-col gap-2">
+        {/* HotEventList: 데스크톱 + 모바일 공통 */}
+        <HotEventList />
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
+            <ServiceLinkList />
+            {/* <ClubCarousel /> 동아리 랜덤 포스터 API 제거로 임시 미사용 */}
+          </aside>
+          <main className="flex-1 min-w-0 w-full space-y-6">
+            <CalendarSection onTodayEventCount={handleTodayEventCount} />
+          </main>
+        </div>
+      </div>
+
+      {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
+    </div>
+  );
+};
+
+export default HOMPage;
