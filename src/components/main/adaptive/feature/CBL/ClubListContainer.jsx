@@ -148,7 +148,7 @@ const ClubListContainer = () => {
               onClick={() => handlePageChange(number)}
               className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                 currentPage === number
-                  ? "bg-blue-500 text-white shadow-sm"
+                  ? "bg-primary text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >

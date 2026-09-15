@@ -37,6 +37,8 @@ src/
 
 ## 스타일과 소스 규약
 
+모바일 고정 탭바는 `--mobile-tab-bar-height`(기본 80px + 하단 safe area)로 높이를 통일한다. `MobileTabBar`가 같은 높이의 `shrink-0` 공간을 문서 흐름에 확보하므로 HOM/EVL/CBL/BKM/MYP는 콘텐츠용 간격만 둔다. BKM 편집 액션처럼 탭바 바로 위의 고정 요소도 같은 변수를 `bottom`으로 사용하고, 해당 액션 자체의 높이만 별도로 본문에 확보한다.
+
 - Tailwind utility class만 사용하고 CSS module은 추가하지 않는다. 정적 class는 일반 문자열로, 조건부 class가 있을 때만 template literal을 사용한다. 임의 Tailwind 값에는 `bg-[#F4F8FE]`처럼 대괄호 문법을 사용한다.
 - 컴포넌트 범위 상수는 컴포넌트 위에 둔다. 자명하지 않은 의도에는 간결한 주석을 쓰고, 탐색성이 좋아질 때만 section 주석을 쓴다. 의미 있는 매개변수나 반환 동작이 있는 export API 함수에는 JSDoc을 작성한다.
 - 로딩·오류 상태에는 early return을 우선한다. 단순 존재 조건은 `&&`, 두 갈래 렌더링은 ternary를 사용한다.
@@ -54,6 +56,12 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 기존 persist store에는 인증 상태와 행사 목록 필터가 있다. `deviceStore.js`는 모바일 breakpoint 판정을 소유한다. API로 가져온 데이터를 persist하지 말고, 실제 클라이언트 설정·세션 상태만 저장한다. 기존 persistence key 변경은 데이터 마이그레이션을 고려한 경우에만 한다.
 
 ## 검증 가이드
+
+### 배포 및 상세 진입
+
+- `vercel.json`은 Vercel의 하위 경로 요청을 `/index.html`로 rewrite한다. API는 기존 별도 API 도메인을 사용한다. 배포 후 `/login`, `/events`, `/events/detail/:id` 등의 직접 접속 및 새로고침을 확인한다. 존재하지 않는 경로는 React Router의 오류 페이지가 처리한다.
+- EVD/CBD는 `useDetailScrollReset(id)`로 상세 진입 및 ID 변경 시 문서 스크롤을 즉시 초기화한다. 모바일 상세 본문은 별도 스크롤 컨테이너를 만들지 않는다.
+- 로그아웃 상태에서 HOM 카테고리 칩, 필터 열기, 관심학과 체크박스, 캘린더 공지 및 인기 공지를 눌러 로그인 화면으로 이동하는지 확인한다. 공지 클릭 시 로그인 후 돌아갈 상세 경로를 `state.from.pathname`에 보관한다.
 
 테스트 파일은 `src/`와 분리하여 루트 `tests/` 아래에 둔다. 예를 들어 `src/utils/saveInterestChanges.js`의 테스트는 `tests/utils/saveInterestChanges.test.js`에 저장한다. Node 내장 테스트 러너는 Vite의 `@/` 별칭을 해석하지 않으므로 테스트에서 소스를 가져올 때는 상대 경로를 사용한다. 해당 테스트는 `node --test tests/utils/saveInterestChanges.test.js`로 실행한다.
 

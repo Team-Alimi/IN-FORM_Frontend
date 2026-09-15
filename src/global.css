@@ -1,6 +1,11 @@
 @import "@kfonts/line-seed-sans-kr";
 @import "tailwindcss";
 
+:root {
+  /* 고정 탭바, 문서 내 자리 확보, 탭바 위 고정 액션이 공유하는 높이 */
+  --mobile-tab-bar-height: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
 @theme {
   --font-sans:
     "LINE Seed Sans KR", ui-sans-serif, system-ui, sans-serif,

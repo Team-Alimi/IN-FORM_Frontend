@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import HotEventRow from "@/components/main/mobile/feature/HOM/HotEventRow";
 import { fetchHotEvents } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
+import useAuthStore from "@/stores/useAuthStore";
 import backIcon from "@/assets/icons/back_simple.svg";
 import NextIcon from "@/assets/icons/next_simple.svg";
 
@@ -12,6 +13,7 @@ const ITEM_WIDTH = 250;
 const HotEventList = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
+  const isLogIn = useAuthStore((state) => state.isLogIn);
   const scrollRef = useRef(null);
 
   const { data, isLoading, error } = useQuery({
@@ -22,11 +24,14 @@ const HotEventList = () => {
   });
 
   const handleArticleClick = (article_id, sourceType) => {
-    if (sourceType === "CLUB") {
-      navigate(`/clubs/detail/${article_id}`);
-    } else {
-      navigate(`/events/detail/${article_id}`);
+    const pathname = sourceType === "CLUB"
+      ? `/clubs/detail/${article_id}`
+      : `/events/detail/${article_id}`;
+    if (!isLogIn) {
+      navigate("/login", { state: { from: { pathname } } });
+      return;
     }
+    navigate(pathname);
   };
 
   const handleScrollBack = () => {

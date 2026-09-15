@@ -53,11 +53,16 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 ## 반응형 UI
 
+- `MobileTabBar`는 고정 탭바와 동일 높이의 문서 내 공간을 함께 렌더링한다. 탭바 높이는 `global.css`의 `--mobile-tab-bar-height`를 공유하며, 페이지마다 탭바용 하단 패딩을 중복 추가하지 않는다.
+
 - `adaptive/`는 두 레이아웃이 함께 쓰는 컴포넌트이며 `isMobile`로 레이아웃을 선택한다. `desktop/`, `mobile/`은 각 전용 UI를 둔다.
 - 모바일 기준은 화면 너비 **430px 이하**다. `MOBILE_BREAKPOINT`, `useDeviceStore(...isMobile)`, Tailwind `max-mobile` variant를 재사용하고, 별도의 기준값을 만들지 않는다.
 - 데스크톱 dialog에 모바일 대응 UI가 있으면 두 가지를 모두 유지한다. 데스크톱은 중앙 고정형 `[Name]Modal.jsx`, 모바일은 공용 `BottomSheet`를 사용하는 `[Name]Sheet.jsx`다.
 
 ## 인증과 라우트
+
+- Vercel 배포는 `vercel.json`의 SPA rewrite를 유지한다. 하위 경로 직접 접속·새로고침도 `index.html`을 거쳐 React Router가 처리한다.
+- 비로그인 HOM은 기본 캘린더 열람만 허용하고, 필터 조작 및 공지 상세 열기는 `/login`으로 안내한다.
 
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.

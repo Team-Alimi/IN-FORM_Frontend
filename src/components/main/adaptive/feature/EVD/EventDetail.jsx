@@ -117,17 +117,14 @@ const useImageViewer = (attachments) => {
 
 /******** 모바일 레이아웃 ********/
 const MobileLayout = ({
-  articleId,
   status,
   title,
   vendors,
-  startDate,
   dueDate,
   created_at,
   content,
   summary,
   category_name,
-  is_bookmarked,
   bookmark_count,
   attachments,
 }) => {
@@ -274,6 +271,7 @@ const DesktopLayout = ({
   summary,
   category_name,
   is_bookmarked,
+  onBookmarkToggle,
   bookmark_count,
   attachments,
 }) => {
@@ -402,6 +400,14 @@ const DesktopLayout = ({
             </div>
           </div>
         )}
+      </div>
+
+      <div className="flex justify-end px-6 pb-6 md:px-8 md:pb-8">
+        <BookmarkButton
+          articleId={articleId}
+          isBookmarked={is_bookmarked}
+          onToggle={onBookmarkToggle}
+        />
       </div>
 
       {selectedIndex !== null && imageAttachments[selectedIndex] && (
