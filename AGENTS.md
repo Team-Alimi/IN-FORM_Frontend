@@ -59,6 +59,9 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 ## 인증과 라우트
 
+- Vercel 배포는 `vercel.json`의 SPA rewrite를 유지한다. 하위 경로 직접 접속·새로고침도 `index.html`을 거쳐 React Router가 처리한다.
+- 비로그인 HOM은 기본 캘린더 열람만 허용하고, 필터 조작 및 공지 상세 열기는 `/login`으로 안내한다.
+
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.
 - 보호된 사용자 라우트: `/clubs`, `/clubs/detail/:id`, `/events`, `/events/detail/:id`, `/bookmarks`, `/mypage`.

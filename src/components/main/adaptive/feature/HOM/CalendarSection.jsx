@@ -16,6 +16,7 @@ import CalendarFilterSheet from "@/components/main/adaptive/feature/HOM/Calendar
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileEventDetail from "@/components/main/adaptive/feature/EVD/MobileEventDetail";
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
+import useAuthStore from "@/stores/useAuthStore";
 
 const CalendarSection = ({ onTodayEventCount }) => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]); // 선택된 카테고리 ID 배열
@@ -24,6 +25,13 @@ const CalendarSection = ({ onTodayEventCount }) => {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
+  const isLogIn = useAuthStore((state) => state.isLogIn);
+
+  const requireLogin = (pathname = "/") => {
+    if (isLogIn) return true;
+    navigate("/login", { state: { from: { pathname } } });
+    return false;
+  };
 
   // 바텀시트 관련 상태
   const [selectedEventId, setSelectedEventId] = useState(null);
@@ -73,7 +81,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
       selectedCategory === "CLUB"
         ? fetchClubDetail(selectedEventId)
         : fetchEventDetail(selectedEventId),
-    enabled: !!selectedEventId && isMobile, // ID가 있고 모바일인 경우에만 활성화
+    enabled: isLogIn && !!selectedEventId && isMobile && isBottomSheetOpen,
     staleTime: 60 * 1000 * 5,
   });
 
@@ -165,6 +173,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
   // 카테고리 칩 클릭 핸들러 (id: number | null)
   // null → 전체 선택(초기화), number → 해당 ID 토글
   const handleCategoryClick = (id) => {
+    if (!requireLogin()) return;
     if (id === null) {
       setSelectedCategoryIds([]);
       return;
@@ -176,6 +185,7 @@ const CalendarSection = ({ onTodayEventCount }) => {
 
   // 필터 바텀시트 적용 핸들러
   const handleFilterSheetApply = ({ categoryIds, deadlineStatuses }) => {
+    if (!requireLogin()) return;
     setSelectedCategoryIds(categoryIds);
     setSelectedDeadlineStatuses(deadlineStatuses);
   };
@@ -198,6 +208,10 @@ const CalendarSection = ({ onTodayEventCount }) => {
     );
   }
   const handleArticleClick = (article_id, category) => {
+    const pathname = category === "CLUB"
+      ? `/clubs/detail/${article_id}`
+      : `/events/detail/${article_id}`;
+    if (!requireLogin(pathname)) return;
     if (isMobile) {
       // 모바일: 바텀시트 열기
       setSelectedEventId(article_id);
@@ -228,14 +242,18 @@ const CalendarSection = ({ onTodayEventCount }) => {
           onSelectDate={handleDateClick}
           onMonthChange={handleMonthChange}
           onOverflowClick={handleOverflowClick}
-          onFilterOpen={() => setIsFilterSheetOpen(true)}
+          onFilterOpen={() => {
+            if (requireLogin()) setIsFilterSheetOpen(true);
+          }}
           filterBarSlot={
             <CalendarFilterBar
               categories={categories}
               selectedCategoryIds={selectedCategoryIds}
               onCategoryClick={handleCategoryClick}
               isMyDeptOnly={isMyDeptOnly}
-              onMyDeptOnlyChange={setIsMyDeptOnly}
+              onMyDeptOnlyChange={(checked) => {
+                if (requireLogin()) setIsMyDeptOnly(checked);
+              }}
             />
           }
         />

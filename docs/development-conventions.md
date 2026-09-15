@@ -55,6 +55,12 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 
 ## 검증 가이드
 
+### 배포 및 상세 진입
+
+- `vercel.json`은 Vercel의 하위 경로 요청을 `/index.html`로 rewrite한다. API는 기존 별도 API 도메인을 사용한다. 배포 후 `/login`, `/events`, `/events/detail/:id` 등의 직접 접속 및 새로고침을 확인한다. 존재하지 않는 경로는 React Router의 오류 페이지가 처리한다.
+- EVD/CBD는 `useDetailScrollReset(id)`로 상세 진입 및 ID 변경 시 문서 스크롤을 즉시 초기화한다. 모바일 상세 본문은 별도 스크롤 컨테이너를 만들지 않는다.
+- 로그아웃 상태에서 HOM 카테고리 칩, 필터 열기, 관심학과 체크박스, 캘린더 공지 및 인기 공지를 눌러 로그인 화면으로 이동하는지 확인한다. 공지 클릭 시 로그인 후 돌아갈 상세 경로를 `state.from.pathname`에 보관한다.
+
 테스트 파일은 `src/`와 분리하여 루트 `tests/` 아래에 둔다. 예를 들어 `src/utils/saveInterestChanges.js`의 테스트는 `tests/utils/saveInterestChanges.test.js`에 저장한다. Node 내장 테스트 러너는 Vite의 `@/` 별칭을 해석하지 않으므로 테스트에서 소스를 가져올 때는 상대 경로를 사용한다. 해당 테스트는 `node --test tests/utils/saveInterestChanges.test.js`로 실행한다.
 
 소스 변경 후 `npm run lint`를 실행한다. 컴파일·라우팅·번들·배포에 영향을 줄 수 있는 변경에는 `npm run build`도 실행한다. 반응형 UI 변경은 데스크톱과 430px 모바일 레이아웃을 모두 확인하고, 로그인 처리 변경은 인앱 브라우저 외부 전환 경로도 확인한다. `npm run format`은 파일을 변경하므로 의도적으로 실행하고, 결과 변경도 함께 검토한다.
