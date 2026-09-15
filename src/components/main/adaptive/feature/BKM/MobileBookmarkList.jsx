@@ -147,7 +147,7 @@ const MobileBookmarkList = () => {
       <MobileHeader title="북마크" />
 
       {/* 본문 */}
-      <div className="flex flex-col pb-32">
+      <div className={`flex flex-col ${isEditMode ? "pb-20" : "pb-2"}`}>
         {/* 검색바 */}
         <div className="px-4 pt-4 pb-3">
           <SearchBar
@@ -297,7 +297,7 @@ const MobileBookmarkList = () => {
 
       {/* 하단 고정 바 - 편집 모드에서만 표시 */}
       {isEditMode && (
-        <div className="fixed bottom-[60px] left-0 right-0 z-40 px-4 pb-2">
+        <div className="fixed bottom-[var(--mobile-tab-bar-height)] left-0 right-0 z-40 px-4 pb-2">
           <div className="flex items-center gap-3">
             {/* 초기화: 선택 초기화 + 편집 모드 종료 */}
             <button

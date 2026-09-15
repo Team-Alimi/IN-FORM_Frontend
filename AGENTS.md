@@ -53,6 +53,8 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 ## 반응형 UI
 
+- `MobileTabBar`는 고정 탭바와 동일 높이의 문서 내 공간을 함께 렌더링한다. 탭바 높이는 `global.css`의 `--mobile-tab-bar-height`를 공유하며, 페이지마다 탭바용 하단 패딩을 중복 추가하지 않는다.
+
 - `adaptive/`는 두 레이아웃이 함께 쓰는 컴포넌트이며 `isMobile`로 레이아웃을 선택한다. `desktop/`, `mobile/`은 각 전용 UI를 둔다.
 - 모바일 기준은 화면 너비 **430px 이하**다. `MOBILE_BREAKPOINT`, `useDeviceStore(...isMobile)`, Tailwind `max-mobile` variant를 재사용하고, 별도의 기준값을 만들지 않는다.
 - 데스크톱 dialog에 모바일 대응 UI가 있으면 두 가지를 모두 유지한다. 데스크톱은 중앙 고정형 `[Name]Modal.jsx`, 모바일은 공용 `BottomSheet`를 사용하는 `[Name]Sheet.jsx`다.

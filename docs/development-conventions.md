@@ -37,6 +37,8 @@ src/
 
 ## 스타일과 소스 규약
 
+모바일 고정 탭바는 `--mobile-tab-bar-height`(기본 80px + 하단 safe area)로 높이를 통일한다. `MobileTabBar`가 같은 높이의 `shrink-0` 공간을 문서 흐름에 확보하므로 HOM/EVL/CBL/BKM/MYP는 콘텐츠용 간격만 둔다. BKM 편집 액션처럼 탭바 바로 위의 고정 요소도 같은 변수를 `bottom`으로 사용하고, 해당 액션 자체의 높이만 별도로 본문에 확보한다.
+
 - Tailwind utility class만 사용하고 CSS module은 추가하지 않는다. 정적 class는 일반 문자열로, 조건부 class가 있을 때만 template literal을 사용한다. 임의 Tailwind 값에는 `bg-[#F4F8FE]`처럼 대괄호 문법을 사용한다.
 - 컴포넌트 범위 상수는 컴포넌트 위에 둔다. 자명하지 않은 의도에는 간결한 주석을 쓰고, 탐색성이 좋아질 때만 section 주석을 쓴다. 의미 있는 매개변수나 반환 동작이 있는 export API 함수에는 JSDoc을 작성한다.
 - 로딩·오류 상태에는 early return을 우선한다. 단순 존재 조건은 `&&`, 두 갈래 렌더링은 ternary를 사용한다.

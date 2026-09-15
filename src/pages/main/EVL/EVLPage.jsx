@@ -272,7 +272,7 @@ const EVLPage = () => {
                           onClick={() => handlePageChange(i)}
                           className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                             currentPage === i
-                              ? "bg-blue-500 text-white shadow-sm"
+                              ? "bg-primary text-white shadow-sm"
                               : "text-gray-600 hover:bg-gray-100"
                           }`}
                         >
