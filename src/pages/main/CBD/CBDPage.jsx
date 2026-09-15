@@ -6,9 +6,11 @@ import ClubDetail from "@/components/main/adaptive/feature/CBD/ClubDetail";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import { fetchClubDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
+import useDetailScrollReset from "@/hooks/useDetailScrollReset";
 
 const CBDPage = () => {
   const { id } = useParams();
+  useDetailScrollReset(id);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -71,7 +73,7 @@ const CBDPage = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 pb-24">
           <ClubDetail
             isMobile={true}
             title={club.title}

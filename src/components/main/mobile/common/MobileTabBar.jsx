@@ -21,8 +21,11 @@ const navItems = [
 export default function MobileTabBar({ activeIndex = 0 }) {
 	const navigate = useNavigate();
 	return (
-		<footer className="fixed bottom-0 left-0 w-full z-50">
-			<div className="mx-auto max-w-md rounded-t-2xl bg-white/30 backdrop-blur-md border-t border-gray-200 flex justify-between px-2 py-1 shadow-lg">
+		<>
+			{/* 고정 탭바에 가려지지 않도록 모든 사용 페이지에서 같은 높이를 확보한다. */}
+			<div aria-hidden="true" className="h-[var(--mobile-tab-bar-height)] shrink-0" />
+		<footer className="fixed bottom-0 left-0 w-full z-50 h-[var(--mobile-tab-bar-height)] pb-[env(safe-area-inset-bottom,0px)] bg-white/30 backdrop-blur-md">
+			<div className="h-full mx-auto max-w-md rounded-t-2xl border-t border-gray-200 flex items-center justify-between px-2 py-1 shadow-lg">
 				{navItems.map((item, idx) => (
 					<button
 						key={item.label}
@@ -54,5 +57,6 @@ export default function MobileTabBar({ activeIndex = 0 }) {
 				))}
 			</div>
 		</footer>
+		</>
 	);
 }

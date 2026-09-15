@@ -48,7 +48,7 @@ const HOMPage = () => {
           </div>
         </div>
       )}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pt-2 max-mobile:pb-24 flex flex-col gap-2">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pt-2 max-mobile:pb-2 flex flex-col gap-2">
         {/* HotEventList: 데스크톱 + 모바일 공통 */}
         <HotEventList />
         <div className="flex flex-col md:flex-row gap-6 items-start">

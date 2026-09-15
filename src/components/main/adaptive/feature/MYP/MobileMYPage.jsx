@@ -162,7 +162,7 @@ const MobileMYPage = () => {
       {isMobile && <MobileHeader title="마이페이지" />}
 
       {/* ─── 본문 ──────────────────────────────────────────────────────────────── */}
-      <div className={`flex flex-col ${isMobile ? "pb-32" : "pb-8"}`}>
+      <div className={`flex flex-col ${isMobile ? "pb-2" : "pb-8"}`}>
 
         {/* ─── 프로필 카드 ── 전체 클릭 → 학과 수정 ────────────────────────── */}
         <div
