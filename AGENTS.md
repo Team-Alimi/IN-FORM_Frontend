@@ -73,4 +73,5 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 - `main`은 프로덕션, `dev`는 기본 통합 브랜치, `manageDev`는 관리자 기능 개발 브랜치다.
 - 이슈 작업은 `feat/<feature>-<issue-number>` 또는 `fix/<bug>-<issue-number>` 형식의 전용 브랜치에서 시작하고 `dev`로 병합한다.
+- 관리자 개편(#86)은 `manageDev`를 통합 브랜치로 사용한다. 페이지마다 상위 이슈의 하위 이슈와 `feat/<Feature Code>-<issue-number>` 브랜치를 만들고, 페이지 PR은 `manageDev`로 보낸다. 개편 완료 후 `dev`로 통합한다. 카테고리·동아리/제공처·사용자 관리 화면은 디자인 확정 후 진행한다.
 - 커밋 형식은 `type: short description`이다. 허용 type은 `feat`, `fix`, `docs`, `style`, `refactor`, `chore`, `test`다.

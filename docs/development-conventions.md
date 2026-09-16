@@ -66,3 +66,13 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 테스트 파일은 `src/`와 분리하여 루트 `tests/` 아래에 둔다. 예를 들어 `src/utils/saveInterestChanges.js`의 테스트는 `tests/utils/saveInterestChanges.test.js`에 저장한다. Node 내장 테스트 러너는 Vite의 `@/` 별칭을 해석하지 않으므로 테스트에서 소스를 가져올 때는 상대 경로를 사용한다. 해당 테스트는 `node --test tests/utils/saveInterestChanges.test.js`로 실행한다.
 
 소스 변경 후 `npm run lint`를 실행한다. 컴파일·라우팅·번들·배포에 영향을 줄 수 있는 변경에는 `npm run build`도 실행한다. 반응형 UI 변경은 데스크톱과 430px 모바일 레이아웃을 모두 확인하고, 로그인 처리 변경은 인앱 브라우저 외부 전환 경로도 확인한다. `npm run format`은 파일을 변경하므로 의도적으로 실행하고, 결과 변경도 함께 검토한다.
+
+## 관리자 페이지 개편 (#86)
+
+- 통합 브랜치는 `manageDev`, 페이지 브랜치는 `feat/<Feature Code>-<하위 이슈 번호>`다. 페이지 PR의 base는 `manageDev`이며, 최종 통합은 `dev`로 한다.
+- MANHOM은 `src/api/manage/dashboard.ts`의 새 API 계약을 사용한다. 다른 관리자 페이지의 구 API 전환은 각 페이지 이슈에서 진행한다.
+- 홈의 확인 필요 카드는 `/admin/articles?needs_check=true&size=1`의 `page_info.total_items`를 사용한다. 통계의 `duplicate_suspected`와 의미가 달라 대체하지 않는다.
+- 검색의 출처는 관리자 제공처 목록에서 ID로 선택한다. 제공처 이름 문자열을 공지 목록 API에 전송하지 않는다. 비활성 옵션도 기존 공지 검색을 위해 포함한다.
+- 전체 선택은 현재 페이지에만 적용하고 검색·페이지 이동 때 초기화한다. 배포는 선택한 모든 공지가 `READY_TO_PUBLISH` 또는 `DRAFT`일 때만 허용한다. 삭제는 휴지통 이동이며 HTTP 200의 `failed` 배열도 표시한다.
+- 상단 새 탐색 UI는 개편된 페이지부터 적용한다. 미검수·반영 대기·휴지통·추가·상세 링크는 기존 라우트를 유지한다.
+- 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.
