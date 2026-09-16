@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import { useNavigate } from "react-router-dom";
 import { getStatus } from "@/utils/statusUtil";
@@ -18,24 +19,11 @@ import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import useEVLFilterStore from "@/stores/useEVLFilterStore";
 import useSearchHistory from "@/hooks/useSearchHistory";
 
-// FilterBottomSheet selectedStatuses 값 → API deadline_status 값 매핑
-const STATUS_TO_DEADLINE = {
-  OPEN: "OPEN",
-  ENDING_SOON: "CLOSING_SOON",
-  UPCOMING: "UPCOMING",
-  CLOSED: "CLOSED",
-};
+import { getDeadlineStatusParam } from "@/utils/deadlineStatusParam";
 
 const EVLPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const navigate = useNavigate();
-
-  const [events, setEvents] = useState([]);
-  const [pageInfo, setPageInfo] = useState({
-    current_page: 1,
-    total_pages: 1,
-    total_items: 0,
-  });
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -65,10 +53,7 @@ const EVLPage = () => {
     setCurrentPage(1);
   };
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const params = {
+  const params = {
           page: currentPage,
           size: pageSize,
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
@@ -82,39 +67,14 @@ const EVLPage = () => {
             activeFilters.categoryIds.length > 0
               ? activeFilters.categoryIds.join(",")
               : undefined,
-        };
-        const res = await fetchEvents(params);
-
-        const apiData = res.data?.data;
-        setEvents(apiData?.content || []);
-        if (apiData?.page_info) {
-          setPageInfo(apiData.page_info);
-        } else {
-          setPageInfo({
-            current_page: currentPage,
-            total_pages: 1,
-            total_items: apiData?.content ? apiData.content.length : 0,
-          });
-        }
-      } catch (error) {
-        console.error("행사 목록 불러오기 실패:", error);
-        console.error("행사 목록을 불러오지 못했습니다.");
-      }
-    };
-
-    loadEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currentPage,
-    pageSize,
-    searchText,
-    activeFilters.startDate,
-    activeFilters.endDate,
-    activeFilters.vendorIds.join(","),
-    activeFilters.selectedStatuses.join(","),
-    activeFilters.categoryIds.join(","),
-  ]);
-
+          deadline_status: getDeadlineStatusParam(activeFilters.selectedStatuses),
+  };
+  const { data: apiData, isPending, isError } = useQuery({
+    queryKey: ["events", params],
+    queryFn: async () => (await fetchEvents(params)).data?.data,
+  });
+  const events = apiData?.content;
+  const pageInfo = apiData?.page_info ?? { total_pages: 0, total_items: 0 };
 
   const totalPages = pageInfo.total_pages || 1;
 
@@ -131,22 +91,6 @@ const EVLPage = () => {
 
     return [...events].sort((a, b) => score(b.deadline_status) - score(a.deadline_status));
   }, [events]);
-
-  // 상태 필터 클라이언트 적용
-  // TODO: 서버에서 deadline_status 파라미터 지원 시 params에 추가하고 이 useMemo 제거
-  // 현재는 현재 페이지 데이터에만 필터가 적용되므로, 페이지 수/전체 개수는 필터 결과와 일치하지 않음
-  const filteredEvents = useMemo(() => {
-    if (
-      activeFilters.selectedStatuses.includes("ALL") ||
-      activeFilters.selectedStatuses.length === 0
-    ) {
-      return sortedEvents;
-    }
-    const allowed = activeFilters.selectedStatuses
-      .map((key) => STATUS_TO_DEADLINE[key])
-      .filter(Boolean);
-    return sortedEvents.filter((e) => allowed.includes(e.deadline_status));
-  }, [sortedEvents, activeFilters.selectedStatuses]);
 
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
@@ -167,7 +111,7 @@ const EVLPage = () => {
       }
     >
       {isMobile ? <MobileHeader title="공지사항" /> : <TabBar />}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:py-2">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pb-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* 왼쪽 사이드바 */}
           <aside className="w-full md:w-1/3 lg:w-1/4 space-y-6 max-mobile:hidden">
@@ -242,8 +186,12 @@ const EVLPage = () => {
 
               {/* 리스트 출력 */}
               <div className="space-y-1">
-                {filteredEvents.length > 0 ? (
-                  filteredEvents.map((event) => {
+                {isPending || isError ? (
+                  <p className="p-4 text-center text-gray-500" role="status">
+                    {isError ? "공지사항을 불러오지 못했습니다." : "불러오는 중..."}
+                  </p>
+                ) : sortedEvents.length > 0 ? (
+                  sortedEvents.map((event) => {
                     const statusResult = getStatus(event.deadline_status);
                     if (isMobile) {
                       return (
@@ -324,7 +272,7 @@ const EVLPage = () => {
                           onClick={() => handlePageChange(i)}
                           className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
                             currentPage === i
-                              ? "bg-blue-500 text-white shadow-sm"
+                              ? "bg-primary text-white shadow-sm"
                               : "text-gray-600 hover:bg-gray-100"
                           }`}
                         >

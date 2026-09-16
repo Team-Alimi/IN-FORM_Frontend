@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TabBar from "@/components/main/desktop/common/TabBar";
 import Footer from "@/components/main/desktop/common/Footer";
-import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import EventDetail from "@/components/main/adaptive/feature/EVD/EventDetail";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import ShareButton from "@/components/main/adaptive/feature/EVD/ShareButton";
 import AddToCalendar from "@/components/main/adaptive/feature/EVD/AddToCalendar";
 import { fetchEventDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
+import useDetailScrollReset from "@/hooks/useDetailScrollReset";
 
 const EVDPage = () => {
   const { id } = useParams();
+  useDetailScrollReset(id);
   const navigate = useNavigate();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [event, setEvent] = useState(null);
@@ -100,7 +101,7 @@ const EVDPage = () => {
         </header>
 
         {/* 스크롤 가능한 본문 영역 */}
-        <div className="flex-1 pt-[52px] overflow-y-auto">
+        <div className="flex-1 pt-[52px] pb-24">
           <EventDetail
             isMobile={true}
             articleId={event.id}
@@ -120,7 +121,7 @@ const EVDPage = () => {
         </div>
 
         {/* 화면 우하단 고정 북마크 버튼 */}
-        <div className="fixed bottom-8 right-5 z-50">
+        <div className="fixed bottom-8 right-5 z-30 rounded-full bg-white p-2 shadow-md border border-gray-100">
           <BookmarkButton articleId={event.id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
         </div>
       </div>
@@ -145,14 +146,10 @@ const EVDPage = () => {
           summary={event.summary}
           category_name={event.categories?.[0]?.name}
           is_bookmarked={event.is_bookmarked}
+          onBookmarkToggle={handleBookmarkToggle}
           bookmark_count={event.bookmark_count}
           attachments={event.attachments}
         />
-      </div>
-
-      {/* 화면 우하단 고정 북마크 버튼 */}
-      <div className="fixed bottom-8 right-6 z-50">
-        <BookmarkButton articleId={event.id} isBookmarked={event.is_bookmarked} onToggle={handleBookmarkToggle} />
       </div>
 
       <Footer />

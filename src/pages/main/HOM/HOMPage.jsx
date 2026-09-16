@@ -6,12 +6,9 @@ import HotEventList from "@/components/main/mobile/feature/HOM/HotEventList";
 import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
-import { useState, useCallback, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { fetchClubs } from "@/api/main/articles";
+import { useState, useCallback } from "react";
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const queryClient = useQueryClient();
   const [todayEventCount, setTodayEventCount] = useState(null);
 
   const handleTodayEventCount = useCallback((count) => {
@@ -27,19 +24,6 @@ const HOMPage = () => {
         : `오늘은 ${todayEventCount}개의 일정이 있어요.`
     : undefined;
 
-  useEffect(() => {
-    queryClient.prefetchQuery({
-      queryKey: ["clubs", "", 1], // 1단계에서 정한 key와 동일
-      queryFn: async () => {
-        const res = await fetchClubs({ page: 1, size: 4 });
-        return {
-          clubList: res.data.data.content,
-          pageInfo: res.data.data.page_info,
-        };
-      },
-      staleTime: 60 * 1000 * 5,
-    });
-  }, [queryClient]);
   return (
     <div
       className={
@@ -64,7 +48,7 @@ const HOMPage = () => {
           </div>
         </div>
       )}
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pt-2 max-mobile:pb-24 flex flex-col gap-2">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-4 max-mobile:pt-2 max-mobile:pb-2 flex flex-col gap-2">
         {/* HotEventList: 데스크톱 + 모바일 공통 */}
         <HotEventList />
         <div className="flex flex-col md:flex-row gap-6 items-start">

@@ -5,6 +5,7 @@ import { fetchVendors, fetchCategories } from "@/api/main/vendors";
 import { fetchEvents } from "@/api/main/articles";
 import { fetchMyInterestCategories, fetchMyVendors } from "@/api/main/user";
 import { STATE_OPTIONS, CATEGORY_NAME_COLOR_MAP, DEFAULT_CATEGORY_COLOR } from "@/constants/filterOption";
+import { getDeadlineStatusParam } from "@/utils/deadlineStatusParam";
 
 const API_TO_STATE_KEY = {
   OPEN: "OnGoing",
@@ -34,7 +35,7 @@ const getChipClass = (value, isSelected) => {
     : "bg-white text-gray-500 border-gray-200";
 };
 
-const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) => {
+const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
@@ -45,8 +46,7 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
   const [interestVendorOnly, setInterestVendorOnly] = useState(false);
   const [vendorEmptyMsg, setVendorEmptyMsg] = useState("");
   const [vendors, setVendors] = useState([]);
-  const [previewCount, setPreviewCount] = useState(totalCount);
-  const timerRef = useRef(null);
+  const [previewParams, setPreviewParams] = useState(null);
   const startDateRef = useRef(null);
   const endDateRef = useRef(null);
   // 체크박스 ON 직전 수동 선택 상태 저장 (OFF 시 복원)
@@ -72,35 +72,31 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, totalCount, keyword }) =>
 
   // 필터 변경 시 미리 카운트 조회 (날짜 입력은 300ms 디바운스)
   useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-
-    // 상태 필터가 선택된 경우 서버에서 정확한 개수를 알 수 없으므로 표시 안 함
-    if (!selectedStatuses.includes("ALL") && selectedStatuses.length > 0) {
-      setPreviewCount(null);
-      return;
-    }
-
-    timerRef.current = setTimeout(async () => {
-      try {
-        const params = {
+    setPreviewParams(null);
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      setPreviewParams({
           page: 1,
           size: 1,
-          keyword: keyword || undefined,
+          keyword: keyword?.trim() || undefined,
           starts_from: startDate || undefined,
           ends_to: endDate || undefined,
           vendor_id: selectedVendorIds.length > 0 ? selectedVendorIds.join(",") : undefined,
           category_id: selectedCategoryIds.length > 0 ? selectedCategoryIds.join(",") : undefined,
-        };
-        const res = await fetchEvents(params);
-        const apiData = res.data?.data;
-        const count = apiData?.page_info?.total_items ?? 0;
-        setPreviewCount(count);
-      } catch {
-        // 실패 시 이전 카운트 유지
-      }
+          deadline_status: getDeadlineStatusParam(selectedStatuses),
+      });
     }, 300);
-    return () => clearTimeout(timerRef.current);
-  }, [startDate, endDate, selectedVendorIds, keyword, selectedStatuses, selectedCategoryIds]);
+    return () => clearTimeout(timer);
+  }, [isOpen, startDate, endDate, selectedVendorIds, keyword, selectedStatuses, selectedCategoryIds]);
+
+  const { data: previewCount } = useQuery({
+    queryKey: ["events", "preview", previewParams],
+    queryFn: async () => {
+      const res = await fetchEvents(previewParams);
+      return res.data?.data?.page_info?.total_items ?? 0;
+    },
+    enabled: isOpen && previewParams !== null,
+  });
 
   const toggleStatus = (value) => {
     if (value === "ALL") {
