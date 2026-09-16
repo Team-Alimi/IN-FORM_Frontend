@@ -167,7 +167,7 @@ const MobileMYPage = () => {
         {/* ─── 프로필 카드 ── 전체 클릭 → 학과 수정 ────────────────────────── */}
         <div
           onClick={() => isLogIn && navigate("/mypage/edit")}
-          className={`mx-4 mt-2 bg-white rounded-2xl border border-gray-100 px-5 py-5 flex items-center gap-4 transition-colors ${
+          className={`mx-4 mt-2 max-mobile:mt-4 bg-white rounded-2xl border border-gray-100 px-5 py-5 flex items-center gap-4 transition-colors ${
             isLogIn ? "cursor-pointer active:bg-gray-50" : ""
           }`}
         >
