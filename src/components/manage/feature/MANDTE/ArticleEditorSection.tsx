@@ -20,29 +20,58 @@ import type {
   UpdateArticlePayload,
   AdminStatus,
 } from '@/api/manage/adminArticles';
+import { MOCK_MANAGE_ARTICLE_DETAIL } from '@/mocks/adminArticleDetailTest';
+import type {
+  OManageArticleDetail,
+  IUpdateArticlePayload,
+  IRegisterArticlePayload,
+} from '@/api/manage/dto/adminDto';
+
+export type FormCategory = {
+  category_id: number;
+  category_name: string;
+  category_key: string | undefined; //🥚추후 확인 필요
+};
+export type FormVendor = {
+  vendor_id: number; //학과정의용 id
+  id?: number | null; //기존 vendor는 아이디도 같이 payload에 실어서 보냄/ 신규의 경우 보내지않음(비움)
+  vendor_name: string;
+  source_url: string;
+};
+export type FormAttachment = {
+  id?: number | null; //기존 attachment는 아이디도 같이 payload에 실어서 보냄/ 신규의 경우 보내지않음(비움)
+  file_url?: string | undefined;
+  original_name?: string | null | undefined;
+  content_type?: string | null | undefined;
+};
 
 const ArticleEditorSection = ({
   articleId,
+  sourceType,
 }: {
-  articleId?: number | undefined; //articleId 값이 있다 : 게시글 수정하기 articleId값이 없다 : 게시글 등록하기
+  articleId?: number; //articleId 값이 있다 : 게시글 수정하기 articleId값이 없다 : 게시글 등록하기
+  sourceType: string; //SCHOOL OR CLUB [현재는 우선 SCHOOL으로 구성 ]
 }) => {
   const isEditing = articleId !== undefined; //articleId 의 값이 있다면 isEditing : true, 수정중이 맞다.
   const navigate = useNavigate();
-
+  /** 🧐 - API 연동 추후 수정
   const { data, isLoading } = useQuery({
     //articleId를 기반으로
     queryKey: ['adminArticleDetail', articleId],
     queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
     enabled: isEditing, //isEditing이 true일때만 내용을 실행하라.
   });
-
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
     staleTime: 60 * 60 * 1000,
-  });
-  const categories = (categoriesData?.data ?? []) as { id: number; name: string }[];
-
+  }); 
+*/
+  // const categories = (categoriesData?.data ?? []) as {
+  //   id: number;
+  //   name: string;
+  // }[];  🧐 - API 연동 후 살려야됨
+  const data = MOCK_MANAGE_ARTICLE_DETAIL;
   const [venderModalOpen, setVendorModalOpen] = useState(false); //vendor모달 토글 상태 관리
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false); //attachment모달 토글 상태 관리
   const [showSubmitModal, setShowSubmitModal] = useState(false); //제출 모달 노출 상태 관리
@@ -53,39 +82,50 @@ const ArticleEditorSection = ({
   const editorRef = useRef<TipTapEditorHandle>(null);
   const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
   const [form, setForm] = useState({
-    category_id: 0,
-    title: '게시글 제목을 작성하세요',
-    article_id: 0,
-    admin_status: 'REFLECTION_WAITING' as AdminStatus,
-    start_date: '',
-    due_date: '',
-    vendors: [] as {
-      vendor_id: number;
-      vendor_name: string;
-      original_url: string | null;
-    }[],
+    categories: [] as FormCategory[],
+    title: '게시글 제목을 입력하세요.',
+    article_id: -1,
+    admin_status: 'PENDING_REVIEW',
+    starts_on: '',
+    ends_on: '',
+    vendors: [] as FormVendor[],
+    created_at: '',
+    updated_at: '',
     content: '',
-    attachment_urls: [] as string[],
+    attachments: [] as FormAttachment[],
   });
+  const TEMP_SOURCE_TYPE = 'SCHOOL'; //우선 공지 게시글 수정으로 구현
 
   useEffect(() => {
     if (!data) return;
     setForm({
-      category_id: data.categories?.category_id ?? 0,
-      title: data.title,
-      article_id: data.id,
-      admin_status: (data.admin_status ?? 'REFLECTION_WAITING') as AdminStatus,
-      start_date: data.start_date,
-      due_date: data.due_date,
-      vendors: data.vendors.map(({ vendor_id, vendor_name, original_url }) => ({
-        vendor_id,
-        vendor_name,
-        original_url,
+      categories:
+        data.data?.categories.map((item) => ({
+          category_id: item.id,
+          category_name: item.name,
+          category_key: undefined,
+        })) ?? [],
+      title: data.data?.title,
+      content: data.data?.content,
+      article_id: data?.data.id,
+      admin_status: data.data?.status, //PENDING_REVIEW
+      starts_on: data.data?.starts_on,
+      ends_on: data.data?.ends_on,
+      vendors: data.data?.vendors.map((item) => ({
+        id: item.id,
+        vendor_id: item.vendor_id, //학과 매핑 아이디
+        vendor_name: item.vendor_name,
+        source_url: item.source_url,
       })),
-      content: data.content,
-      attachment_urls: data.attachments.map((a) => a.attachment_url),
+      created_at: data.data?.created_at,
+      updated_at: data.data?.updated_at,
+      attachments: data.data?.attachments.map((item) => ({
+        id: item.id,
+        file_url: item.file_url,
+        original_name: item.original_name,
+        content_type: item.content_type,
+      })),
     });
-    setEditorKey(`loaded-${data.id}`);
   }, [data]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -96,38 +136,57 @@ const ArticleEditorSection = ({
 
   const handleSubmitConfirm = async () => {
     const content = editorRef.current?.getHTML() ?? '';
-
+    //게시글 수정하기
     try {
       if (isEditing) {
-        const payload: UpdateArticlePayload = {
+        const payload: IUpdateArticlePayload = {
           title: form.title,
-          content,
-          category_id: form.category_id,
-          admin_status: form.admin_status,
-          start_date: form.start_date,
-          due_date: form.due_date,
-          vendors: form.vendors.map(({ vendor_id, original_url }) => ({
-            vendor_id,
-            original_url: original_url ?? '',
+          content: form.content,
+          starts_on: form.starts_on,
+          ends_on: form.ends_on,
+          category_ids: form.categories.map((item) => item.category_id),
+          vendors: form.vendors.map((item) => ({
+            id: item.id ?? null,
+            vendor_id: item.vendor_id,
+            vendor_name: item.vendor_name,
+            source_url: item.source_url,
           })),
-          attachment_urls: form.attachment_urls,
+          attachments: form.attachments.map((item) => ({
+            id: item.id ?? null,
+            file_url: item.file_url,
+            original_name: item.original_name,
+            content_type: item.content_type,
+          })),
+          //🥚상태 수정 관련 항목이 안보인다. 확인필요
         };
-        await updateArticle(articleId!, payload);
+        console.log('[🧐게시글 수정하기] 제출되었습니다.', payload);
+        //await updateArticle(articleId!, payload); 🧐[추후API]
       } else {
-        const payload: CreateArticlePayload = {
-          article_id: form.article_id,
+        //게시글 신규 등록하기
+        const payload: IRegisterArticlePayload = {
+          article_id: form.article_id ?? null,
+          source_type: TEMP_SOURCE_TYPE,
+          status: form.admin_status,
           title: form.title,
-          content,
-          category_id: form.category_id,
-          start_date: form.start_date,
-          due_date: form.due_date,
-          vendors: form.vendors.map(({ vendor_id, original_url }) => ({
-            vendor_id,
-            original_url: original_url ?? '',
+          content: form.content,
+          starts_on: form.starts_on,
+          ends_on: form.ends_on,
+          category_ids: form.categories.map((item) => item.category_id),
+          vendors: form.vendors.map((item) => ({
+            id: item.id ?? null,
+            vendor_id: item.vendor_id,
+            vendor_name: item.vendor_name,
+            source_url: item.source_url,
           })),
-          attachment_urls: form.attachment_urls,
+          attachments: form.attachments.map((item) => ({
+            id: item.id ?? null,
+            file_url: item.file_url,
+            original_name: item.original_name,
+            content_type: item.content_type,
+          })),
         };
-        await createArticle(payload);
+        //await createArticle(payload); 🧐[추후API]
+        console.log('[🧐게시글 등록하기] 제출되었습니다.', payload);
       }
       navigate('/manage');
     } catch {
@@ -160,11 +219,17 @@ const ArticleEditorSection = ({
     }));
   };
 
-  const handleVendorAdd = (id: number, name: string, url: string) => {
-    const NewVendor = {
-      vendor_id: id,
+  const handleVendorAdd = (
+    vendor_id: number,
+    name: string,
+    url: string,
+    id: number | null = null // 신규 vendor는 아직 서버에 없으므로 id를 비워서(null) 둔다
+  ) => {
+    const NewVendor: FormVendor = {
+      vendor_id: vendor_id,
+      id: id,
       vendor_name: name,
-      original_url: url,
+      source_url: url,
     };
     setForm((prev) => ({ ...prev, vendors: [...prev.vendors, NewVendor] }));
     setVendorModalOpen(false);
@@ -174,10 +239,22 @@ const ArticleEditorSection = ({
     setVendorModalOpen((prev) => !prev);
   };
 
-  const handleAttachmentAdd = (url: string) => {
+  const handleAttachmentAdd = (
+    file_url: string,
+    original_name?: string,
+    content_type?: string,
+    id: number | null = null
+  ) => {
+    const NewAttachment: FormAttachment = {
+      id: id,
+      file_url: file_url,
+      original_name: original_name,
+      content_type: content_type,
+    };
+
     setForm((prev) => ({
       ...prev,
-      attachment_urls: [...prev.attachment_urls, url],
+      attachment_urls: [...prev.attachments, NewAttachment],
     }));
     setAttachmentModalOpen(false);
   };
@@ -185,17 +262,9 @@ const ArticleEditorSection = ({
   const handleAttachmentDelete = (index: number) => {
     setForm((prev) => ({
       ...prev,
-      attachment_urls: prev.attachment_urls.filter((_, i) => i !== index),
+      attachment_urls: prev.filter((item) => item.file_url !== index),
     }));
   };
-
-  if (isEditing && isLoading) {
-    return (
-      <div className="mt-8 text-center text-gray-400 text-sm">
-        불러오는 중...
-      </div>
-    );
-  }
 
   const handleAlreadyCheck = async () => {
     if (typeof form.article_id !== 'number') {
@@ -207,13 +276,25 @@ const ArticleEditorSection = ({
     setIdStatus(res.data ? 'taken' : 'available');
   };
 
+  if (isEditing) {
+    return (
+      <div className="mt-8 text-center text-gray-400 text-sm">
+        불러오는 중...
+      </div>
+    );
+  }
   return (
     <div>
       <form onSubmit={handleSubmit}>
+        {/**
+         * <1> 게시글 분류 카테고리 선택 목록 배열
+         *  - 필수로 한개의 카테고리 선택 필요
+         */}
         <div>
           {categories.map((cat) => {
             const isSelected = cat.id === form.category_id;
-            const colorBg = CATEGORY_NAME_COLOR_MAP[cat.name]?.dot ?? 'bg-gray-400';
+            const colorBg =
+              CATEGORY_NAME_COLOR_MAP[cat.name]?.dot ?? 'bg-gray-400';
             return (
               <label key={cat.id}>
                 <input
@@ -238,6 +319,10 @@ const ArticleEditorSection = ({
             );
           })}
         </div>
+        {/**
+         * <2> 게시글 제목 입력 폼
+         *  - 게시글 이름 문자열 입력 필수
+         */}
         <div>
           <input
             name="title"
@@ -249,7 +334,10 @@ const ArticleEditorSection = ({
           />
         </div>
 
-        {/* 출처 섹션 */}
+        {/**
+         * <3> 게시글 출처 입력 폼
+         *  - 출처 입력 필수
+         */}
         <div className="flex flex-row gap-2 flex-wrap">
           {form.vendors.map((item) => (
             <div
@@ -275,7 +363,10 @@ const ArticleEditorSection = ({
         </div>
         {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
 
-        {/* 첨부파일 섹션 */}
+        {/**
+         * <4> 첨부파일 입력 폼
+         *  - 첩부파일 필수 x
+         */}
         <div className="flex flex-row gap-2 flex-wrap">
           {form.attachment_urls.map((url, index) => (
             <div
@@ -305,7 +396,10 @@ const ArticleEditorSection = ({
             onCancel={() => setAttachmentModalOpen(false)}
           />
         )}
-
+        {/**
+         * <5> id입력 폼
+         *  - 필수 입력 + 중복 검사 True
+         */}
         <div className="flex flex-row gap-2">
           {!isEditing && (
             <>
@@ -354,12 +448,18 @@ const ArticleEditorSection = ({
               </button>
             </>
           )}
+        </div>
+        {/**
+         * <6> 행사 기간 입력 폼
+         *  - 필수 입력
+         */}
+        <div>
           <label>
             행사기간 :{' '}
             <input
               type="date"
               name="start_date"
-              value={form.start_date}
+              value={form.starts_on}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, start_date: e.target.value }))
               }
@@ -367,7 +467,7 @@ const ArticleEditorSection = ({
             <input
               type="date"
               name="due_date"
-              value={form.due_date}
+              value={form.ends_on}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, due_date: e.target.value }))
               }
