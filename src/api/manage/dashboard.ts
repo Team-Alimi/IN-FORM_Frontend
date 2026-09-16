@@ -1,4 +1,17 @@
+import { isAxiosError } from 'axios';
 import api from '@/api/axios';
+
+/** 권한/입력 오류는 같은 요청을 반복해도 해결되지 않습니다. */
+export const shouldRetryDashboardQuery = (
+  failureCount: number,
+  error: unknown
+) => {
+  const status = isAxiosError(error) ? error.response?.status : undefined;
+  return !(status && status >= 400 && status < 500) && failureCount < 3;
+};
+
+export const isDashboardForbidden = (error: unknown) =>
+  isAxiosError(error) && error.response?.status === 403;
 
 export type ReviewStatus =
   | 'PENDING_REVIEW'

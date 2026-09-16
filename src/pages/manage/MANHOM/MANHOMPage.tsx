@@ -9,6 +9,8 @@ import {
   getDashboardOptions,
   getDashboardStats,
   runDashboardAction,
+  shouldRetryDashboardQuery,
+  isDashboardForbidden,
 } from '@/api/manage/dashboard';
 import type { ArticleFilters, ReviewStatus } from '@/api/manage/dashboard';
 import useAuthStore from '@/stores/useAuthStore';
@@ -52,22 +54,27 @@ const MANHOMPage = () => {
   const stats = useQuery({
     queryKey: ['adminDashboard', 'stats'],
     queryFn: getDashboardStats,
+    retry: shouldRetryDashboardQuery,
   });
   const checks = useQuery({
     queryKey: ['adminDashboard', 'needsCheck'],
     queryFn: () => getDashboardArticles({ needs_check: true }, 1, 1),
+    retry: shouldRetryDashboardQuery,
   });
   const articles = useQuery({
     queryKey: ['adminDashboard', 'articles', filters, page],
     queryFn: () => getDashboardArticles(filters, page),
+    retry: shouldRetryDashboardQuery,
   });
   const categories = useQuery({
     queryKey: ['adminDashboard', 'categories'],
     queryFn: () => getDashboardOptions('categories'),
+    retry: shouldRetryDashboardQuery,
   });
   const vendors = useQuery({
     queryKey: ['adminDashboard', 'vendors'],
     queryFn: () => getDashboardOptions('vendors'),
+    retry: shouldRetryDashboardQuery,
   });
   const mutation = useMutation({
     mutationFn: ({
@@ -163,6 +170,49 @@ const MANHOMPage = () => {
       filter: { needs_check: true },
     },
   ];
+  const forbidden = [
+    stats.error,
+    checks.error,
+    articles.error,
+    categories.error,
+    vendors.error,
+    mutation.error,
+  ].some(isDashboardForbidden);
+  if (forbidden) {
+    return (
+      <div className="min-h-screen bg-[#F7F8FA] text-gray-800">
+        <ManageNavigation />
+        <main className="mx-auto max-w-xl px-6 py-16">
+          <section
+            role="alert"
+            className="rounded-2xl border border-gray-200 bg-white p-8"
+          >
+            <h1 className="text-xl font-bold">
+              관리자 접근 권한을 확인해 주세요
+            </h1>
+            <p className="mt-4 text-sm">
+              서버가 관리자 API 요청을 거부했습니다. (403 FORBIDDEN)
+            </p>
+            <p className="mt-3 text-sm text-gray-600">
+              관리자 권한이 부여된 계정으로 로그인해 주세요. 권한을 최근
+              변경했다면 다시 로그인해 새 인증 정보를 받아야 합니다.
+            </p>
+            <p className="mt-3 text-sm text-gray-600">
+              다시 로그인해도 같다면 서버 관리자에게 계정의 ADMIN 권한과 서버
+              권한 설정을 확인해 달라고 요청해 주세요.
+            </p>
+            <Link
+              to="/login"
+              state={{ from: { pathname: '/manage' } }}
+              className="mt-6 inline-block rounded-lg bg-black px-5 py-3 text-sm text-white"
+            >
+              다시 로그인
+            </Link>
+          </section>
+        </main>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-[#111827]">
       <ManageNavigation />

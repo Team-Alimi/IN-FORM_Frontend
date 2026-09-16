@@ -9,6 +9,7 @@ OUTPUT.mkdir(exist_ok=True)
 requests = []
 errors = []
 fail_list = False
+forbidden = False
 rows = [dict(id=182+i, title=f'2026학년도 안내 게시글 {i+1}', status=['PUBLISHED', 'PENDING_REVIEW', 'READY_TO_PUBLISH', 'DRAFT'][i % 4], starts_on='2026-08-10', ends_on='2026-09-22', updated_at='2026-07-30T10:00:00+09:00', vendors=[dict(id=5, name='컴퓨터공학과')], categories=[dict(id=3, name='장학')]) for i in range(9)]
 rows[1].pop('starts_on')
 rows[1]['categories'] = []
@@ -19,6 +20,9 @@ def route_api(route):
     url = urlparse(req.url)
     query = parse_qs(url.query)
     requests.append((url.path, query, req.post_data_json if req.method == 'POST' else None))
+    if forbidden:
+        route.fulfill(status=403, json={'success': False, 'error': {'code': 'FORBIDDEN', 'message': '권한이 없습니다.'}})
+        return
     if url.path.endswith('/stats'):
         data = dict(pending_review=5, ready_to_publish=6)
     elif url.path.endswith('/categories'):
@@ -33,7 +37,7 @@ def route_api(route):
             rows = [r for r in rows if r['id'] not in succeeded]
     else:
         if fail_list:
-            route.fulfill(status=403, json={'success': False, 'error': {'message': '권한이 없습니다.'}})
+            route.fulfill(status=500, json={'success': False, 'error': {'message': '서버 오류입니다.'}})
             return
         filtered = rows
         if 'status' in query: filtered = [r for r in filtered if r['status'] == query['status'][0]]
@@ -98,6 +102,16 @@ with sync_playwright() as p:
     fail_list = False
     page.get_by_role('button', name='다시 시도', exact=True).last.click()
     expect(page.locator('tbody tr')).to_have_count(8)
+    forbidden = True
+    requests.clear()
+    page.reload()
+    expect(page.get_by_role('heading', name='관리자 접근 권한을 확인해 주세요')).to_be_visible()
+    expect(page.get_by_role('link', name='다시 로그인')).to_have_attribute('href', '/login')
+    # 기본 자동 재시도 지연(1초, 2초, 4초) 이후에도 각 조회는 한 번뿐이어야 합니다.
+    page.wait_for_timeout(8000)
+    assert len(requests) == 5, requests
+    page.get_by_role('link', name='다시 로그인').click()
+    expect(page).to_have_url('http://127.0.0.1:5173/login')
     assert not errors, errors
     browser.close()
-print('PASS: desktop/mobile, filters, empty/error/retry, pagination, publish eligibility, JSON bulk payload, partial failure and selection')
+print('PASS: desktop/mobile, filters, empty/error/retry, pagination, publish eligibility, JSON bulk payload, partial failure, 403 guidance without retries and login link')
