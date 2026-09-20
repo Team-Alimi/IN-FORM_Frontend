@@ -69,6 +69,7 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 
 ## 관리자 페이지 개편 (#86)
 
+- 관리자도 공용 `/login`에서 Google OAuth로 로그인한다. 관리자 로그아웃은 인증 상태와 QueryClient 캐시를 비우고, 현재 관리자 경로를 `state.from.pathname`에 담아 `/login`으로 이동한다. 재로그인 후 기존 화면으로 복귀한다.
 - 통합 브랜치는 `manageDev`, 페이지 브랜치는 `feat/<Feature Code>-<하위 이슈 번호>`다. 페이지 PR의 base는 `manageDev`이며, 최종 통합은 `dev`로 한다.
 - MANHOM은 `src/api/manage/dashboard.ts`의 새 API 계약을 사용한다. 다른 관리자 페이지의 구 API 전환은 각 페이지 이슈에서 진행한다.
 - 홈의 확인 필요 카드는 `/admin/articles?needs_check=true&size=1`의 `page_info.total_items`를 사용한다. 통계의 `duplicate_suspected`와 의미가 달라 대체하지 않는다.

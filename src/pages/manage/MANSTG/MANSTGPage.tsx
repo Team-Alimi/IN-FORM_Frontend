@@ -75,8 +75,6 @@ const MANSTGPage = () => {
               'eventDetail',
               'hotEvents',
               'bookmarks',
-              'notifications',
-              'notificationsUnreadCount',
             ].map((key) => queryClient.invalidateQueries({ queryKey: [key] }))
           : []),
       ]);
@@ -142,7 +140,6 @@ const MANSTGPage = () => {
               관리자 권한이 부여된 계정으로 다시 로그인해 주세요. 같은 문제가
               계속되면 서버 관리자에게 계정 권한을 확인해 달라고 요청해 주세요.
             </p>
-            {/* MANLGN은 아직 임시 화면이므로 실제 OAuth 로그인 경로를 사용합니다. */}
             <Link
               to="/login"
               state={{ from: { pathname: '/manage/staged' } }}

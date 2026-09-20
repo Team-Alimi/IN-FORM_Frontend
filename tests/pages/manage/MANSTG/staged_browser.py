@@ -109,7 +109,7 @@ with sync_playwright() as p:
     expect(page.get_by_role('status')).to_contain_text('1건 휴지통으로 이동 완료')
     expect(table.locator('tbody tr')).to_have_count(8)
     assert any(path.endswith('/bulk/trash') and body == {'ids':[199]} for path, _, body in requests)
-    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    assert {'monthlyAll', 'events', 'eventDetail', 'hotEvents', 'bookmarks'} <= set(page.evaluate('window.testInvalidations'))
     page.evaluate('window.testInvalidations = []')
     search.get_by_label('게시글 제목', exact=True).fill('없는 제목')
     search.get_by_role('button', name='조회', exact=True).click()
@@ -146,7 +146,7 @@ with sync_playwright() as p:
     expect(table.get_by_label('게시글 187 선택')).to_be_checked()
     expect(page.get_by_role('heading', name='반영 대기 게시글 (7)', exact=True)).to_be_visible()
     assert any(path.endswith('/bulk/publish') and body=={'ids':[185,187]} for path, _, body in requests)
-    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    assert {'monthlyAll', 'events', 'eventDetail', 'hotEvents', 'bookmarks'} <= set(page.evaluate('window.testInvalidations'))
     page.evaluate('window.testInvalidations = []')
     # Pending requests lock both confirmation and filters; Escape cannot interrupt the write.
     partial = False
@@ -169,7 +169,7 @@ with sync_playwright() as p:
     expect(page.get_by_role('status')).to_contain_text('1건 운영 반영 완료')
     expect(page.get_by_role('dialog')).to_have_count(0)
     expect(table.get_by_label('게시글 190 선택')).to_have_count(0)
-    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    assert {'monthlyAll', 'events', 'eventDetail', 'hotEvents', 'bookmarks'} <= set(page.evaluate('window.testInvalidations'))
     page.evaluate('window.testInvalidations = []')
     mode = 'all-failed'
     table.get_by_label('게시글 187 선택').check()
@@ -179,7 +179,7 @@ with sync_playwright() as p:
     expect(page.get_by_role('dialog')).to_have_count(0)
     invalidations = set(page.evaluate('window.testInvalidations'))
     assert 'adminDashboard' in invalidations
-    assert not {'notifications', 'notificationsUnreadCount'} & invalidations
+    assert not {'monthlyAll', 'events', 'eventDetail', 'hotEvents', 'bookmarks'} & invalidations
     mode = 'mutation-error'
     table.get_by_label('게시글 187 선택').check()
     table.get_by_role('button', name='운영 반영', exact=True).click()
@@ -197,9 +197,14 @@ with sync_playwright() as p:
     mode = 'normal'
     table.get_by_role('button', name='다시 시도').click()
     expect(table.locator('tbody tr')).to_have_count(6)
+    page.get_by_role('button', name='로그아웃', exact=True).click()
+    expect(page).to_have_url(BASE+'/login')
+    assert page.evaluate('history.state.usr.from.pathname') == '/manage/staged'
+    auth = page.evaluate("JSON.parse(localStorage.getItem('auth-storage')).state")
+    assert not auth['isLogIn'] and auth['accessToken'] is None and auth['userInfo'] is None
     mode = 'forbidden'
     requests.clear()
-    page.reload()
+    page.goto(BASE + '/manage/staged')
     expect(page.get_by_role('heading', name='관리자 접근 권한을 확인해 주세요')).to_be_visible()
     page.wait_for_timeout(8000)
     assert len(requests)<=4, requests
