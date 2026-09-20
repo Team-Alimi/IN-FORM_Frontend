@@ -9,6 +9,8 @@ import {
 import type { ReviewFilters } from '@/api/manage/review';
 
 interface Props {
+  title: string;
+  label?: string;
   disabled: boolean;
   onSearch: (filters: ReviewFilters) => void;
 }
@@ -22,7 +24,12 @@ const EMPTY = {
 };
 const INPUT =
   'rounded-lg border border-gray-100 bg-[#F7F8FA] px-3 py-2 text-xs text-gray-800 placeholder:text-gray-300';
-const UnreviewedSearchForm = ({ disabled, onSearch }: Props) => {
+const ArticleSearchForm = ({
+  title,
+  label = title,
+  disabled,
+  onSearch,
+}: Props) => {
   const [form, setForm] = useState(EMPTY);
   const [error, setError] = useState('');
   const categories = useQuery({
@@ -69,11 +76,11 @@ const UnreviewedSearchForm = ({ disabled, onSearch }: Props) => {
     isDashboardForbidden(vendors.error);
   return (
     <form
-      aria-label="미검수 게시글 검색"
+      aria-label={label}
       onSubmit={handleSubmit}
       className="rounded-2xl border border-gray-200 bg-white p-5 text-xs text-gray-500"
     >
-      <h2 className="mb-5 font-semibold text-gray-600">미검수 게시글 검색</h2>
+      <h2 className="mb-5 font-semibold text-gray-600">{title}</h2>
       <fieldset
         disabled={disabled}
         className="flex flex-wrap items-center gap-x-5 gap-y-3 disabled:opacity-50"
@@ -212,4 +219,4 @@ const UnreviewedSearchForm = ({ disabled, onSearch }: Props) => {
     </form>
   );
 };
-export default UnreviewedSearchForm;
+export default ArticleSearchForm;

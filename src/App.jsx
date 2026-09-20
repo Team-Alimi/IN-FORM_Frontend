@@ -22,7 +22,6 @@ import PRIPage from '@/pages/main/PRI/PRIPage';
 import TOSPage from '@/pages/main/TOS/TOSPage';
 /**관리자 기능 페이지 목록*/
 import MANHOMPage from '@/pages/manage/MANHOM/MANHOMPage';
-import MANLGNPage from '@/pages/manage/MANLGN/MANLGNPage';
 import MANDTEPage from '@/pages/manage/MANDTE/MANDTEPage';
 import MANDTRPage from '@/pages/manage/MANDTR/MANDTRPage';
 import MANGBGPage from '@/pages/manage/MANGBG/MANGBGPage';
@@ -105,7 +104,6 @@ function App() {
         {/* 관리자 라우트 — /manage/* 경로 아래 전부 묶음 */}
         <Route path="/manage">
           <Route index element={<MANHOMPage />} />
-          <Route path="login" element={<MANLGNPage />} />
           <Route path="detail/:id" element={<MANDTRPage />} />
           <Route path="edit" element={<MANDTEPage />} />
           <Route path="edit/:id" element={<MANDTEPage />} />

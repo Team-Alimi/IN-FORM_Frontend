@@ -4,8 +4,8 @@ import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ManageNavigation from '@/components/manage/common/ManageNavigation';
 import ReviewArticleTable from '@/components/manage/common/ReviewArticleTable';
-import UnreviewedSearchForm from '@/components/manage/feature/MANURV/UnreviewedSearchForm';
-import ReviewConfirmModal from '@/components/manage/feature/MANURV/ReviewConfirmModal';
+import ArticleSearchForm from '@/components/manage/common/ArticleSearchForm';
+import ArticleActionModal from '@/components/manage/common/ArticleActionModal';
 import {
   getDashboardStats,
   isDashboardForbidden,
@@ -214,7 +214,8 @@ const MANURVPage = () => {
               확인 필요 게시글
             </h2>
             <p className="text-xs text-gray-400">
-              중복이 의심되거나, 기간·본문·카테고리·원본 링크 정보가 부족한 게시글입니다.
+              중복이 의심되거나, 기간·본문·카테고리·원본 링크 정보가 부족한
+              게시글입니다.
             </p>
           </div>
           <ReviewArticleTable
@@ -229,7 +230,9 @@ const MANURVPage = () => {
               setSelected((current) => ({ ...current, checks: ids }))
             }
             onPageChange={(page) => handlePage('checks', page)}
-            onAction={(action, ids) => handleAction('checks', action, ids)}
+            primaryLabel="반영대기"
+            onPrimaryAction={(ids) => handleAction('checks', 'ready', ids)}
+            onTrash={(ids) => handleAction('checks', 'trash', ids)}
             onRetry={() => void checks.refetch()}
           />
           <div className="my-7 flex items-center gap-5 text-xs text-gray-400">
@@ -237,7 +240,8 @@ const MANURVPage = () => {
             <span>전체 미검수 게시글 검색</span>
             <span className="h-px flex-1 bg-gray-200" />
           </div>
-          <UnreviewedSearchForm
+          <ArticleSearchForm
+            title="미검수 게시글 검색"
             disabled={mutation.isPending}
             onSearch={handleSearch}
           />
@@ -254,12 +258,14 @@ const MANURVPage = () => {
                 setSelected((current) => ({ ...current, all: ids }))
               }
               onPageChange={(page) => handlePage('all', page)}
-              onAction={(action, ids) => handleAction('all', action, ids)}
+              primaryLabel="반영대기"
+              onPrimaryAction={(ids) => handleAction('all', 'ready', ids)}
+              onTrash={(ids) => handleAction('all', 'trash', ids)}
               onRetry={() => void all.refetch()}
             />
           </div>
           {pendingAction && (
-            <ReviewConfirmModal
+            <ArticleActionModal
               action={pendingAction.action}
               count={pendingAction.ids.length}
               pending={mutation.isPending}

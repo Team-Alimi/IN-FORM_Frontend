@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { RiDeleteBinLine, RiAccountCircleFill } from 'react-icons/ri';
 import logo from '@/assets/icons/logo.svg';
@@ -8,11 +8,15 @@ const ManageNavigation = () => {
   const userInfo = useAuthStore((state) => state.userInfo);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const handleLogout = () => {
     logout();
     queryClient.clear();
-    navigate('/manage/login', { replace: true });
+    navigate('/login', {
+      replace: true,
+      state: { from: { pathname: location.pathname } },
+    });
   };
   return (
     <header className="flex min-h-16 flex-wrap items-center gap-8 border-b border-gray-100 bg-white px-6 text-xs max-mobile:gap-4 max-mobile:px-4">
