@@ -40,7 +40,7 @@ def route_api(route):
         if mode == 'mutation-error':
             route.fulfill(status=500, json=dict(success=False, error=dict(message='잠시 후 다시 시도해 주세요.')))
             return
-        succeeded = body['ids'][:1] if partial else body['ids']
+        succeeded = [] if mode == 'all-failed' else body['ids'][:1] if partial else body['ids']
         data = dict(succeeded=succeeded, failed=[dict(id=i, code='CONCURRENT_MODIFICATION', message='다른 관리자가 수정했습니다.') for i in body['ids'] if i not in succeeded])
         for row in rows:
             if row['id'] in succeeded: row['status'] = 'PUBLISHED' if path.endswith('/publish') else 'TRASHED'
@@ -83,6 +83,18 @@ with sync_playwright() as p:
     rows[-1].pop('starts_on'); rows[-1]['categories'] = []; rows[-1]['vendors'] = []
     page.reload()
     expect(table.locator('tbody tr')).to_have_count(8)
+    # Observe real query invalidations without changing cache behavior.
+    page.evaluate("""async () => {
+      const url = performance.getEntriesByType('resource')
+        .find(entry => entry.name.includes('/@tanstack_react-query.js')).name;
+      const { QueryClient } = await import(url);
+      const original = QueryClient.prototype.invalidateQueries;
+      window.testInvalidations = [];
+      QueryClient.prototype.invalidateQueries = function (...args) {
+        window.testInvalidations.push(args[0]?.queryKey?.[0]);
+        return original.apply(this, args);
+      };
+    }""")
     table.get_by_label('게시글 185 선택').check()
     table.get_by_role('button', name='다음 페이지').click()
     expect(table.get_by_label('게시글 199 선택')).to_be_visible()
@@ -97,6 +109,8 @@ with sync_playwright() as p:
     expect(page.get_by_role('status')).to_contain_text('1건 휴지통으로 이동 완료')
     expect(table.locator('tbody tr')).to_have_count(8)
     assert any(path.endswith('/bulk/trash') and body == {'ids':[199]} for path, _, body in requests)
+    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    page.evaluate('window.testInvalidations = []')
     search.get_by_label('게시글 제목', exact=True).fill('없는 제목')
     search.get_by_role('button', name='조회', exact=True).click()
     expect(table.get_by_text('조회된 게시글이 없습니다.')).to_be_visible()
@@ -132,6 +146,8 @@ with sync_playwright() as p:
     expect(table.get_by_label('게시글 187 선택')).to_be_checked()
     expect(page.get_by_role('heading', name='반영 대기 게시글 (7)', exact=True)).to_be_visible()
     assert any(path.endswith('/bulk/publish') and body=={'ids':[185,187]} for path, _, body in requests)
+    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    page.evaluate('window.testInvalidations = []')
     # Pending requests lock both confirmation and filters; Escape cannot interrupt the write.
     partial = False
     table.get_by_label('게시글 187 선택').uncheck()
@@ -153,6 +169,17 @@ with sync_playwright() as p:
     expect(page.get_by_role('status')).to_contain_text('1건 운영 반영 완료')
     expect(page.get_by_role('dialog')).to_have_count(0)
     expect(table.get_by_label('게시글 190 선택')).to_have_count(0)
+    assert {'notifications', 'notificationsUnreadCount'} <= set(page.evaluate('window.testInvalidations'))
+    page.evaluate('window.testInvalidations = []')
+    mode = 'all-failed'
+    table.get_by_label('게시글 187 선택').check()
+    table.get_by_role('button', name='운영 반영', exact=True).click()
+    page.get_by_role('dialog').get_by_role('button', name='확인', exact=True).click()
+    expect(page.get_by_role('status')).to_contain_text('0건 운영 반영 완료 · 1건 실패')
+    expect(page.get_by_role('dialog')).to_have_count(0)
+    invalidations = set(page.evaluate('window.testInvalidations'))
+    assert 'adminDashboard' in invalidations
+    assert not {'notifications', 'notificationsUnreadCount'} & invalidations
     mode = 'mutation-error'
     table.get_by_label('게시글 187 선택').check()
     table.get_by_role('button', name='운영 반영', exact=True).click()
