@@ -214,7 +214,7 @@ const MANURVPage = () => {
               확인 필요 게시글
             </h2>
             <p className="text-xs text-gray-400">
-              즉시 검토가 필요한 게시글입니다.
+              중복이 의심되거나, 기간·본문·카테고리·원본 링크 정보가 부족한 게시글입니다.
             </p>
           </div>
           <ReviewArticleTable
