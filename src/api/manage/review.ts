@@ -24,6 +24,10 @@ export const getUnreviewedArticles = (
     5
   );
 
+/** 반영 대기는 학교 공지의 READY_TO_PUBLISH만 조회합니다. */
+export const getStagedArticles = (filters: ReviewFilters, page: number) =>
+  getDashboardArticles({ ...filters, status: 'READY_TO_PUBLISH' }, page, 8);
+
 /** 검수 완료는 반영대기까지만 이동합니다. 실제 발행은 별도 단계입니다. */
 export const runReviewAction = async (
   action: ReviewAction,

@@ -77,4 +77,7 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 - 상단 새 탐색 UI는 개편된 페이지부터 적용한다. 미검수·반영 대기·휴지통·추가·상세 링크는 기존 라우트를 유지한다.
 - MANURV는 두 목록 모두 `PENDING_REVIEW`로 제한하고 위쪽 확인 필요 목록에만 `needs_check=true`를 적용한다. 아래 검색 조건은 위쪽 목록에 영향을 주지 않는다. 목록별 선택·페이지를 분리하며, 반영대기는 `POST /articles/bulk/status`의 `READY_TO_PUBLISH`, 삭제는 `/bulk/trash`를 사용한다. 확인창에서 확정 후 처리하고, 처리 후 두 목록·홈 통계·기존 관리자 목록 캐시를 갱신한다. 상세 검토는 기존 상세 라우트로 연결한다.
 - MANURV 브라우저 검증은 `python tests/pages/manage/MANURV/unreviewed_browser.py`로 실행한다. 독립 선택·검색·페이지 이동, 확인/취소, 부분 실패, 마지막 페이지 처리, 권한 오류, 430px 화면을 모의 API로 확인한다.
+- MANSTG는 `READY_TO_PUBLISH`만 조회한다. `DRAFT`는 동아리 임시저장이므로 반영 대기 목록에 포함하지 않는다. 운영 반영은 `/articles/bulk/publish`, 삭제는 `/articles/bulk/trash`에 선택한 `ids`를 JSON으로 전달한다. 처리 후 관리자 목록·통계와 영향을 받는 사용자 공지 캐시를 갱신한다.
+- MANURV/MANSTG의 검색폼(`ArticleSearchForm`), 표(`ReviewArticleTable`), 확인창(`ArticleActionModal`)은 `components/manage/common/`에서 공유한다. 표의 상태 배지는 실제 응답 상태를 표시하고, 주 동작 문구와 콜백은 페이지에서 지정한다.
+- MANSTG 브라우저 검증은 `python tests/pages/manage/MANSTG/staged_browser.py`로 실행한다. 공통 UI를 변경한 경우 MANURV 브라우저 검증도 함께 실행한다.
 - 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.
