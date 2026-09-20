@@ -75,4 +75,6 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 - 검색의 출처는 관리자 제공처 목록에서 ID로 선택한다. 제공처 이름 문자열을 공지 목록 API에 전송하지 않는다. 비활성 옵션도 기존 공지 검색을 위해 포함한다.
 - 전체 선택은 현재 페이지에만 적용하고 검색·페이지 이동 때 초기화한다. 배포는 선택한 모든 공지가 `READY_TO_PUBLISH` 또는 `DRAFT`일 때만 허용한다. 삭제는 휴지통 이동이며 HTTP 200의 `failed` 배열도 표시한다.
 - 상단 새 탐색 UI는 개편된 페이지부터 적용한다. 미검수·반영 대기·휴지통·추가·상세 링크는 기존 라우트를 유지한다.
+- MANURV는 두 목록 모두 `PENDING_REVIEW`로 제한하고 위쪽 확인 필요 목록에만 `needs_check=true`를 적용한다. 아래 검색 조건은 위쪽 목록에 영향을 주지 않는다. 목록별 선택·페이지를 분리하며, 반영대기는 `POST /articles/bulk/status`의 `READY_TO_PUBLISH`, 삭제는 `/bulk/trash`를 사용한다. 확인창에서 확정 후 처리하고, 처리 후 두 목록·홈 통계·기존 관리자 목록 캐시를 갱신한다. 상세 검토는 기존 상세 라우트로 연결한다.
+- MANURV 브라우저 검증은 `python tests/pages/manage/MANURV/unreviewed_browser.py`로 실행한다. 독립 선택·검색·페이지 이동, 확인/취소, 부분 실패, 마지막 페이지 처리, 권한 오류, 430px 화면을 모의 API로 확인한다.
 - 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.
