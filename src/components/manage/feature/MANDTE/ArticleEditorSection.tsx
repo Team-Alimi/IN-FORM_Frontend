@@ -341,13 +341,13 @@ const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
       setProcessing(false);
     }
   };
+  const initialCategoryIds = initial?.categories.map((item) => item.id) ?? [];
   const availableCategories = (categories.data ?? []).filter(
-    (item) => item.is_active || categoryIds.includes(item.id)
+    (item) => item.is_active || initialCategoryIds.includes(item.id)
   );
   const missingCategories = (initial?.categories ?? []).filter(
     (item) =>
-      !availableCategories.some((option) => option.id === item.id) &&
-      categoryIds.includes(item.id)
+      !availableCategories.some((option) => option.id === item.id)
   );
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-gray-700">

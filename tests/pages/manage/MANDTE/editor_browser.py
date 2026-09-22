@@ -188,8 +188,20 @@ with sync_playwright() as p:
     assert body['source_type'] == 'CLUB' and body['status'] == 'DRAFT' and 'article_id' not in body
     assert body['vendors'] == [dict(vendor_id=21)] and 'starts_on' not in body and 'ends_on' not in body
     # Edit preserves relation IDs, locks crawled vendors and sends no ignored state fields.
+    detail['categories'].append(dict(id=10, name='목록에서 빠진 카테고리'))
     page.goto(BASE+'/manage/edit/42')
     expect(page.get_by_label('게시글 제목', exact=True)).to_have_value('기존 게시글')
+    # Originally linked categories remain recoverable even when inactive or absent from options.
+    for name in ['숨김 카테고리 (숨김)', '목록에서 빠진 카테고리']:
+        category = page.get_by_label(name, exact=True)
+        expect(category).to_be_checked()
+        category.uncheck()
+        expect(category).to_be_visible()
+        expect(category).not_to_be_checked()
+        category.check()
+        expect(category).to_be_checked()
+    # Visibility does not imply selection: explicitly unchecked categories are omitted from PATCH.
+    page.get_by_label('목록에서 빠진 카테고리', exact=True).uncheck()
     expect(page.get_by_label('게시글 ID', exact=True)).to_be_disabled()
     expect(page.get_by_text('수집 출처', exact=True)).to_be_visible()
     expect(page.get_by_label('학사지원팀 출처 제거 1')).to_have_count(0)
