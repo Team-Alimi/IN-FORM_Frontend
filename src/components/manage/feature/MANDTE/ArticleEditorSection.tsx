@@ -1,528 +1,943 @@
-import { useState, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
-import { CATEGORY_NAME_COLOR_MAP } from '@/constants/filterOption';
-import { fetchCategories } from '@/api/main/vendors';
-import VendorAddModal from './VendorAddModal';
-import AttachmentAddModal from './AttachmentAddModal';
-import AlertModal from '@/components/manage/common/AlertModal';
+import { useEffect, useRef, useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  RiAddLine,
+  RiArrowLeftSLine,
+  RiCheckLine,
+  RiCloseLine,
+} from 'react-icons/ri';
+import {
+  checkEditorArticleId,
+  discardEditorFiles,
+  editorErrorMessage,
+  findEditorDuplicates,
+  getEditorCategories,
+  getEditorVendors,
+  saveEditorArticle,
+  uploadEditorFiles,
+} from '@/api/manage/articleEditor';
+import type {
+  ArticleAttachment,
+  ArticleVendor,
+  ArticleWritePayload,
+  EditableArticle,
+  SourceType,
+} from '@/api/manage/articleEditor';
+import type { ReviewStatus } from '@/api/manage/dashboard';
+import {
+  isDashboardForbidden,
+  shouldRetryDashboardQuery,
+} from '@/api/manage/dashboard';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
-import { checkArticleIdDuplicate } from '@/api/manage/checkArticleIdDuplicate';
-import {
-  createArticle,
-  updateArticle,
-  deleteArticles,
-} from '@/api/manage/adminArticles';
-import type {
-  CreateArticlePayload,
-  UpdateArticlePayload,
-  AdminStatus,
-} from '@/api/manage/adminArticles';
-import { MOCK_MANAGE_ARTICLE_DETAIL } from '@/mocks/adminArticleDetailTest';
-import type {
-  OManageArticleDetail,
-  IUpdateArticlePayload,
-  IRegisterArticlePayload,
-} from '@/api/manage/dto/adminDto';
+import EditorDialog from './EditorDialog';
+import ManageNavigation from '@/components/manage/common/ManageNavigation';
 
-export type FormCategory = {
-  category_id: number;
-  category_name: string;
-  category_key: string | undefined; //🥚추후 확인 필요
+const STATUS_LABELS: Record<ReviewStatus, string> = {
+  PENDING_REVIEW: '미검수',
+  READY_TO_PUBLISH: '반영대기',
+  DRAFT: '임시저장',
+  PUBLISHED: '운영',
+  TRASHED: '휴지통',
 };
-export type FormVendor = {
-  vendor_id: number; //학과정의용 id
-  id?: number | null; //기존 vendor는 아이디도 같이 payload에 실어서 보냄/ 신규의 경우 보내지않음(비움)
-  vendor_name: string;
-  source_url: string;
-};
-export type FormAttachment = {
-  id?: number | null; //기존 attachment는 아이디도 같이 payload에 실어서 보냄/ 신규의 경우 보내지않음(비움)
-  file_url?: string | undefined;
-  original_name?: string | null | undefined;
-  content_type?: string | null | undefined;
-};
-
-const ArticleEditorSection = ({
-  articleId,
-  sourceType,
+const INPUT =
+  'min-w-0 rounded-lg border border-gray-100 bg-[#F8F9FA] px-3 py-2.5 text-sm outline-none focus:border-gray-400 disabled:text-gray-400';
+const BUTTON =
+  'rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm disabled:opacity-40';
+const FieldRow = ({
+  label,
+  children,
 }: {
-  articleId?: number; //articleId 값이 있다 : 게시글 수정하기 articleId값이 없다 : 게시글 등록하기
-  sourceType: string; //SCHOOL OR CLUB [현재는 우선 SCHOOL으로 구성 ]
-}) => {
-  const isEditing = articleId !== undefined; //articleId 의 값이 있다면 isEditing : true, 수정중이 맞다.
+  label: string;
+  children: ReactNode;
+}) => (
+  <div className="grid grid-cols-[112px_minmax(0,1fr)] items-start gap-0 border-t border-gray-100 px-5 py-4 max-mobile:grid-cols-1 max-mobile:gap-3">
+    <div className="pt-2 text-sm text-gray-700">{label}</div>
+    <div className="min-w-0">{children}</div>
+  </div>
+);
+
+const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
   const navigate = useNavigate();
-  /** 🧐 - API 연동 추후 수정
-  const { data, isLoading } = useQuery({
-    //articleId를 기반으로
-    queryKey: ['adminArticleDetail', articleId],
-    queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
-    enabled: isEditing, //isEditing이 true일때만 내용을 실행하라.
-  });
-  const { data: categoriesData } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-    staleTime: 60 * 60 * 1000,
-  }); 
-*/
-  // const categories = (categoriesData?.data ?? []) as {
-  //   id: number;
-  //   name: string;
-  // }[];  🧐 - API 연동 후 살려야됨
-  const data = MOCK_MANAGE_ARTICLE_DETAIL;
-  const [venderModalOpen, setVendorModalOpen] = useState(false); //vendor모달 토글 상태 관리
-  const [attachmentModalOpen, setAttachmentModalOpen] = useState(false); //attachment모달 토글 상태 관리
-  const [showSubmitModal, setShowSubmitModal] = useState(false); //제출 모달 노출 상태 관리
-  const [showDeleteModal, setShowDeleteModal] = useState(false); //삭제 모달 노출 상태 관리
-  const [idStatus, setIdStatus] = useState<
-    'idle' | 'available' | 'taken' | 'unvalid'
-  >('idle'); //id 중복 확인 및 유효성 검사 state
+  const queryClient = useQueryClient();
   const editorRef = useRef<TipTapEditorHandle>(null);
-  const [editorKey, setEditorKey] = useState(isEditing ? 'pending' : 'new');
-  const [form, setForm] = useState({
-    categories: [] as FormCategory[],
-    title: '게시글 제목을 입력하세요.',
-    article_id: -1,
-    admin_status: 'PENDING_REVIEW',
-    starts_on: '',
-    ends_on: '',
-    vendors: [] as FormVendor[],
-    created_at: '',
-    updated_at: '',
-    content: '',
-    attachments: [] as FormAttachment[],
+  const operationRef = useRef(false);
+  const [processing, setProcessing] = useState(false);
+  const leaveRef = useRef<() => void>(() => navigate('/manage'));
+  const [sourceType, setSourceType] = useState<SourceType>(
+    initial?.source_type ?? 'SCHOOL'
+  );
+  const [articleId, setArticleId] = useState('');
+  const [title, setTitle] = useState(initial?.title ?? '');
+  const [categoryIds, setCategoryIds] = useState(
+    initial?.categories.map((item) => item.id) ?? []
+  );
+  const [vendors, setVendors] = useState<ArticleVendor[]>(
+    initial?.vendors ?? []
+  );
+  const [attachments, setAttachments] = useState<ArticleAttachment[]>(
+    initial?.attachments ?? []
+  );
+  const [startsOn, setStartsOn] = useState(initial?.starts_on ?? '');
+  const [endsOn, setEndsOn] = useState(initial?.ends_on ?? '');
+  const [status, setStatus] = useState<ReviewStatus>(
+    initial?.status ?? 'PENDING_REVIEW'
+  );
+  const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState('');
+  const [dialog, setDialog] = useState<'save' | 'cancel' | 'vendor' | null>(
+    null
+  );
+  const [vendorId, setVendorId] = useState('');
+  const [vendorUrl, setVendorUrl] = useState('');
+  const [vendorError, setVendorError] = useState('');
+  const [pendingPayload, setPendingPayload] =
+    useState<ArticleWritePayload | null>(null);
+  const categories = useQuery({
+    queryKey: ['adminEditor', 'categories'],
+    queryFn: getEditorCategories,
+    retry: shouldRetryDashboardQuery,
   });
-  const TEMP_SOURCE_TYPE = 'SCHOOL'; //우선 공지 게시글 수정으로 구현
-
+  const vendorOptions = useQuery({
+    queryKey: ['adminEditor', 'vendors', sourceType],
+    queryFn: () => getEditorVendors(sourceType),
+    retry: shouldRetryDashboardQuery,
+  });
+  const idCheck = useQuery({
+    queryKey: ['adminEditor', 'idCheck', articleId],
+    queryFn: () => checkEditorArticleId(Number(articleId)),
+    enabled: false,
+    retry: false,
+  });
+  const duplicates = useQuery({
+    queryKey: ['adminEditor', 'duplicates', title.trim()],
+    queryFn: () => findEditorDuplicates(title.trim()),
+    enabled: false,
+    retry: false,
+  });
+  const cleanup = useMutation({ mutationFn: discardEditorFiles });
+  const upload = useMutation({ mutationFn: uploadEditorFiles });
+  const save = useMutation({
+    mutationFn: (payload: ArticleWritePayload) =>
+      saveEditorArticle(payload, initial?.id),
+  });
+  const busy =
+    processing || save.isPending || upload.isPending || cleanup.isPending;
+  const forbidden = [
+    categories.error,
+    vendorOptions.error,
+    save.error,
+    upload.error,
+    cleanup.error,
+    idCheck.error,
+    duplicates.error,
+  ].some(isDashboardForbidden);
   useEffect(() => {
-    if (!data) return;
-    setForm({
-      categories:
-        data.data?.categories.map((item) => ({
-          category_id: item.id,
-          category_name: item.name,
-          category_key: undefined,
-        })) ?? [],
-      title: data.data?.title,
-      content: data.data?.content,
-      article_id: data?.data.id,
-      admin_status: data.data?.status, //PENDING_REVIEW
-      starts_on: data.data?.starts_on,
-      ends_on: data.data?.ends_on,
-      vendors: data.data?.vendors.map((item) => ({
-        id: item.id,
-        vendor_id: item.vendor_id, //학과 매핑 아이디
-        vendor_name: item.vendor_name,
-        source_url: item.source_url,
-      })),
-      created_at: data.data?.created_at,
-      updated_at: data.data?.updated_at,
-      attachments: data.data?.attachments.map((item) => ({
-        id: item.id,
-        file_url: item.file_url,
-        original_name: item.original_name,
-        content_type: item.content_type,
-      })),
-    });
-  }, [data]);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    //제출 확인 모달 제어
-    e.preventDefault();
-    setShowSubmitModal(true);
-  };
-
-  const handleSubmitConfirm = async () => {
-    const content = editorRef.current?.getHTML() ?? '';
-    //게시글 수정하기
-    try {
-      if (isEditing) {
-        const payload: IUpdateArticlePayload = {
-          title: form.title,
-          content: form.content,
-          starts_on: form.starts_on,
-          ends_on: form.ends_on,
-          category_ids: form.categories.map((item) => item.category_id),
-          vendors: form.vendors.map((item) => ({
-            id: item.id ?? null,
-            vendor_id: item.vendor_id,
-            vendor_name: item.vendor_name,
-            source_url: item.source_url,
-          })),
-          attachments: form.attachments.map((item) => ({
-            id: item.id ?? null,
-            file_url: item.file_url,
-            original_name: item.original_name,
-            content_type: item.content_type,
-          })),
-          //🥚상태 수정 관련 항목이 안보인다. 확인필요
-        };
-        console.log('[🧐게시글 수정하기] 제출되었습니다.', payload);
-        //await updateArticle(articleId!, payload); 🧐[추후API]
-      } else {
-        //게시글 신규 등록하기
-        const payload: IRegisterArticlePayload = {
-          article_id: form.article_id ?? null,
-          source_type: TEMP_SOURCE_TYPE,
-          status: form.admin_status,
-          title: form.title,
-          content: form.content,
-          starts_on: form.starts_on,
-          ends_on: form.ends_on,
-          category_ids: form.categories.map((item) => item.category_id),
-          vendors: form.vendors.map((item) => ({
-            id: item.id ?? null,
-            vendor_id: item.vendor_id,
-            vendor_name: item.vendor_name,
-            source_url: item.source_url,
-          })),
-          attachments: form.attachments.map((item) => ({
-            id: item.id ?? null,
-            file_url: item.file_url,
-            original_name: item.original_name,
-            content_type: item.content_type,
-          })),
-        };
-        //await createArticle(payload); 🧐[추후API]
-        console.log('[🧐게시글 등록하기] 제출되었습니다.', payload);
+    const handleUnload = (event: BeforeUnloadEvent) => {
+      if (dirty || busy) {
+        event.preventDefault();
+        event.returnValue = '';
       }
-      navigate('/manage');
-    } catch {
-      alert(
-        isEditing
-          ? '게시글 수정에 실패했습니다. 다시 시도해주세요.'
-          : '게시글 등록에 실패했습니다. 다시 시도해주세요.'
-      );
-    } finally {
-      setShowSubmitModal(false);
-    }
+    };
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [dirty, busy]);
+  const handleNavigate = (proceed: () => void) => {
+    if (busy || operationRef.current) return;
+    leaveRef.current = proceed;
+    if (dirty) setDialog('cancel');
+    else proceed();
   };
-
-  const handleDeleteConfirm = async () => {
+  const handleCancel = () => handleNavigate(() => navigate('/manage'));
+  const handleDiscard = async () => {
+    if (operationRef.current) return;
+    operationRef.current = true;
+    setProcessing(true);
+    setError('');
     try {
-      await deleteArticles([articleId!]);
-      navigate('/manage');
+      const urls = attachments
+        .filter((item) => item.id === undefined)
+        .map((item) => item.file_url);
+      if (urls.length) await cleanup.mutateAsync(urls);
+      setDirty(false);
+      leaveRef.current();
     } catch {
-      alert('게시글 삭제에 실패했습니다. 다시 시도해주세요.');
+      setError('업로드 파일 정리 요청에 실패했습니다. 다시 취소해 주세요.');
+      setDialog(null);
     } finally {
-      setShowDeleteModal(false);
+      operationRef.current = false;
+      setProcessing(false);
     }
   };
-
-  const handleVendorDelete = (id: number) => {
-    //선택된 vendor를 삭제 하는 핸들러
-    setForm((prev) => ({
-      ...prev,
-      vendors: prev.vendors.filter((item) => item.vendor_id !== id),
-    }));
-  };
-
-  const handleVendorAdd = (
-    vendor_id: number,
-    name: string,
-    url: string,
-    id: number | null = null // 신규 vendor는 아직 서버에 없으므로 id를 비워서(null) 둔다
-  ) => {
-    const NewVendor: FormVendor = {
-      vendor_id: vendor_id,
-      id: id,
-      vendor_name: name,
-      source_url: url,
-    };
-    setForm((prev) => ({ ...prev, vendors: [...prev.vendors, NewVendor] }));
-    setVendorModalOpen(false);
-  };
-
-  const handleVendorModalToggle = () => {
-    setVendorModalOpen((prev) => !prev);
-  };
-
-  const handleAttachmentAdd = (
-    file_url: string,
-    original_name?: string,
-    content_type?: string,
-    id: number | null = null
-  ) => {
-    const NewAttachment: FormAttachment = {
-      id: id,
-      file_url: file_url,
-      original_name: original_name,
-      content_type: content_type,
-    };
-
-    setForm((prev) => ({
-      ...prev,
-      attachment_urls: [...prev.attachments, NewAttachment],
-    }));
-    setAttachmentModalOpen(false);
-  };
-
-  const handleAttachmentDelete = (index: number) => {
-    setForm((prev) => ({
-      ...prev,
-      attachment_urls: prev.filter((item) => item.file_url !== index),
-    }));
-  };
-
-  const handleAlreadyCheck = async () => {
-    if (typeof form.article_id !== 'number') {
-      setIdStatus('unvalid');
+  const handleUpload = async (files: File[]) => {
+    if (operationRef.current || !files.length) return;
+    setError('');
+    if (attachments.length + files.length > 20) {
+      setError('이미지는 최대 20개까지 첨부할 수 있습니다.');
       return;
     }
-    const res = await checkArticleIdDuplicate(form.article_id);
-    console.log(res);
-    setIdStatus(res.data ? 'taken' : 'available');
+    if (files.some((file) => !/\.(jpe?g|png|gif|webp)$/i.test(file.name))) {
+      setError('jpg, jpeg, png, gif, webp 이미지만 업로드할 수 있습니다.');
+      return;
+    }
+    if (
+      files.some((file) => file.size <= 0 || file.size > 10 * 1024 * 1024) ||
+      files.reduce((sum, file) => sum + file.size, 0) > 60 * 1024 * 1024
+    ) {
+      setError(
+        '빈 파일은 업로드할 수 없으며, 파일당 10MB·한 번에 60MB까지 가능합니다.'
+      );
+      return;
+    }
+    if (files.some((file) => file.name.length > 255)) {
+      setError('파일 이름은 255자 이내여야 합니다.');
+      return;
+    }
+    operationRef.current = true;
+    setProcessing(true);
+    try {
+      const results = await upload.mutateAsync(files);
+      setAttachments((current) => [...current, ...results]);
+      setDirty(true);
+      editorRef.current?.insertImages(results);
+    } catch (cause) {
+      setError(
+        editorErrorMessage(
+          cause,
+          '이미지를 업로드하지 못했습니다. 다시 시도해 주세요.'
+        )
+      );
+    } finally {
+      operationRef.current = false;
+      setProcessing(false);
+    }
   };
-
-  if (isEditing) {
-    return (
-      <div className="mt-8 text-center text-gray-400 text-sm">
-        불러오는 중...
-      </div>
-    );
-  }
+  const handleRemoveAttachment = async (attachment: ArticleAttachment) => {
+    if (operationRef.current) return;
+    operationRef.current = true;
+    setProcessing(true);
+    setError('');
+    try {
+      if (attachment.id === undefined)
+        await cleanup.mutateAsync([attachment.file_url]);
+      setAttachments((current) =>
+        current.filter((item) => item !== attachment)
+      );
+      editorRef.current?.removeImage(attachment.file_url);
+      setDirty(true);
+    } catch {
+      setError('이미지 제거 요청에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      operationRef.current = false;
+      setProcessing(false);
+    }
+  };
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (busy || operationRef.current) return;
+    setError('');
+    if (!title.trim() || title.length > 500) {
+      setError('게시글 제목을 1~500자로 입력해 주세요.');
+      return;
+    }
+    if (editorRef.current?.isEmpty() !== false) {
+      setError('게시글 본문을 입력해 주세요.');
+      return;
+    }
+    if (
+      articleId &&
+      (!/^\d+$/.test(articleId) ||
+        Number(articleId) < 1 ||
+        Number(articleId) > 100000000)
+    ) {
+      setError('게시글 ID는 1부터 100000000까지의 정수로 입력해 주세요.');
+      return;
+    }
+    if (!initial && articleId && idCheck.data === true) {
+      setError('이미 사용 중인 게시글 ID입니다. 다른 ID를 입력해 주세요.');
+      return;
+    }
+    if (startsOn && endsOn && startsOn > endsOn) {
+      setError('행사 시작일은 마감일보다 늦을 수 없습니다.');
+      return;
+    }
+    if ((initial?.starts_on && !startsOn) || (initial?.ends_on && !endsOn)) {
+      setError('기존 행사 날짜는 비울 수 없습니다. 날짜를 선택해 주세요.');
+      return;
+    }
+    setPendingPayload({
+      ...(initial
+        ? {}
+        : {
+            source_type: sourceType,
+            status,
+            ...(articleId ? { article_id: Number(articleId) } : {}),
+          }),
+      title: title.trim(),
+      content: editorRef.current!.getHTML(),
+      ...(startsOn ? { starts_on: startsOn } : {}),
+      ...(endsOn ? { ends_on: endsOn } : {}),
+      category_ids: categoryIds,
+      vendors: vendors.map((item) => ({
+        ...(item.id !== undefined ? { id: item.id } : {}),
+        vendor_id: item.vendor_id,
+        ...(item.source_url ? { source_url: item.source_url } : {}),
+      })),
+      attachments: attachments.map((item) => ({
+        ...(item.id !== undefined ? { id: item.id } : {}),
+        file_url: item.file_url,
+        ...(item.original_name !== undefined
+          ? { original_name: item.original_name }
+          : {}),
+        ...(item.content_type !== undefined
+          ? { content_type: item.content_type }
+          : {}),
+        ...(item.size_bytes !== undefined
+          ? { size_bytes: item.size_bytes }
+          : {}),
+      })),
+    });
+    setDialog('save');
+  };
+  const handleSave = async () => {
+    if (!pendingPayload || operationRef.current) return;
+    operationRef.current = true;
+    setProcessing(true);
+    try {
+      await save.mutateAsync(pendingPayload);
+      setDirty(false);
+      // Saving succeeded: never offer another POST if a subsequent refetch fails.
+      const keys = [
+        'adminDashboard',
+        'adminArticles',
+        'adminArticleCounts',
+        'adminArticleDetail',
+        'adminEditor',
+      ];
+      if (status === 'PUBLISHED')
+        keys.push(
+          'monthlyAll',
+          'events',
+          'eventDetail',
+          'hotEvents',
+          'bookmarks'
+        );
+      await Promise.allSettled(
+        keys.map((key) => queryClient.invalidateQueries({ queryKey: [key] }))
+      );
+      navigate('/manage', { replace: true });
+    } catch (cause) {
+      setError(
+        editorErrorMessage(
+          cause,
+          '게시글을 저장하지 못했습니다. 입력 내용을 확인하고 다시 시도해 주세요.'
+        )
+      );
+      setDialog(null);
+    } finally {
+      operationRef.current = false;
+      setProcessing(false);
+    }
+  };
+  const initialCategoryIds = initial?.categories.map((item) => item.id) ?? [];
+  const availableCategories = (categories.data ?? []).filter(
+    (item) => item.is_active || initialCategoryIds.includes(item.id)
+  );
+  const missingCategories = (initial?.categories ?? []).filter(
+    (item) =>
+      !availableCategories.some((option) => option.id === item.id)
+  );
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        {/**
-         * <1> 게시글 분류 카테고리 선택 목록 배열
-         *  - 필수로 한개의 카테고리 선택 필요
-         */}
-        <div>
-          {categories.map((cat) => {
-            const isSelected = cat.id === form.category_id;
-            const colorBg =
-              CATEGORY_NAME_COLOR_MAP[cat.name]?.dot ?? 'bg-gray-400';
-            return (
-              <label key={cat.id}>
-                <input
-                  type="radio"
-                  name="category"
-                  value={cat.id}
-                  checked={isSelected}
-                  onChange={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      category_id: cat.id,
-                    }))
-                  }
-                  className="hidden"
-                />
-                <span
-                  className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? `${colorBg} text-white` : 'bg-gray-100 text-gray-600'}`}
-                >
-                  {cat.name}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-        {/**
-         * <2> 게시글 제목 입력 폼
-         *  - 게시글 이름 문자열 입력 필수
-         */}
-        <div>
-          <input
-            name="title"
-            value={form.title}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, title: e.target.value }))
-            }
-            className="text-lg w-4/5"
-          />
-        </div>
-
-        {/**
-         * <3> 게시글 출처 입력 폼
-         *  - 출처 입력 필수
-         */}
-        <div className="flex flex-row gap-2 flex-wrap">
-          {form.vendors.map((item) => (
-            <div
-              key={item.vendor_id}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
-            >
-              {item.vendor_name}
-              <button
-                type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
-                onClick={() => handleVendorDelete(item.vendor_id)}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <div
-            className="text-3xl p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
-            onClick={handleVendorModalToggle}
-          >
-            +
-          </div>
-        </div>
-        {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
-
-        {/**
-         * <4> 첨부파일 입력 폼
-         *  - 첩부파일 필수 x
-         */}
-        <div className="flex flex-row gap-2 flex-wrap">
-          {form.attachment_urls.map((url, index) => (
-            <div
-              key={index}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
-            >
-              {url.split('/').pop() || url}
-              <button
-                type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
-                onClick={() => handleAttachmentDelete(index)}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <div
-            className="text-sm p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
-            onClick={() => setAttachmentModalOpen(true)}
-          >
-            첨부파일 추가하기 +
-          </div>
-        </div>
-        {attachmentModalOpen && (
-          <AttachmentAddModal
-            onConfirm={handleAttachmentAdd}
-            onCancel={() => setAttachmentModalOpen(false)}
-          />
-        )}
-        {/**
-         * <5> id입력 폼
-         *  - 필수 입력 + 중복 검사 True
-         */}
-        <div className="flex flex-row gap-2">
-          {!isEditing && (
-            <>
-              <label>
-                ID :{' '}
-                <input
-                  name="article_id"
-                  value={form.article_id}
-                  onChange={(e) => {
-                    setForm((prev) => ({
-                      ...prev,
-                      article_id: Number(e.target.value),
-                    }));
-                    setIdStatus('idle');
-                  }}
-                  className={`border rounded px-2 py-1 ${
-                    idStatus === 'taken'
-                      ? 'border-red-500'
-                      : idStatus === 'available'
-                        ? 'border-green-500'
-                        : 'border-gray-300'
-                  }`}
-                />
-              </label>
-              {idStatus === 'taken' && (
-                <p className="text-red-500 text-xs mt-0.5">
-                  이미 사용 중인 ID입니다.
-                </p>
-              )}
-              {idStatus === 'unvalid' && (
-                <p className="text-red-500 text-xs mt-0.5">
-                  적절하지 않은 입력입니다.
-                </p>
-              )}
-              {idStatus === 'available' && (
-                <p className="text-green-500 text-xs mt-0.5">
-                  사용 가능한 ID입니다.
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={handleAlreadyCheck}
-                className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
-              >
-                중복검사
-              </button>
-            </>
-          )}
-        </div>
-        {/**
-         * <6> 행사 기간 입력 폼
-         *  - 필수 입력
-         */}
-        <div>
-          <label>
-            행사기간 :{' '}
-            <input
-              type="date"
-              name="start_date"
-              value={form.starts_on}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, start_date: e.target.value }))
-              }
-            />{' '}
-            <input
-              type="date"
-              name="due_date"
-              value={form.ends_on}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, due_date: e.target.value }))
-              }
-            />
-          </label>
-        </div>
-
-        <TipTapEditor
-          key={editorKey}
-          ref={editorRef}
-          initialValue={form.content}
-        />
-        <button
-          type="submit"
-          // disabled={idStatus !== 'available'}
-          className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+    <div className="min-h-screen bg-[#F7F8FA] text-gray-700">
+      <ManageNavigation onNavigate={handleNavigate} />
+      <main className="mx-auto max-w-[924px] px-6 pb-4 pt-8 max-mobile:px-4">
+        <form
+          id="article-editor"
+          onSubmit={handleSubmit}
+          onChange={() => setDirty(true)}
         >
-          {isEditing ? '반영하기' : '추가하기'}
-        </button>
-        {isEditing && (
+          <div className="mb-5 flex items-center gap-3">
+            <button
+              type="button"
+              aria-label="작성 취소하고 돌아가기"
+              className="rounded-full border border-gray-200 bg-white p-1.5 shadow-sm"
+              onClick={handleCancel}
+              disabled={busy}
+            >
+              <RiArrowLeftSLine size={24} />
+            </button>
+            <h1 className="text-[22px] font-bold text-black">
+              게시글 {initial ? '수정하기' : '추가하기'}
+            </h1>
+          </div>
+          {forbidden && (
+            <div
+              role="alert"
+              className="mb-5 rounded-xl border border-amber-200 bg-white p-5 text-sm"
+            >
+              관리자 접근 권한을 확인해 주세요. 관리자 권한이 부여된 계정으로
+              로그인해야 합니다.{' '}
+              <Link
+                to="/login"
+                state={{
+                  from: {
+                    pathname: initial
+                      ? `/manage/edit/${initial.id}`
+                      : '/manage/edit',
+                  },
+                }}
+                className="underline"
+              >
+                다시 로그인
+              </Link>
+            </div>
+          )}
+          {error && (
+            <p
+              role="alert"
+              className="mb-5 rounded-xl border border-red-200 bg-white p-4 text-sm text-red-600"
+            >
+              {error}
+            </p>
+          )}
+          <fieldset disabled={busy || forbidden} className="min-w-0">
+            <section
+              aria-label="게시글 정보"
+              className="overflow-hidden rounded-2xl border border-gray-200 bg-white"
+            >
+              <h2 className="bg-[#F8F9FA] px-5 py-4 text-xs text-gray-600">
+                게시글 정보
+              </h2>
+              <FieldRow label="게시글 ID">
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    aria-label="게시글 ID"
+                    inputMode="numeric"
+                    value={initial?.id ?? articleId}
+                    disabled={!!initial}
+                    onChange={(event) => setArticleId(event.target.value)}
+                    placeholder="ID를 입력하세요"
+                    className={`${INPUT} w-40`}
+                  />
+                  {!initial && (
+                    <button
+                      type="button"
+                      className={BUTTON}
+                      disabled={
+                        !/^\d+$/.test(articleId) ||
+                        Number(articleId) < 1 ||
+                        Number(articleId) > 100000000 ||
+                        idCheck.isFetching
+                      }
+                      onClick={() => void idCheck.refetch()}
+                    >
+                      중복 확인
+                    </button>
+                  )}
+                </div>
+                {!initial && (
+                  <p className="mt-2 text-xs text-gray-400">
+                    비워 두면 자동으로 발급됩니다. 직접 지정할 경우 최대 1억까지
+                    입력할 수 있습니다.
+                  </p>
+                )}
+                {!initial && idCheck.isFetching && (
+                  <p role="status" className="mt-2 text-xs">
+                    ID 확인 중…
+                  </p>
+                )}
+                {!initial && idCheck.isError && (
+                  <p role="alert" className="mt-2 text-xs text-red-600">
+                    ID를 확인하지 못했습니다. 다시 시도해 주세요.
+                  </p>
+                )}
+                {!initial &&
+                  !idCheck.isFetching &&
+                  !idCheck.isError &&
+                  idCheck.data !== undefined && (
+                    <p
+                      role="status"
+                      className={`mt-2 text-xs ${idCheck.data ? 'text-red-600' : 'text-gray-600'}`}
+                    >
+                      {idCheck.data
+                        ? '이미 사용 중인 ID입니다.'
+                        : '확인 시점에 사용하지 않는 ID입니다. 최종 등록 시 다시 확인됩니다.'}
+                    </p>
+                  )}
+              </FieldRow>
+              <FieldRow label="게시글 제목">
+                <div className="flex gap-2 max-mobile:flex-wrap">
+                  <input
+                    aria-label="게시글 제목"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    maxLength={500}
+                    placeholder="제목을 입력하세요"
+                    className={`${INPUT} w-full`}
+                  />
+                  <button
+                    type="button"
+                    className={`${BUTTON} shrink-0`}
+                    disabled={!title.trim() || duplicates.isFetching}
+                    onClick={() => void duplicates.refetch()}
+                  >
+                    유사 제목 확인
+                  </button>
+                </div>
+                {duplicates.isFetching && (
+                  <p role="status" className="mt-2 text-xs">
+                    유사 제목 확인 중…
+                  </p>
+                )}
+                {duplicates.isError && (
+                  <p role="alert" className="mt-2 text-xs text-red-600">
+                    유사 제목을 확인하지 못했습니다.
+                  </p>
+                )}
+                {duplicates.data &&
+                  !duplicates.isFetching &&
+                  !duplicates.isError && (
+                    <div role="status" className="mt-3 text-xs text-gray-600">
+                      <p>
+                        {duplicates.data.exists
+                          ? '같은 제목을 포함한 게시글입니다. 출처와 내용을 확인해 주세요.'
+                          : '같은 제목을 포함한 게시글을 찾지 못했습니다. 등록 가능 여부를 보장하지는 않습니다.'}
+                      </p>
+                      <ul className="mt-2 space-y-2">
+                        {duplicates.data.articles.map((item) => (
+                          <li key={item.id}>
+                            <Link
+                              to={`/manage/detail/${item.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="underline"
+                            >
+                              #{item.id} {item.title}
+                            </Link>{' '}
+                            · {STATUS_LABELS[item.status]}
+                          </li>
+                        ))}
+                      </ul>
+                      {duplicates.data.articles.length === 20 && (
+                        <p>
+                          최대 20건만 표시됩니다. 제목을 더 구체적으로 입력해
+                          주세요.
+                        </p>
+                      )}
+                    </div>
+                  )}
+              </FieldRow>
+              <FieldRow label="카테고리">
+                <div className="flex flex-wrap gap-2">
+                  {[...availableCategories, ...missingCategories].map(
+                    (item) => (
+                      <label
+                        key={item.id}
+                        className={`relative cursor-pointer rounded-full border px-4 py-2 text-xs has-focus-visible:ring-2 has-focus-visible:ring-gray-500 ${categoryIds.includes(item.id) ? 'border-black bg-black text-white' : 'border-gray-200 text-gray-600'}`}
+                      >
+                        <input
+                          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                          type="checkbox"
+                          checked={categoryIds.includes(item.id)}
+                          onChange={() =>
+                            setCategoryIds((current) =>
+                              current.includes(item.id)
+                                ? current.filter((id) => id !== item.id)
+                                : [...current, item.id]
+                            )
+                          }
+                        />
+                        {item.name}
+                        {'is_active' in item && !item.is_active
+                          ? ' (숨김)'
+                          : ''}
+                      </label>
+                    )
+                  )}
+                </div>
+                {categories.isPending && (
+                  <p className="text-xs">카테고리 불러오는 중…</p>
+                )}
+                {categories.isError && (
+                  <p role="alert" className="text-xs text-red-600">
+                    카테고리를 불러오지 못했습니다.{' '}
+                    <button
+                      type="button"
+                      className="underline"
+                      onClick={() => void categories.refetch()}
+                    >
+                      다시 시도
+                    </button>
+                  </p>
+                )}
+                {categories.data?.length === 0 && (
+                  <p className="text-xs text-gray-500">
+                    등록된 카테고리가 없습니다.
+                  </p>
+                )}
+              </FieldRow>
+              <FieldRow label="출처">
+                <div className="mb-3 flex items-center gap-4 text-xs">
+                  <span>공지 유형</span>
+                  {(['SCHOOL', 'CLUB'] as const).map((type) => (
+                    <label key={type} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="source-type"
+                        className="accent-black"
+                        value={type}
+                        checked={sourceType === type}
+                        disabled={!!initial || vendors.length > 0}
+                        onChange={() => {
+                          setSourceType(type);
+                          setStatus(
+                            type === 'SCHOOL' ? 'PENDING_REVIEW' : 'DRAFT'
+                          );
+                        }}
+                      />
+                      {type === 'SCHOOL' ? '학교' : '동아리'}
+                    </label>
+                  ))}
+                </div>
+                <ul className="space-y-2">
+                  {vendors.map((item, index) => (
+                    <li
+                      key={item.id ?? `new-${index}`}
+                      className="flex min-w-0 items-center gap-2 text-xs"
+                    >
+                      <span className="shrink-0 rounded-full border border-gray-200 px-3 py-2">
+                        {item.vendor_name}
+                      </span>
+                      <span className="break-all text-gray-500">
+                        {item.source_url}
+                      </span>
+                      {item.external_key !== undefined ? (
+                        <span className="shrink-0 text-gray-400">
+                          수집 출처
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          aria-label={`${item.vendor_name} 출처 제거 ${index + 1}`}
+                          onClick={() => {
+                            setVendors((current) =>
+                              current.filter((_, i) => i !== index)
+                            );
+                            setDirty(true);
+                          }}
+                        >
+                          <RiCloseLine />
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="mt-1 inline-flex items-center gap-1 rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-500"
+                  onClick={() => {
+                    setVendorId('');
+                    setVendorUrl('');
+                    setVendorError('');
+                    setDialog('vendor');
+                  }}
+                >
+                  <RiAddLine /> 출처 추가
+                </button>
+                {vendors.length > 0 && !initial && (
+                  <p className="mt-2 text-xs text-gray-400">
+                    공지 유형을 바꾸려면 선택한 출처를 먼저 제거해 주세요.
+                  </p>
+                )}
+              </FieldRow>
+              <FieldRow label="행사 기간">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                  <label className="flex items-center gap-2">
+                    시작일
+                    <input
+                      aria-label="행사 시작일"
+                      type="date"
+                      value={startsOn}
+                      onChange={(event) => setStartsOn(event.target.value)}
+                      className={`${INPUT} w-40`}
+                    />
+                  </label>
+                  <span>~</span>
+                  <label className="flex items-center gap-2">
+                    마감일
+                    <input
+                      aria-label="행사 마감일"
+                      type="date"
+                      value={endsOn}
+                      onChange={(event) => setEndsOn(event.target.value)}
+                      className={`${INPUT} w-40`}
+                    />
+                  </label>
+                </div>
+              </FieldRow>
+              <FieldRow label="상태">
+                {initial ? (
+                  <p className="py-2 text-sm">
+                    {STATUS_LABELS[status]}
+                    <span className="ml-3 text-xs text-gray-400">
+                      상태 변경은 목록 화면에서 진행해 주세요.
+                    </span>
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-5 py-2 text-xs">
+                    {(sourceType === 'SCHOOL'
+                      ? ([
+                          'PENDING_REVIEW',
+                          'READY_TO_PUBLISH',
+                          'PUBLISHED',
+                        ] as const)
+                      : (['DRAFT', 'PUBLISHED'] as const)
+                    ).map((item) => (
+                      <label key={item} className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="status"
+                          checked={status === item}
+                          onChange={() => setStatus(item)}
+                          className="accent-black"
+                        />
+                        {STATUS_LABELS[item]}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </FieldRow>
+            </section>
+            <div className="mt-5">
+              <TipTapEditor
+                ref={editorRef}
+                initialValue={initial?.content ?? ''}
+                disabled={busy || forbidden}
+                onChange={() => setDirty(true)}
+                onUpload={(files) => void handleUpload(files)}
+              />
+            </div>
+            {attachments.length > 0 && (
+              <section
+                aria-label="첨부 이미지"
+                className="mt-4 rounded-xl border border-gray-200 bg-white p-4"
+              >
+                <h2 className="text-sm">첨부 파일 ({attachments.length}/20)</h2>
+                <p className="mt-1 text-xs text-gray-500">
+                  본문에서 지운 이미지도 첨부로 유지됩니다. 첨부에서도 빼려면
+                  제거해 주세요.
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {attachments.map((item, index) => (
+                    <li
+                      key={item.id ?? item.file_url}
+                      className="flex items-center justify-between gap-3 text-xs"
+                    >
+                      <span className="break-all">
+                        {item.original_name ?? `첨부 ${index + 1}`}
+                      </span>
+                      <button
+                        type="button"
+                        className="shrink-0 underline"
+                        aria-label={`첨부 ${index + 1} 제거`}
+                        onClick={() => void handleRemoveAttachment(item)}
+                      >
+                        제거
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </fieldset>
+          {upload.isPending && (
+            <p role="status" className="mt-3 text-sm">
+              이미지 업로드 중…
+            </p>
+          )}
+          {cleanup.isPending && (
+            <p role="status" className="mt-3 text-sm">
+              이미지 정리 요청 중…
+            </p>
+          )}
+        </form>
+        {dialog === 'vendor' && (
+          <EditorDialog title="출처 추가" onCancel={() => setDialog(null)}>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                const selected = vendorOptions.data?.find(
+                  (item) =>
+                    item.id === Number(vendorId) &&
+                    item.type === sourceType &&
+                    item.is_active
+                );
+                if (!selected) {
+                  setVendorError('제공처를 선택해 주세요.');
+                  return;
+                }
+                const url = vendorUrl.trim();
+                if (url) {
+                  try {
+                    if (!['http:', 'https:'].includes(new URL(url).protocol))
+                      throw new Error();
+                  } catch {
+                    setVendorError(
+                      '원본 URL은 http 또는 https 주소를 입력해 주세요.'
+                    );
+                    return;
+                  }
+                }
+                setVendors((current) => [
+                  ...current,
+                  {
+                    vendor_id: selected.id,
+                    vendor_name: selected.name,
+                    ...(url ? { source_url: url } : {}),
+                  },
+                ]);
+                setDirty(true);
+                setDialog(null);
+              }}
+            >
+              <label className="block">
+                제공처
+                <select
+                  aria-label="제공처"
+                  autoFocus
+                  value={vendorId}
+                  onChange={(event) => setVendorId(event.target.value)}
+                  className={`${INPUT} mt-2 w-full`}
+                >
+                  <option value="">제공처 선택</option>
+                  {vendorOptions.data
+                    ?.filter(
+                      (item) => item.type === sourceType && item.is_active
+                    )
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              {vendorOptions.isPending && (
+                <p className="mt-2">제공처 불러오는 중…</p>
+              )}
+              {vendorOptions.isError && (
+                <p role="alert" className="mt-2 text-red-600">
+                  제공처를 불러오지 못했습니다.{' '}
+                  <button
+                    type="button"
+                    className="underline"
+                    onClick={() => void vendorOptions.refetch()}
+                  >
+                    다시 시도
+                  </button>
+                </p>
+              )}
+              {vendorOptions.data?.length === 0 && (
+                <p className="mt-2">선택할 수 있는 제공처가 없습니다.</p>
+              )}
+              <label className="mt-4 block">
+                원본 URL (선택)
+                <input
+                  type="url"
+                  maxLength={1000}
+                  placeholder="https://"
+                  value={vendorUrl}
+                  onChange={(event) => setVendorUrl(event.target.value)}
+                  className={`${INPUT} mt-2 w-full`}
+                />
+              </label>
+              {vendorError && (
+                <p role="alert" className="mt-3 text-red-600">
+                  {vendorError}
+                </p>
+              )}
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  className={BUTTON}
+                  onClick={() => setDialog(null)}
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  disabled={!vendorId || vendorOptions.isError}
+                  className="rounded-xl bg-black px-5 py-2 text-white disabled:opacity-40"
+                >
+                  추가
+                </button>
+              </div>
+            </form>
+          </EditorDialog>
+        )}
+        {(dialog === 'save' || dialog === 'cancel') && (
+          <EditorDialog
+            title={
+              dialog === 'save'
+                ? `게시글을 ${initial ? '수정' : '등록'}할까요?`
+                : '작성을 취소할까요?'
+            }
+            pending={busy}
+            onCancel={() => setDialog(null)}
+          >
+            <p>
+              {dialog === 'cancel'
+                ? '작성한 내용은 저장되지 않으며, 새로 업로드한 파일은 정리 요청합니다.'
+                : status === 'PUBLISHED'
+                  ? '저장하면 사용자에게 게시글이 공개됩니다.'
+                  : `${STATUS_LABELS[status]} 상태로 저장됩니다.`}
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={busy}
+                className={BUTTON}
+                onClick={() => setDialog(null)}
+              >
+                계속 작성
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() =>
+                  void (dialog === 'save' ? handleSave() : handleDiscard())
+                }
+                className="rounded-xl bg-black px-5 py-2 text-white disabled:opacity-40"
+              >
+                {busy ? '처리 중…' : '확인'}
+              </button>
+            </div>
+          </EditorDialog>
+        )}
+      </main>
+      <footer className="mt-1 border-t border-gray-100 bg-white">
+        <div className="mx-auto flex max-w-[988px] items-center justify-between px-6 py-4 max-mobile:px-4">
           <button
             type="button"
-            onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 bg-red-100 text-red-400 rounded hover:bg-red-200 m-4"
+            onClick={handleCancel}
+            className={BUTTON}
+            disabled={busy}
           >
-            삭제하기
+            취소
           </button>
-        )}
-      </form>
-
-      {showSubmitModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-          <AlertModal
-            title={
-              isEditing
-                ? '이 내용으로 게시글을 수정하시겠습니까?'
-                : '이 내용으로 게시글을 등록하시겠습니까?'
-            }
-            onConfirm={handleSubmitConfirm}
-            onCancel={() => setShowSubmitModal(false)}
-          />
+          <button
+            type="submit"
+            form="article-editor"
+            disabled={busy || forbidden}
+            className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm text-white disabled:opacity-40"
+          >
+            <RiCheckLine />
+            게시글 {initial ? '수정하기' : '등록하기'}
+          </button>
         </div>
-      )}
-
-      {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-          <AlertModal
-            title="해당 게시글을 삭제하시겠습니까?"
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeleteModal(false)}
-          />
-        </div>
-      )}
+      </footer>
     </div>
   );
 };
-
 export default ArticleEditorSection;

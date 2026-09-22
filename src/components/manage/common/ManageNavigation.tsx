@@ -4,7 +4,11 @@ import { RiDeleteBinLine, RiAccountCircleFill } from 'react-icons/ri';
 import logo from '@/assets/icons/logo.svg';
 import useAuthStore from '@/stores/useAuthStore';
 
-const ManageNavigation = () => {
+const ManageNavigation = ({
+  onNavigate,
+}: {
+  onNavigate?: (proceed: () => void) => void;
+}) => {
   const userInfo = useAuthStore((state) => state.userInfo);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -19,7 +23,25 @@ const ManageNavigation = () => {
     });
   };
   return (
-    <header className="flex min-h-16 flex-wrap items-center gap-8 border-b border-gray-100 bg-white px-6 text-xs max-mobile:gap-4 max-mobile:px-4">
+    <header
+      className="flex min-h-16 flex-wrap items-center gap-8 border-b border-gray-100 bg-white px-6 text-xs max-mobile:gap-4 max-mobile:px-4"
+      onClickCapture={(event) => {
+        if (
+          !onNavigate ||
+          event.button !== 0 ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return;
+        const anchor = (event.target as HTMLElement).closest('a');
+        if (!anchor) return;
+        event.preventDefault();
+        event.stopPropagation();
+        onNavigate(() => navigate(anchor.pathname));
+      }}
+    >
       <NavLink
         to="/manage"
         className="flex items-center gap-2 font-bold text-black"
@@ -57,7 +79,13 @@ const ManageNavigation = () => {
           <RiAccountCircleFill size={21} />
           {userInfo?.name ?? '관리자'}
         </span>
-        <button onClick={handleLogout}>로그아웃</button>
+        <button
+          onClick={() =>
+            onNavigate ? onNavigate(handleLogout) : handleLogout()
+          }
+        >
+          로그아웃
+        </button>
       </div>
     </header>
   );

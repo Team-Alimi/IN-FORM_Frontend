@@ -81,4 +81,9 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 - MANSTG는 `READY_TO_PUBLISH`만 조회한다. `DRAFT`는 동아리 임시저장이므로 반영 대기 목록에 포함하지 않는다. 운영 반영은 `/articles/bulk/publish`, 삭제는 `/articles/bulk/trash`에 선택한 `ids`를 JSON으로 전달한다. 처리 후 관리자 목록·통계와 영향을 받는 사용자 공지 캐시를 갱신한다.
 - MANURV/MANSTG의 검색폼(`ArticleSearchForm`), 표(`ReviewArticleTable`), 확인창(`ArticleActionModal`)은 `components/manage/common/`에서 공유한다. 표의 상태 배지는 실제 응답 상태를 표시하고, 주 동작 문구와 콜백은 페이지에서 지정한다.
 - MANSTG 브라우저 검증은 `python tests/pages/manage/MANSTG/staged_browser.py`로 실행한다. 공통 UI를 변경한 경우 MANURV 브라우저 검증도 함께 실행한다.
+- MANDTE는 `/manage/edit`에서 작성하고 `/manage/edit/:id`에서 실제 상세를 읽어 수정한다. ID는 선택 입력(1~100000000)이며 ID 확인은 상세 조회의 `404 ARTICLE_NOT_FOUND`만 미사용으로 판정한다. `duplicate-check`는 제목 검색으로 별도 제공하며 두 확인 결과 모두 저장 시점의 중복 검증을 대신하지 않는다.
+- MANDTE는 학교의 미검수·반영대기·운영, 동아리의 임시저장·운영 상태를 지원한다. PATCH에는 변경할 수 없는 ID·출처 유형·상태를 보내지 않는다. 기존 출처·첨부의 연결 행 ID를 보존하고, 수집 출처는 제거할 수 없다. 수정 시 기존 날짜를 비우는 동작은 명세상 지원하지 않아 안내한다.
+- Tiptap 본문을 저장 직전에 읽고, 이미지 업로드 응답 메타데이터를 `attachments`로 전송한다. 새 이미지의 명시적 제거와 작성 취소는 `DELETE /admin/files`의 JSON `file_urls`로 정리 요청한다. 기존 연결 파일에는 이 API를 호출하지 않는다. 첨부 제거 시 편집기 실행 취소 이력을 초기화해 제거된 URL이 복원되지 않게 한다. 본문에서만 지운 이미지는 첨부로 남는다.
+- 작성 중 상단 메뉴·로그아웃·취소는 확인 후 새 파일 정리를 기다린다. 새로고침·탭 닫기는 브라우저 이탈 경고를 사용하며, 브라우저 강제 종료나 뒤로 이동 등 명시적 취소를 거치지 않은 업로드 정리는 서버 배치 영역이다. 저장 성공 후 관리자 목록으로 이동하며, 후속 캐시 재조회 오류로 등록을 다시 보내지 않는다.
+- MANDTE 검증: `python tests/pages/manage/MANDTE/editor_browser.py`. 작성·수정 JSON, 실제 HTML, ID·제목 중복 확인, 날짜·출처·상태 조합, 업로드·제거·취소, 실패 입력 보존, 권한 오류와 데스크톱/430px 화면을 모의 API로 검증한다.
 - 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.

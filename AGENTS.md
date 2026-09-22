@@ -4,6 +4,7 @@
 
 - 프로젝트 전반에 오래 적용될 규칙, 라우트, 구조가 바뀌면 이 문서도 함께 갱신한다. 구현 세부 사항·근거·예시는 [docs/development-conventions.md](docs/development-conventions.md)에 둔다.
 - 기존 코드를 수정하기 전에 관련 코드를 확인하고, 작업 범위 밖의 사용자 변경은 보존한다. PR 생성 시 `.github/PULL_REQUEST_TEMPLATE.md`를 사용한다.
+- 이슈 생성 시 `.github/ISSUE_TEMPLATE/`의 해당 유형 템플릿과 기본 라벨을 적용한다. 관리자 페이지 하위 이슈도 같은 규칙을 따른다.
 - 완료 전에 관련 검증을 실행하고, 변경 파일·영향 범위·검증 결과를 보고한다. 단계마다 승인을 요구하지 말고, 중요한 설계 선택이나 추가 권한이 필요한 경우에만 질문한다.
 
 ## 명령어
@@ -67,8 +68,9 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.
 - 보호된 사용자 라우트: `/clubs`, `/clubs/detail/:id`, `/events`, `/events/detail/:id`, `/bookmarks`, `/mypage`.
-- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`.
+- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`.
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
+- MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
 
 ## Git workflow
 
