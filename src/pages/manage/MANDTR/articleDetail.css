@@ -1,6 +1,9 @@
 .admin-article-content {
   overflow-wrap: anywhere;
 }
+.admin-article-content .admin-article-plain-text {
+  white-space: pre-wrap;
+}
 .admin-article-content > :first-child {
   margin-top: 0;
 }

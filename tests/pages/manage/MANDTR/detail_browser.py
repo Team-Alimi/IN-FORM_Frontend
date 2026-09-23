@@ -118,6 +118,28 @@ with sync_playwright() as p:
     article['ends_on'] = '2026-09-22'
     page.reload()
     expect(row('행사 기간')).to_have_text('미정 ~ 2026.09.22')
+    # Crawled plain text uses real newline characters rather than HTML paragraphs.
+    plain_text = '하반기 공채와 삼성 소프트웨어 역량테스트에 대비해 「양떼 목장 챌린지」를 안내해드립니다.\n\n1. 프로그램 소개 코드트리는 코딩테스트 학습 서비스입니다.\n\n학습 자료만큼 중요한 것은 공부를 꾸준히 이어갈 여건입니다.\n\n2. 참여 대상\n\n- 하반기 취업·인턴십 코딩테스트를 준비하는 학생\n\n- 자료구조·알고리즘 수업 내용을 복습하려는 학생\n\n3. 신청 기간 및 학습 지원\n\n- 신청 기간: 2026년 9월 1일 ~ 10월 31일.'
+    article = dict(original, content=plain_text)
+    page.reload()
+    plain = content.locator('.admin-article-plain-text')
+    expect(plain).to_be_visible()
+    assert plain.text_content() == plain_text
+    assert plain.evaluate('(el) => getComputedStyle(el).whiteSpace') == 'pre-wrap'
+    # A retained blank line must produce visual separation, not just survive in the DOM.
+    assert plain.evaluate('''(el) => {
+      const text = el.firstChild;
+      const index = text.textContent.indexOf('1. 프로그램 소개');
+      const range = document.createRange();
+      range.setStart(text, index); range.setEnd(text, index + 1);
+      return range.getBoundingClientRect().top - el.getBoundingClientRect().top >= 2 * parseFloat(getComputedStyle(el).lineHeight);
+    }''')
+    page.set_viewport_size(dict(width=1280, height=1100))
+    page.add_style_tag(content='.tsqd-parent-container { display:none !important; }')
+    page.screenshot(path=str(OUTPUT/'plain-text-desktop.png'), full_page=True)
+    page.set_viewport_size(dict(width=430, height=932))
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    page.screenshot(path=str(OUTPUT/'plain-text-mobile.png'), full_page=True)
     # Render rich HTML, keep typography and task state, remove executable content and overlays.
     article = copy.deepcopy(original)
     article['content'] = '''<h2>HTML 검증</h2><p style="font-size:20px;color:rgb(255, 0, 0);position:fixed;inset:0;z-index:99999" class="fixed inset-0">서식 유지</p>
@@ -131,6 +153,8 @@ with sync_playwright() as p:
     article['vendors'].append(dict(id=91, vendor_id=7, vendor_name='잘못된 출처', source_url='javascript:alert(1)'))
     page.reload()
     expect(content.get_by_role('heading', name='HTML 검증')).to_be_visible()
+    expect(content.locator('.admin-article-plain-text')).to_have_count(0)
+    assert content.locator('.admin-article-content').evaluate('(el) => getComputedStyle(el).whiteSpace') == 'normal'
     expect(content.locator('script, iframe, form, button, input')).to_have_count(0)
     expect(content.locator('[onload], [onclick], [onerror], [class="fixed inset-0"]')).to_have_count(0)
     expect(content.locator('a').filter(has_text='위험 링크')).not_to_have_attribute('href', 'javascript:alert(1)')

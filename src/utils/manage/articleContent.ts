@@ -128,6 +128,15 @@ export const sanitizeArticleContent = (html: string): string => {
     if (!image.hasAttribute('alt')) image.setAttribute('alt', '');
   });
   const container = document.createElement('div');
-  container.append(fragment);
+  // Crawled articles may contain plain text despite the HTML API contract.
+  // Preserve its newlines without applying pre-wrap to formatted HTML source.
+  if (fragment.childElementCount === 0) {
+    const text = fragment.textContent ?? '';
+    if (!text.trim()) return '';
+    const plainText = document.createElement('div');
+    plainText.className = 'admin-article-plain-text';
+    plainText.textContent = text;
+    container.append(plainText);
+  } else container.append(fragment);
   return container.innerHTML;
 };

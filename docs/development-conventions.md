@@ -89,4 +89,5 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 - MANDTR는 `GET /admin/articles/{id}`와 `['adminArticleDetail', id]`를 사용한다. 복수 카테고리·제공처, 선택 기간, 실제 상태, 한국 시간 기준 최종 수정 시각, 본문·첨부를 표시한다. 출처 키는 제공처 ID가 아닌 연결 행 ID이며 수집 출처는 툴팁과 접근성 이름으로 구분한다. 수정은 `/manage/edit/:id`, 삭제·발행은 기존 목록 흐름에서 처리한다.
 - MANDTR 본문은 DOMPurify 허용 목록과 서식 속성 제한으로 정제한다. 제목·목록·표·이미지·링크·체크리스트 및 글자 서식을 유지하되 스크립트·이벤트·폼·프레임·앱 CSS 클래스·위치 스타일은 제거한다. 원본 기준 경로를 알 수 없는 상대 URL과 실행 가능한 URL은 링크로 열지 않는다. 본문의 이메일·전화 링크는 허용한다. 큰 표·코드는 내부 스크롤로 처리한다.
 - MANDTR는 잘못된 ID에 요청하지 않으며 404·403·일반 오류를 구분한다. 직접 접속 뒤로 가기는 관리자 홈으로 복귀하며 SPA 내부에서 진입했다면 이전 화면으로 돌아간다. 검증은 `python tests/pages/manage/MANDTR/detail_browser.py`로 실행한다. 상세 API·수정 이동·첨부·HTML 정제·상태·선택 필드·오류·1280px/430px 화면을 모의 API로 확인한다.
+- MANDTR의 실제 수집 본문은 HTML 대신 줄바꿈이 포함된 일반 텍스트로 내려오기도 한다. 정제 후 요소가 없는 텍스트는 `white-space: pre-wrap`으로 줄바꿈·빈 줄을 보존하고, 서식 HTML에는 이 스타일을 적용하지 않는다. 응답에서 사라진 강조나 문단 구분은 화면에서 추측해 만들지 않는다.
 - 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.
