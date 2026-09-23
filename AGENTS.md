@@ -71,6 +71,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`.
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
 - MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
+- MANDTR 상세는 `src/api/manage/articleDetail.ts`로 조회한다. 읽기 전용 HTML 본문은 `src/utils/manage/articleContent.ts`로 정제하고, 출처·첨부 링크는 HTTP(S) 주소만 연다.
 
 ## Git workflow
 
