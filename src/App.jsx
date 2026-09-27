@@ -27,6 +27,7 @@ import MANDTRPage from '@/pages/manage/MANDTR/MANDTRPage';
 import MANGBGPage from '@/pages/manage/MANGBG/MANGBGPage';
 import MANSTGPage from '@/pages/manage/MANSTG/MANSTGPage';
 import MANURVPage from '@/pages/manage/MANURV/MANURVPage';
+import MANUSRPage from '@/pages/manage/MANUSR/MANUSRPage';
 import DeviceTestPage from './pages/TEST/DeviceTestPage';
 
 const queryClient = new QueryClient(); //리액트 쿼리
@@ -110,6 +111,7 @@ function App() {
           <Route path="staged" element={<MANSTGPage />} />
           <Route path="garbage" element={<MANGBGPage />} />
           <Route path="unreviewed" element={<MANURVPage />} />
+          <Route path="users" element={<MANUSRPage />} />
         </Route>
         {/**공통 에러처리 */}
         <Route path="/error" element={<ErrorPage />} />
