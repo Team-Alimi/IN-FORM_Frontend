@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   IoChevronBackOutline,
@@ -74,8 +74,10 @@ const STEP_INFO = [
 
 const ONBPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const setUserInfo = useAuthStore((state) => state.setUserInfo);
+  const from = location.state?.from?.pathname ?? "/";
 
   const [step, setStep] = useState(1);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState(new Set());
@@ -133,7 +135,7 @@ const ONBPage = () => {
     },
     onSuccess: (res) => {
       if (res?.data) setUserInfo(res.data);
-      navigate("/");
+      navigate(from);
     },
     onError: (e) => console.error("[ONB] clubTypes/complete 에러:", e),
   });
@@ -143,7 +145,7 @@ const ONBPage = () => {
     mutationFn: postOnboardingComplete,
     onSuccess: (res) => {
       if (res?.data) setUserInfo(res.data);
-      navigate("/");
+      navigate(from);
     },
     onError: (e) => console.error("[ONB] onboardingComplete 에러:", e),
   });

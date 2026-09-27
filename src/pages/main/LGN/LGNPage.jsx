@@ -46,7 +46,10 @@ const LGNPage = () => {
         // (백엔드는 "신규 가입 여부"가 아니라 onboarding_completed 로 화면 분기를 지시함 —
         //  온보딩 도중 이탈했다가 재로그인한 기존 유저도 다시 온보딩으로 보내야 하기 때문)
         if (!res.data.user_info?.onboarding_completed) {
-          navigate("/onboarding", { replace: true });
+          navigate("/onboarding", {
+            replace: true,
+            state: { from: location.state?.from },
+          });
         } else {
           const from = location.state?.from?.pathname ?? "/";
           navigate(from, { replace: true });
