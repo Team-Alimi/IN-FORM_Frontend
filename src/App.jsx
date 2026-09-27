@@ -113,7 +113,14 @@ function App() {
           <Route path="garbage" element={<MANGBGPage />} />
           <Route path="unreviewed" element={<MANURVPage />} />
           <Route path="users" element={<MANUSRPage />} />
-          <Route path="vendors" element={<MANVNDPage />} />
+          <Route
+            path="vendors"
+            element={
+              <ProtectedRoute>
+                <MANVNDPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
         {/**공통 에러처리 */}
         <Route path="/error" element={<ErrorPage />} />

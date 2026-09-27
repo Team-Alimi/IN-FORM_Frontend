@@ -63,6 +63,22 @@ def route_api(route):
 
 with sync_playwright() as p:
     browser = p.chromium.launch()
+    # Logged-out direct visits preserve the destination without making API calls.
+    anonymous = browser.new_context()
+    anonymous_requests = []
+    def reject_anonymous_api(route):
+        anonymous_requests.append(route.request.url)
+        route.fulfill(status=401, json=dict(success=False))
+    anonymous.route('https://api.inha-inform.today/**', reject_anonymous_api)
+    anonymous_page = anonymous.new_page()
+    anonymous_page.goto(BASE + '/manage/vendors')
+    expect(anonymous_page).to_have_url(BASE + '/login')
+    assert anonymous_page.evaluate('history.state.usr.from.pathname') == '/manage/vendors'
+    anonymous_page.reload()
+    expect(anonymous_page).to_have_url(BASE + '/login')
+    assert anonymous_page.evaluate('history.state.usr.from.pathname') == '/manage/vendors'
+    assert not anonymous_requests, anonymous_requests
+    anonymous.close()
     page = browser.new_page(viewport=dict(width=1280, height=1120), device_scale_factor=1)
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.route('https://api.inha-inform.today/**', route_api)
