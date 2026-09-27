@@ -8,7 +8,7 @@ import {
 } from '@/api/manage/dashboard';
 import ArticleEditorSection from '@/components/manage/feature/MANDTE/ArticleEditorSection';
 
-const MANDTEPage = (SourceType: string) => {
+const MANDTEPage = () => {
   const { id } = useParams<{ id?: string }>();
   const articleId = Number(id);
   const validId =
