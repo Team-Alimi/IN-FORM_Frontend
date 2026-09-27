@@ -44,7 +44,7 @@ def route_api(route):
         if mode == 'mutation-error':
             route.fulfill(status=500, json=dict(success=False, error=dict(message='처리 요청 실패')))
             return
-        succeeded = [] if mode == 'all-failed' else body['ids'][:1] if mode == 'partial' else body['ids']
+        succeeded = [] if mode == 'all-failed' else body['ids'][:1] if mode == 'partial' else body['ids'][:-1] if mode == 'last-failed' else body['ids']
         data = dict(succeeded=succeeded, failed=[dict(id=i, code='RESOURCE_BUSY', message='다시 시도해 주세요.') for i in body['ids'] if i not in succeeded])
         rows[:] = [r for r in rows if r['id'] not in succeeded]
     route.fulfill(json=dict(success=True, data=data))
@@ -166,6 +166,30 @@ with sync_playwright() as p:
     mode = 'normal'
     table.get_by_role('button', name='다시 시도').click()
     expect(table.locator('tbody tr')).to_have_count(8)
+    # Removing seven successes on page 2 leaves its last failure on page 2.
+    # The eight preceding rows were not selected and cannot be removed by this action.
+    for action in ['선택 복구', '영구 삭제']:
+        rows[:] = [dict(rows[0], id=500+i, previous_status='PUBLISHED') for i in range(24)]
+        page.reload()
+        expect(table.locator('tbody tr')).to_have_count(8)
+        table.get_by_role('button', name='다음 페이지').click()
+        expect(table.get_by_label('게시글 508 선택')).to_be_visible()
+        table.get_by_label('휴지통 보관 게시물 전체 선택').check()
+        mode = 'last-failed'
+        table.get_by_role('button', name=action, exact=True).click()
+        page.get_by_role('dialog').get_by_role('button', name='확인', exact=True).click()
+        expect(page.get_by_role('dialog')).to_have_count(0)
+        expect(page.get_by_role('status')).to_contain_text('7건')
+        expect(page.get_by_role('status')).to_contain_text('1건 실패')
+        expect(table.get_by_role('button', name='2', exact=True)).to_have_attribute('aria-current', 'page')
+        expect(table.get_by_label('게시글 515 선택')).to_be_checked()
+        expect(table.get_by_role('button', name=action, exact=True)).to_be_enabled()
+        assert requests[-2][2] == {'ids': list(range(508, 516))}
+        mode = 'normal'
+        table.get_by_role('button', name=action, exact=True).click()
+        page.get_by_role('dialog').get_by_role('button', name='확인', exact=True).click()
+        expect(page.get_by_role('dialog')).to_have_count(0)
+        assert any(body == {'ids': [515]} for _, _, body in requests)
     # Last visible page disappears after deleting its final row.
     rows[:] = rows[:9]
     page.reload()
