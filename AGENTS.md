@@ -70,6 +70,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - 보호된 사용자 라우트: `/clubs`, `/clubs/detail/:id`, `/events`, `/events/detail/:id`, `/bookmarks`, `/mypage`.
 - 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`, `/manage/users`, `/manage/vendors`.
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
+- `/manage` 부모 라우트에 `ProtectedRoute`와 `Outlet`을 적용해 모든 관리자 페이지의 비로그인 접근을 API 요청 전에 처리한다.
 - MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
 - MANDTR 상세는 `src/api/manage/articleDetail.ts`로 조회한다. 읽기 전용 HTML 본문은 `src/utils/manage/articleContent.ts`로 정제하고, 출처·첨부 링크는 HTTP(S) 주소만 연다.
 - MANGBG는 `src/api/manage/trash.ts`의 휴지통 전용 API를 사용한다. 전체 페이지 조회 후 화면에서 검색하며, 삭제 전 상태(`previous_status`)가 없는 게시물은 복구를 차단한다.
