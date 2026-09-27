@@ -51,19 +51,20 @@ const ManageNavigation = ({
       </NavLink>
       <nav
         aria-label="관리자 메뉴"
-        className="flex self-stretch gap-8 max-mobile:order-3 max-mobile:w-full"
+        className="flex min-w-0 max-w-full self-stretch gap-8 max-mobile:order-3 max-mobile:w-full max-mobile:gap-6 max-mobile:overflow-x-auto"
       >
         {[
           ['/manage', '홈'],
           ['/manage/unreviewed', '미검수 게시글'],
           ['/manage/staged', '반영 대기'],
+          ['/manage/users', '회원 관리'],
         ].map(([to, label]) => (
           <NavLink
             key={to}
             to={to!}
             end
             className={({ isActive }) =>
-              `flex items-center border-b-2 py-5 ${isActive ? 'border-black font-bold text-black' : 'border-transparent text-gray-500'}`
+              `flex shrink-0 items-center whitespace-nowrap border-b-2 py-5 ${isActive ? 'border-black font-bold text-black' : 'border-transparent text-gray-500'}`
             }
           >
             {label}
