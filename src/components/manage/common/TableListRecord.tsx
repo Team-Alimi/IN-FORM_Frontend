@@ -1,4 +1,5 @@
 import type { Article } from '@/api/manage/adminArticles';
+import CategoryBadge from '@/components/manage/common/CategoryBadge';
 
 interface TableListRecordProps {
   article: Article;
@@ -46,7 +47,10 @@ const TableListRecord = ({
       }`}
     >
       {/* 선택 */}
-      <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+      <td
+        className="px-3 py-3 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <input
           type="checkbox"
           checked={checked}
@@ -60,7 +64,11 @@ const TableListRecord = ({
 
       {/* 카테고리 */}
       <td className="px-3 py-3 text-center text-gray-600">
-        {categories?.category_name ?? '-'}
+        {categories?.category_name ? (
+          <CategoryBadge name={categories.category_name} />
+        ) : (
+          '-'
+        )}
       </td>
 
       {/* 게시글 제목 */}
@@ -75,7 +83,9 @@ const TableListRecord = ({
       <td className="px-3 py-3 text-gray-600">{vendorLabel}</td>
 
       {/* 게시글 최종 수정일 */}
-      <td className="px-3 py-3 text-gray-600 whitespace-nowrap">{formattedDate}</td>
+      <td className="px-3 py-3 text-gray-600 whitespace-nowrap">
+        {formattedDate}
+      </td>
     </tr>
   );
 };

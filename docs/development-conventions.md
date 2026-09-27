@@ -66,3 +66,42 @@ query key에는 응답에 영향을 주는 모든 입력을 넣는다. 예를 �
 테스트 파일은 `src/`와 분리하여 루트 `tests/` 아래에 둔다. 예를 들어 `src/utils/saveInterestChanges.js`의 테스트는 `tests/utils/saveInterestChanges.test.js`에 저장한다. Node 내장 테스트 러너는 Vite의 `@/` 별칭을 해석하지 않으므로 테스트에서 소스를 가져올 때는 상대 경로를 사용한다. 해당 테스트는 `node --test tests/utils/saveInterestChanges.test.js`로 실행한다.
 
 소스 변경 후 `npm run lint`를 실행한다. 컴파일·라우팅·번들·배포에 영향을 줄 수 있는 변경에는 `npm run build`도 실행한다. 반응형 UI 변경은 데스크톱과 430px 모바일 레이아웃을 모두 확인하고, 로그인 처리 변경은 인앱 브라우저 외부 전환 경로도 확인한다. `npm run format`은 파일을 변경하므로 의도적으로 실행하고, 결과 변경도 함께 검토한다.
+
+## 관리자 페이지 개편 (#86)
+
+- 관리자 부모 라우트는 `ProtectedRoute` 안의 `Outlet`으로 하위 페이지를 렌더링한다. 비로그인 직접 접근 시 API 호출 전에 `/login`으로 이동하고 `state.from.pathname`을 보존한다. `python tests/pages/manage/login_return_browser.py`는 관리자 9개 경로에서 로그인 화면 새로고침 후 모의 Google 로그인 성공까지 원래 경로로 복귀하는지 확인한다.
+- MANVND(`/manage/vendors`)는 관리자 제공처 API로 유형(`SCHOOL`/`CLUB`)·활성 여부를 필터링한다. 서버가 전체 배열을 반환하므로 서버 정렬 순서를 유지하면서 화면에서 8건씩 페이지를 나눈다. 필터 변경은 첫 페이지로 돌아가고 숨김 처리 후에는 유효한 마지막 페이지로 보정한다.
+- 제공처 등록은 이름·식별자·유형과 선택 홈페이지를 보낸다. 식별자는 한글/대문자를 허용하며 앞뒤 공백 제거 후 내부 공백을 차단한다(목업의 영문 소문자 제한보다 API 계약 우선). 수정은 변경된 이름·홈페이지·활성 여부만 PATCH하며 식별자·유형을 보내지 않는다. 홈페이지를 비우면 `""`을 보내고 변경하지 않으면 생략한다. 홈페이지 링크는 HTTP(S)만 열며 기존 비표준 URL은 이름만 수정할 때 재전송하지 않는다.
+- 등록/수정 성공은 응답의 정규화된 이름·식별자를 표시하고 `warning`이 있으면 성공창과 목록 알림에 남긴다. 숨김은 목록/필터 노출만 변경하며 수집을 중단하지 않는다. 수집 시작·중단을 위한 크롤러 시드 변경은 서버 운영 작업이다. POST/PATCH 성공 후 목록 재조회가 실패해도 저장 요청을 다시 보내지 않으며 등록·수정 폼으로 돌아가지 않는다.
+- 제공처 변경 후 관리자 목록·작성 옵션·상세와 사용자 제공처/동아리·공지 캐시를 무효화한다. 테스트는 `python tests/pages/manage/MANVND/vendors_browser.py`로 실행하며 실제 제공처를 생성하거나 수정하지 않는다.
+
+- MANUSR(`/manage/users`)는 `src/api/manage/users.ts`로 목록·단건 조회 및 권한 변경을 처리한다. 이름/이메일은 공백 제거 후 2자 이상, 역할과 상태는 서버 필터를 사용하고 가입 최신순·8건 단위로 조회한다. 목업의 예시 ID 문자열 대신 실제 숫자 ID를 표시한다.
+- 회원 상세는 네이티브 dialog 기반 오른쪽 패널로 표시한다. 포커스가 패널 내부에 머물고 닫으면 원래 버튼으로 돌아간다. 모바일에서는 화면 너비에 맞추며 표는 내부에서 가로 스크롤한다. 일시는 Asia/Seoul 기준이다.
+- 권한 변경 전 확인하고 요청 중에는 닫기·중복 요청을 차단한다. 본인 판별은 로그인 응답의 `user_info.user_id`를 사용하며 서버의 `CANNOT_CHANGE_OWN_ROLE`도 처리한다. 탈퇴 사용자의 승격은 차단하고 탈퇴 관리자의 강등은 허용한다. 변경 응답으로 상세 캐시를 갱신하고 목록을 무효화하여 역할 필터·전체 건수·마지막 페이지를 보정한다. 409 발생 시 상세와 목록을 다시 조회한 뒤 사용자가 확인하고 재시도한다.
+- MANUSR 검증은 `python tests/pages/manage/MANUSR/users_browser.py`로 실행한다. 목록·검색·상세·권한 변경·자기 권한/탈퇴 제한·동시 수정·오류·430px 화면을 모의 API로 확인한다. 실제 회원의 권한은 변경하지 않는다.
+
+- 관리자도 공용 `/login`에서 Google OAuth로 로그인한다. 관리자 로그아웃은 인증 상태와 QueryClient 캐시를 비우고, 현재 관리자 경로를 `state.from.pathname`에 담아 `/login`으로 이동한다. 재로그인 후 기존 화면으로 복귀한다.
+- 통합 브랜치는 `manageDev`, 페이지 브랜치는 `feat/<Feature Code>-<하위 이슈 번호>`다. 페이지 PR의 base는 `manageDev`이며, 최종 통합은 `dev`로 한다.
+- MANHOM은 `src/api/manage/dashboard.ts`의 새 API 계약을 사용한다. 다른 관리자 페이지의 구 API 전환은 각 페이지 이슈에서 진행한다.
+- 홈의 확인 필요 카드는 `/admin/articles?needs_check=true&size=1`의 `page_info.total_items`를 사용한다. 통계의 `duplicate_suspected`와 의미가 달라 대체하지 않는다.
+- 홈 카드 클릭은 하단 검색 조건을 바꾸지 않고 페이지를 이동한다. 미검수·확인 필요는 `/manage/unreviewed`, 반영 대기는 `/manage/staged`로 연결한다. 관리자 목록·상세의 카테고리는 공통 `CategoryBadge`로 `filterOption`의 이름/영문 코드 매핑과 배경·글자·테두리 색을 재사용한다. 색상 브라우저 검증은 `python tests/pages/manage/category_badges_browser.py`로 실행한다.
+- 검색의 출처는 관리자 제공처 목록에서 ID로 선택한다. 제공처 이름 문자열을 공지 목록 API에 전송하지 않는다. 비활성 옵션도 기존 공지 검색을 위해 포함한다.
+- 전체 선택은 현재 페이지에만 적용하고 검색·페이지 이동 때 초기화한다. 배포는 선택한 모든 공지가 `READY_TO_PUBLISH` 또는 `DRAFT`일 때만 허용한다. 삭제는 휴지통 이동이며 HTTP 200의 `failed` 배열도 표시한다.
+- 상단 새 탐색 UI는 개편된 페이지부터 적용한다. 미검수·반영 대기·휴지통·추가·상세 링크는 기존 라우트를 유지한다.
+- MANURV는 두 목록 모두 `PENDING_REVIEW`로 제한하고 위쪽 확인 필요 목록에만 `needs_check=true`를 적용한다. 아래 검색 조건은 위쪽 목록에 영향을 주지 않는다. 목록별 선택·페이지를 분리하며, 반영대기는 `POST /articles/bulk/status`의 `READY_TO_PUBLISH`, 삭제는 `/bulk/trash`를 사용한다. 확인창에서 확정 후 처리하고, 처리 후 두 목록·홈 통계·기존 관리자 목록 캐시를 갱신한다. 상세 검토는 기존 상세 라우트로 연결한다.
+- MANURV 브라우저 검증은 `python tests/pages/manage/MANURV/unreviewed_browser.py`로 실행한다. 독립 선택·검색·페이지 이동, 확인/취소, 부분 실패, 마지막 페이지 처리, 권한 오류, 430px 화면을 모의 API로 확인한다.
+- MANSTG는 `READY_TO_PUBLISH`만 조회한다. `DRAFT`는 동아리 임시저장이므로 반영 대기 목록에 포함하지 않는다. 운영 반영은 `/articles/bulk/publish`, 삭제는 `/articles/bulk/trash`에 선택한 `ids`를 JSON으로 전달한다. 처리 후 관리자 목록·통계와 영향을 받는 사용자 공지 캐시를 갱신한다.
+- MANGBG는 `GET /api/v1/admin/articles/trash`를 `size=50`으로 끝까지 조회한 뒤 ID·제목·출처 이름·카테고리·행사 기간 겹침(미정 날짜는 열린 구간)·삭제 전 상태를 화면에서 필터링하고 8건씩 표시한다. API는 검색을 지원하지 않으므로 일부 페이지 조회에 실패하면 검색/선택 작업을 차단한다. 전체 조회 비용은 데이터 수에 비례하며, 동시 변경 중인 페이지 조회는 서버 스냅샷을 보장하지 않는다. 대량 데이터 환경에서는 서버 검색 지원이 필요하다.
+- 휴지통 상태 배지는 `previous_status`를 사용하며 `DRAFT`도 표시/검색한다. 이력이 없는 항목은 삭제 가능하지만 복구할 수 없다. 복구/영구 삭제는 각각 `POST /articles/bulk/restore`, `/bulk/delete`에 `ids`를 전달하고 확인창, 중복 제출 방지, 건별 실패 안내를 제공한다. 처리 후 관리자 목록·상세·편집 및 사용자 공지 캐시를 갱신하며, 영구 삭제 시 서버에서 함께 삭제되는 사용자 알림 캐시도 갱신한다. 목업의 30일 자동 삭제 정책은 명세에 없어 확정 전까지 UI에서 보장하지 않는다.
+- MANURV/MANSTG의 검색폼(`ArticleSearchForm`), 표(`ReviewArticleTable`), 확인창(`ArticleActionModal`)은 `components/manage/common/`에서 공유한다. 표의 상태 배지는 실제 응답 상태를 표시하고, 주 동작 문구와 콜백은 페이지에서 지정한다.
+- MANSTG 브라우저 검증은 `python tests/pages/manage/MANSTG/staged_browser.py`로 실행한다. 공통 UI를 변경한 경우 MANURV 브라우저 검증도 함께 실행한다.
+- MANDTE는 `/manage/edit`에서 작성하고 `/manage/edit/:id`에서 실제 상세를 읽어 수정한다. ID는 선택 입력(1~100000000)이며 ID 확인은 상세 조회의 `404 ARTICLE_NOT_FOUND`만 미사용으로 판정한다. `duplicate-check`는 제목 검색으로 별도 제공하며 두 확인 결과 모두 저장 시점의 중복 검증을 대신하지 않는다.
+- MANDTE는 학교의 미검수·반영대기·운영, 동아리의 임시저장·운영 상태를 지원한다. PATCH에는 변경할 수 없는 ID·출처 유형·상태를 보내지 않는다. 기존 출처·첨부의 연결 행 ID를 보존하고, 수집 출처는 제거할 수 없다. 수정 시 기존 날짜를 비우는 동작은 명세상 지원하지 않아 안내한다.
+- Tiptap 본문을 저장 직전에 읽고, 이미지 업로드 응답 메타데이터를 `attachments`로 전송한다. 새 이미지의 명시적 제거와 작성 취소는 `DELETE /admin/files`의 JSON `file_urls`로 정리 요청한다. 기존 연결 파일에는 이 API를 호출하지 않는다. 첨부 제거 시 편집기 실행 취소 이력을 초기화해 제거된 URL이 복원되지 않게 한다. 본문에서만 지운 이미지는 첨부로 남는다.
+- 작성 중 상단 메뉴·로그아웃·취소는 확인 후 새 파일 정리를 기다린다. 새로고침·탭 닫기는 브라우저 이탈 경고를 사용하며, 브라우저 강제 종료나 뒤로 이동 등 명시적 취소를 거치지 않은 업로드 정리는 서버 배치 영역이다. 저장 성공 후 관리자 목록으로 이동하며, 후속 캐시 재조회 오류로 등록을 다시 보내지 않는다.
+- MANDTE 검증: `python tests/pages/manage/MANDTE/editor_browser.py`. 작성·수정 JSON, 실제 HTML, ID·제목 중복 확인, 날짜·출처·상태 조합, 업로드·제거·취소, 실패 입력 보존, 권한 오류와 데스크톱/430px 화면을 모의 API로 검증한다.
+- MANDTR는 `GET /admin/articles/{id}`와 `['adminArticleDetail', id]`를 사용한다. 복수 카테고리·제공처, 선택 기간, 실제 상태, 한국 시간 기준 최종 수정 시각, 본문·첨부를 표시한다. 출처 키는 제공처 ID가 아닌 연결 행 ID이며 수집 출처는 툴팁과 접근성 이름으로 구분한다. 수정은 `/manage/edit/:id`로 연결한다. 상세 삭제는 확인 후 `/articles/bulk/trash`에 단일 ID를 전달하며 `succeeded`에 포함된 경우에만 관련 캐시를 무효화하고 휴지통으로 이동한다. 이미 `TRASHED`이면 삭제 버튼을 숨기며 영구 삭제·발행은 기존 목록에서 처리한다.
+- MANDTR 본문은 DOMPurify 허용 목록과 서식 속성 제한으로 정제한다. 제목·목록·표·이미지·링크·체크리스트 및 글자 서식을 유지하되 스크립트·이벤트·폼·프레임·앱 CSS 클래스·위치 스타일은 제거한다. 원본 기준 경로를 알 수 없는 상대 URL과 실행 가능한 URL은 링크로 열지 않는다. 본문의 이메일·전화 링크는 허용한다. 큰 표·코드는 내부 스크롤로 처리한다.
+- MANDTR는 잘못된 ID에 요청하지 않으며 404·403·일반 오류를 구분한다. 직접 접속 뒤로 가기는 관리자 홈으로 복귀하며 SPA 내부에서 진입했다면 이전 화면으로 돌아간다. 검증은 `python tests/pages/manage/MANDTR/detail_browser.py`로 실행한다. 상세 API·수정 이동·첨부·HTML 정제·상태·선택 필드·오류·1280px/430px 화면을 모의 API로 확인한다.
+- MANDTR의 실제 수집 본문은 HTML 대신 줄바꿈이 포함된 일반 텍스트로 내려오기도 한다. 정제 후 요소가 없는 텍스트는 `white-space: pre-wrap`으로 줄바꿈·빈 줄을 보존하고, 서식 HTML에는 이 스타일을 적용하지 않는다. 응답에서 사라진 강조나 문단 구분은 화면에서 추측해 만들지 않는다.
+- 브라우저 검증: Vite 실행 후 Python Playwright 환경에서 `python tests/pages/manage/MANHOM/dashboard_browser.py`. API 응답을 브라우저에서 대체하므로 운영 데이터를 변경하지 않는다. 1280px/430px 캡처는 같은 폴더의 `screenshots/`에 생성한다.
