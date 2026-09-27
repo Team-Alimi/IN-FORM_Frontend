@@ -57,8 +57,8 @@ export interface OManageArticleDetail {
 export interface OManageArticleDetailLog {
   status_logs:
     | {
-        id: number | undefined | null;
-        from_status: string | undefined | null; //변경 전 상태
+        id?: number | null;
+        from_status?: string | null; //변경 전 상태
         to_status: string | undefined | null; //변경 후 상태
         memo: string | undefined | null;
         created_at: string | undefined | null;
@@ -100,4 +100,26 @@ export interface IRegisterArticlePayload {
   category_ids: number[];
   vendors: FormVendor[];
   attachments: FormAttachment[];
+}
+/**
+ * [MANDTE] : 관리자 시스템 카테고리 버튼 구현용 API
+ * [GET] : 현재 활성화된 전체 카테고리 목록을 가져옴
+ */
+export interface FormCategories {
+  id?: number;
+  //code?: string;
+  name?: string;
+  //is_active?: boolean;
+  sort_order?: number;
+  //in_use?: boolean;
+}
+/**
+ * [MANDTE] : 관리자 시스템 출처학과 설정 모달에 사용
+ * [GET] : 관리자 시스템 출처학과 목록 전체를 가져옴
+ */
+export interface FormVendorListComponent {
+  id?: number;
+  name?: string;
+  type?: string;
+  homepage_url?: string;
 }

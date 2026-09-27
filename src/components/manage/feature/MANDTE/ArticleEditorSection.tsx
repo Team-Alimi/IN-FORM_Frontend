@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getMockAdminArticleDetail } from '@/mocks/adminArticlesMock';
 import { CATEGORY_NAME_COLOR_MAP } from '@/constants/filterOption';
-import { fetchCategories } from '@/api/main/vendors';
 import VendorAddModal from './VendorAddModal';
 import AttachmentAddModal from './AttachmentAddModal';
 import AlertModal from '@/components/manage/common/AlertModal';
@@ -18,7 +17,6 @@ import {
 import type {
   CreateArticlePayload,
   UpdateArticlePayload,
-  AdminStatus,
 } from '@/api/manage/adminArticles';
 import { MOCK_MANAGE_ARTICLE_DETAIL } from '@/mocks/adminArticleDetailTest';
 import type {
@@ -26,6 +24,7 @@ import type {
   IUpdateArticlePayload,
   IRegisterArticlePayload,
 } from '@/api/manage/dto/adminDto';
+import { getCategoriesAll } from '@/api/manage/api/adminArticleEdit';
 
 export type FormCategory = {
   category_id: number;
@@ -45,12 +44,20 @@ export type FormAttachment = {
   content_type?: string | null | undefined;
 };
 
+export type AdminStatus = 'PENDING_REVIEW' | 'READY_TO_PUBLISH' | 'PUBLISHED';
+
+const ADMIN_STATUS_LABEL_MAP: Record<AdminStatus, string> = {
+  PENDING_REVIEW: '미검수',
+  READY_TO_PUBLISH: '반영대기',
+  PUBLISHED: '운영반영',
+};
+
 const ArticleEditorSection = ({
   articleId,
   sourceType,
 }: {
   articleId?: number; //articleId 값이 있다 : 게시글 수정하기 articleId값이 없다 : 게시글 등록하기
-  sourceType: string; //SCHOOL OR CLUB [현재는 우선 SCHOOL으로 구성 ]
+  sourceType?: string; //SCHOOL OR CLUB [현재는 우선 SCHOOL으로 구성 ]
 }) => {
   const isEditing = articleId !== undefined; //articleId 의 값이 있다면 isEditing : true, 수정중이 맞다.
   const navigate = useNavigate();
@@ -61,16 +68,7 @@ const ArticleEditorSection = ({
     queryFn: () => getMockAdminArticleDetail(articleId!), // TODO: API 연동 시 → getAdminArticleDetail(articleId!)
     enabled: isEditing, //isEditing이 true일때만 내용을 실행하라.
   });
-  const { data: categoriesData } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-    staleTime: 60 * 60 * 1000,
-  }); 
 */
-  // const categories = (categoriesData?.data ?? []) as {
-  //   id: number;
-  //   name: string;
-  // }[];  🧐 - API 연동 후 살려야됨
   const data = MOCK_MANAGE_ARTICLE_DETAIL;
   const [venderModalOpen, setVendorModalOpen] = useState(false); //vendor모달 토글 상태 관리
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false); //attachment모달 토글 상태 관리
@@ -94,6 +92,7 @@ const ArticleEditorSection = ({
     content: '',
     attachments: [] as FormAttachment[],
   });
+
   const TEMP_SOURCE_TYPE = 'SCHOOL'; //우선 공지 게시글 수정으로 구현
 
   useEffect(() => {
@@ -127,6 +126,13 @@ const ArticleEditorSection = ({
       })),
     });
   }, [data]);
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => getCategoriesAll(),
+    staleTime: 60 * 60 * 1000,
+  });
+  const categories = categoriesData ?? [];
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     //제출 확인 모달 제어
@@ -251,10 +257,9 @@ const ArticleEditorSection = ({
       original_name: original_name,
       content_type: content_type,
     };
-
     setForm((prev) => ({
       ...prev,
-      attachment_urls: [...prev.attachments, NewAttachment],
+      attachments: [...prev.attachments, NewAttachment],
     }));
     setAttachmentModalOpen(false);
   };
@@ -262,7 +267,7 @@ const ArticleEditorSection = ({
   const handleAttachmentDelete = (index: number) => {
     setForm((prev) => ({
       ...prev,
-      attachment_urls: prev.filter((item) => item.file_url !== index),
+      attachments: prev.attachments.filter((_, i) => i !== index),
     }));
   };
 
@@ -288,216 +293,271 @@ const ArticleEditorSection = ({
       <form onSubmit={handleSubmit}>
         {/**
          * <1> 게시글 분류 카테고리 선택 목록 배열
-         *  - 필수로 한개의 카테고리 선택 필요
+         *  - 하나 이상 선택 가능 (중복 선택 허용)
          */}
-        <div>
-          {categories.map((cat) => {
-            const isSelected = cat.id === form.category_id;
-            const colorBg =
-              CATEGORY_NAME_COLOR_MAP[cat.name]?.dot ?? 'bg-gray-400';
-            return (
-              <label key={cat.id}>
-                <input
-                  type="radio"
-                  name="category"
-                  value={cat.id}
-                  checked={isSelected}
-                  onChange={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      category_id: cat.id,
-                    }))
-                  }
-                  className="hidden"
-                />
-                <span
-                  className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? `${colorBg} text-white` : 'bg-gray-100 text-gray-600'}`}
+        <div className="flex flex-col gap-y-2">
+          <div>
+            {categories.map((cat) => {
+              const isSelected = form.categories.some(
+                (item) => item.category_id === cat.id
+              );
+              const colorBg =
+                CATEGORY_NAME_COLOR_MAP[
+                  (cat.name ?? '') as keyof typeof CATEGORY_NAME_COLOR_MAP
+                ]?.dot ?? 'bg-gray-400';
+              return (
+                <label key={cat.id}>
+                  <input
+                    type="checkbox"
+                    name="category"
+                    checked={isSelected}
+                    onChange={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        categories: isSelected
+                          ? prev.categories.filter(
+                              (item) => item.category_id !== cat.id
+                            )
+                          : [
+                              ...prev.categories,
+                              {
+                                category_id: cat.id!,
+                                category_name: cat.name ?? '',
+                                category_key: undefined,
+                              },
+                            ],
+                      }))
+                    }
+                    className="hidden"
+                  />
+                  <span
+                    className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? `${colorBg} text-white` : 'bg-gray-100 text-gray-600'}`}
+                  >
+                    {cat.name}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          {/**
+           * <2> 게시글 제목 입력 폼
+           *  - 게시글 이름 문자열 입력 필수
+           */}
+          <div>
+            <input
+              name="title"
+              value={form.title}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, title: e.target.value }))
+              }
+              className="text-lg w-4/5"
+            />
+          </div>
+
+          {/**
+           * <3> 게시글 출처 입력 폼
+           *  - 출처 입력 필수
+           */}
+          <div className="flex flex-row gap-2 flex-wrap">
+            {form.vendors.map((item) => (
+              <div
+                key={item.vendor_id}
+                className="inline-flex items-center gap-1 px-3 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+              >
+                {item.vendor_name}
+                <button
+                  type="button"
+                  className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
+                  onClick={() => handleVendorDelete(item.vendor_id)}
                 >
-                  {cat.name}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-        {/**
-         * <2> 게시글 제목 입력 폼
-         *  - 게시글 이름 문자열 입력 필수
-         */}
-        <div>
-          <input
-            name="title"
-            value={form.title}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, title: e.target.value }))
-            }
-            className="text-lg w-4/5"
-          />
-        </div>
-
-        {/**
-         * <3> 게시글 출처 입력 폼
-         *  - 출처 입력 필수
-         */}
-        <div className="flex flex-row gap-2 flex-wrap">
-          {form.vendors.map((item) => (
+                  ×
+                </button>
+              </div>
+            ))}
             <div
-              key={item.vendor_id}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+              className="text-3xl p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
+              onClick={handleVendorModalToggle}
             >
-              {item.vendor_name}
-              <button
-                type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
-                onClick={() => handleVendorDelete(item.vendor_id)}
-              >
-                ×
-              </button>
+              +
             </div>
-          ))}
-          <div
-            className="text-3xl p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
-            onClick={handleVendorModalToggle}
-          >
-            +
           </div>
-        </div>
-        {venderModalOpen && <VendorAddModal onConfirm={handleVendorAdd} />}
 
-        {/**
-         * <4> 첨부파일 입력 폼
-         *  - 첩부파일 필수 x
-         */}
-        <div className="flex flex-row gap-2 flex-wrap">
-          {form.attachment_urls.map((url, index) => (
+          {/**
+           * <4> 첨부파일 입력 폼
+           *  - 첩부파일 필수 x
+           */}
+          <div className="flex flex-row gap-2 flex-wrap">
+            {form.attachments.map((item, index) => (
+              <div
+                key={index}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+              >
+                {item.file_url?.split('/').pop() || item.file_url}
+                <button
+                  type="button"
+                  className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
+                  onClick={() => handleAttachmentDelete(index)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
             <div
-              key={index}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-300 bg-white text-sm text-gray-700"
+              className="text-sm p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
+              onClick={() => setAttachmentModalOpen(true)}
             >
-              {url.split('/').pop() || url}
-              <button
-                type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-600 leading-none"
-                onClick={() => handleAttachmentDelete(index)}
-              >
-                ×
-              </button>
+              첨부파일 추가하기 +
             </div>
-          ))}
-          <div
-            className="text-sm p-1 px-3 bg-gray-100 rounded-md cursor-pointer"
-            onClick={() => setAttachmentModalOpen(true)}
-          >
-            첨부파일 추가하기 +
           </div>
-        </div>
-        {attachmentModalOpen && (
-          <AttachmentAddModal
-            onConfirm={handleAttachmentAdd}
-            onCancel={() => setAttachmentModalOpen(false)}
+
+          {/**
+           * <5> id입력 폼
+           *  - 필수 입력 + 중복 검사 True
+           */}
+          <div className="flex flex-row gap-2">
+            {!isEditing && (
+              <>
+                <label>
+                  ID :{' '}
+                  <input
+                    name="article_id"
+                    value={form.article_id}
+                    onChange={(e) => {
+                      setForm((prev) => ({
+                        ...prev,
+                        article_id: Number(e.target.value),
+                      }));
+                      setIdStatus('idle');
+                    }}
+                    className={`border rounded px-2 py-1 ${
+                      idStatus === 'taken'
+                        ? 'border-red-500'
+                        : idStatus === 'available'
+                          ? 'border-green-500'
+                          : 'border-gray-300'
+                    }`}
+                  />
+                </label>
+                {idStatus === 'taken' && (
+                  <p className="text-red-500 text-xs mt-0.5">
+                    이미 사용 중인 ID입니다.
+                  </p>
+                )}
+                {idStatus === 'unvalid' && (
+                  <p className="text-red-500 text-xs mt-0.5">
+                    적절하지 않은 입력입니다.
+                  </p>
+                )}
+                {idStatus === 'available' && (
+                  <p className="text-green-500 text-xs mt-0.5">
+                    사용 가능한 ID입니다.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={handleAlreadyCheck}
+                  className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+                >
+                  중복검사
+                </button>
+              </>
+            )}
+          </div>
+          {/**
+           * <6> 행사 기간 입력 폼
+           *  - 필수 입력
+           */}
+          <div>
+            <label>
+              행사기간 :{' '}
+              <input
+                type="date"
+                name="start_date"
+                value={form.starts_on}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, start_date: e.target.value }))
+                }
+              />{' '}
+              <input
+                type="date"
+                name="due_date"
+                value={form.ends_on}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, due_date: e.target.value }))
+                }
+              />
+            </label>
+          </div>
+          {/**
+           * <1-1> 게시글 상태 선택
+           *  - 하나의 상태만 선택 가능
+           */}
+          <div className="flex flex-row gap-2">
+            {(Object.keys(ADMIN_STATUS_LABEL_MAP) as AdminStatus[]).map(
+              (status) => {
+                const isSelected = form.admin_status === status;
+                return (
+                  <label key={status}>
+                    <input
+                      type="radio"
+                      name="admin_status"
+                      checked={isSelected}
+                      onChange={() =>
+                        setForm((prev) => ({ ...prev, admin_status: status }))
+                      }
+                      className="hidden"
+                    />
+                    <span
+                      className={`cursor-pointer px-3 py-1 rounded-sm text-sm mr-2 ${isSelected ? 'bg-[#005CBE] text-white' : 'bg-gray-100 text-gray-600'}`}
+                    >
+                      {ADMIN_STATUS_LABEL_MAP[status]}
+                    </span>
+                  </label>
+                );
+              }
+            )}
+          </div>
+
+          <TipTapEditor
+            key={editorKey}
+            ref={editorRef}
+            initialValue={form.content}
           />
-        )}
-        {/**
-         * <5> id입력 폼
-         *  - 필수 입력 + 중복 검사 True
-         */}
-        <div className="flex flex-row gap-2">
-          {!isEditing && (
-            <>
-              <label>
-                ID :{' '}
-                <input
-                  name="article_id"
-                  value={form.article_id}
-                  onChange={(e) => {
-                    setForm((prev) => ({
-                      ...prev,
-                      article_id: Number(e.target.value),
-                    }));
-                    setIdStatus('idle');
-                  }}
-                  className={`border rounded px-2 py-1 ${
-                    idStatus === 'taken'
-                      ? 'border-red-500'
-                      : idStatus === 'available'
-                        ? 'border-green-500'
-                        : 'border-gray-300'
-                  }`}
-                />
-              </label>
-              {idStatus === 'taken' && (
-                <p className="text-red-500 text-xs mt-0.5">
-                  이미 사용 중인 ID입니다.
-                </p>
-              )}
-              {idStatus === 'unvalid' && (
-                <p className="text-red-500 text-xs mt-0.5">
-                  적절하지 않은 입력입니다.
-                </p>
-              )}
-              {idStatus === 'available' && (
-                <p className="text-green-500 text-xs mt-0.5">
-                  사용 가능한 ID입니다.
-                </p>
-              )}
-              <button
-                type="button"
-                onClick={handleAlreadyCheck}
-                className="text-sm px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
-              >
-                중복검사
-              </button>
-            </>
+          <button
+            type="submit"
+            // disabled={idStatus !== 'available'}
+            className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {isEditing ? '반영하기' : '추가하기'}
+          </button>
+          {isEditing && (
+            <button
+              type="button"
+              onClick={() => setShowDeleteModal(true)}
+              className="px-4 py-2 bg-red-100 text-red-400 rounded hover:bg-red-200 m-4"
+            >
+              삭제하기
+            </button>
           )}
         </div>
-        {/**
-         * <6> 행사 기간 입력 폼
-         *  - 필수 입력
-         */}
-        <div>
-          <label>
-            행사기간 :{' '}
-            <input
-              type="date"
-              name="start_date"
-              value={form.starts_on}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, start_date: e.target.value }))
-              }
-            />{' '}
-            <input
-              type="date"
-              name="due_date"
-              value={form.ends_on}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, due_date: e.target.value }))
-              }
-            />
-          </label>
-        </div>
-
-        <TipTapEditor
-          key={editorKey}
-          ref={editorRef}
-          initialValue={form.content}
-        />
-        <button
-          type="submit"
-          // disabled={idStatus !== 'available'}
-          className="px-4 py-2 bg-primary text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {isEditing ? '반영하기' : '추가하기'}
-        </button>
-        {isEditing && (
-          <button
-            type="button"
-            onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 bg-red-100 text-red-400 rounded hover:bg-red-200 m-4"
-          >
-            삭제하기
-          </button>
-        )}
       </form>
+      {/**[모달정리]*/}
+      {/**1. 학과 선택 모달 관리*/}
+      {venderModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <VendorAddModal
+            onConfirm={handleVendorAdd}
+            onCancel={() => setVendorModalOpen(false)}
+          />
+        </div>
+      )}
 
+      {attachmentModalOpen && (
+        <AttachmentAddModal
+          onConfirm={handleAttachmentAdd}
+          onCancel={() => setAttachmentModalOpen(false)}
+        />
+      )}
       {showSubmitModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
           <AlertModal
