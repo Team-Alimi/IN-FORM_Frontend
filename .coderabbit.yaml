@@ -15,6 +15,7 @@ reviews:
       - master
       - develop
       - dev
+      - manageDev
     drafts: false
 chat:
   auto_reply: true

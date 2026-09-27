@@ -1,0 +1,108 @@
+.admin-article-content {
+  overflow-wrap: anywhere;
+}
+.admin-article-content .admin-article-plain-text {
+  white-space: pre-wrap;
+}
+.admin-article-content > :first-child {
+  margin-top: 0;
+}
+.admin-article-content > :last-child {
+  margin-bottom: 0;
+}
+.admin-article-content p {
+  margin: 0.6rem 0;
+}
+.admin-article-content h1,
+.admin-article-content h2,
+.admin-article-content h3,
+.admin-article-content h4,
+.admin-article-content h5,
+.admin-article-content h6 {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+.admin-article-content h1 {
+  font-size: 1.25rem;
+}
+.admin-article-content h2 {
+  font-size: 1.125rem;
+}
+.admin-article-content ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.admin-article-content ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.admin-article-content li {
+  margin: 0.3rem 0;
+}
+.admin-article-content a[href] {
+  color: #2563eb;
+  text-decoration: underline;
+}
+.admin-article-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+.admin-article-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.admin-article-content th,
+.admin-article-content td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+}
+.admin-article-content th {
+  background: #f3f4f6;
+  font-weight: 700;
+}
+.admin-article-content hr {
+  border-top: 1px solid #e5e7eb;
+  margin: 1rem 0;
+}
+.admin-article-content blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  color: #6b7280;
+}
+.admin-article-content pre {
+  overflow-x: auto;
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: 0.5rem;
+}
+.admin-article-content code {
+  border-radius: 0.25rem;
+  background: #f3f4f6;
+  font-size: 0.875rem;
+}
+.admin-article-content ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+}
+.admin-article-content li[data-type='taskItem'] {
+  display: flex;
+  gap: 0.5rem;
+}
+.admin-article-content li[data-type='taskItem']::before {
+  content: '☐';
+}
+.admin-article-content li[data-type='taskItem'][data-checked='true']::before {
+  content: '☑';
+}
+.admin-article-content li[data-type='taskItem'] > div {
+  flex: 1;
+  min-width: 0;
+}

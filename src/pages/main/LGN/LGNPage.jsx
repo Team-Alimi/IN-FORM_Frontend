@@ -42,8 +42,10 @@ const LGNPage = () => {
         // 서버에서 던져준 access_token, refresh_token, user_info를 로컬 상태에 저장!
         login(res.data.access_token, res.data.refresh_token, res.data.user_info);
 
-        // 신규 유저일 경우 온보딩 페이지로, 기존 유저는 홈 또는 이전 페이지로 이동
-        if (res.data.new_user) {
+        // 온보딩 미완료 시 온보딩 페이지로, 완료했다면 홈 또는 이전 페이지로 이동
+        // (백엔드는 "신규 가입 여부"가 아니라 onboarding_completed 로 화면 분기를 지시함 —
+        //  온보딩 도중 이탈했다가 재로그인한 기존 유저도 다시 온보딩으로 보내야 하기 때문)
+        if (!res.data.user_info?.onboarding_completed) {
           navigate("/onboarding", { replace: true });
         } else {
           const from = location.state?.from?.pathname ?? "/";

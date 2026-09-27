@@ -1,8 +1,7 @@
 import type {
-  FormCategory,
-  FormVendor,
-  FormAttachment,
-} from '@/components/manage/feature/MANDTE/ArticleEditorSection';
+  ArticleVendor as FormVendor,
+  ArticleAttachment as FormAttachment,
+} from '@/api/manage/articleEditor';
 /**
  * MANDTE : 관리자 시스템 게시글 수정하기/게시하기
  * [GET] : 요청에 대한 응답
