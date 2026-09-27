@@ -94,6 +94,18 @@ const MANHOMPage = () => {
       void queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticles'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticleCounts'] });
+      if (result.succeeded.length)
+        [
+          'adminArticleDetail',
+          'adminEditor',
+          'monthlyAll',
+          'events',
+          'eventDetail',
+          'hotEvents',
+          'bookmarks',
+        ].forEach((key) =>
+          void queryClient.invalidateQueries({ queryKey: [key] })
+        );
     },
     onError: () =>
       setNotice(
