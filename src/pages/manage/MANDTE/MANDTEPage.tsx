@@ -22,10 +22,12 @@ const MANDTEPage = () => {
     enabled: validId,
     retry: shouldRetryDashboardQuery,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
   });
 
   if (id === undefined) return <ArticleEditorSection key="new" />;
-  if (validId && detail.isSuccess)
+  if (validId && detail.data)
     return <ArticleEditorSection key={id} initial={detail.data} />;
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-gray-700">
