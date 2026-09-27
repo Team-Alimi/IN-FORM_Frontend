@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import type { DashboardList, ReviewStatus } from '@/api/manage/dashboard';
 import {
@@ -21,6 +22,10 @@ interface Props {
   onPrimaryAction: (ids: number[]) => void;
   onTrash: (ids: number[]) => void;
   onRetry: () => void;
+  secondaryLabel?: string;
+  secondaryDisabled?: boolean;
+  trashView?: boolean;
+  renderStatus?: (id: number) => ReactNode;
 }
 const categoryColors: Record<string, { bg: string; text: string }> =
   CATEGORY_NAME_COLOR_MAP;
@@ -55,6 +60,10 @@ const ReviewArticleTable = ({
   onPrimaryAction,
   onTrash,
   onRetry,
+  secondaryLabel = '삭제',
+  secondaryDisabled = false,
+  trashView = false,
+  renderStatus,
 }: Props) => {
   const rows = data?.content ?? [];
   const selectedIds = rows
@@ -99,16 +108,24 @@ const ReviewArticleTable = ({
           <button
             disabled={blocked || primaryDisabled || !selectedIds.length}
             onClick={() => onPrimaryAction(selectedIds)}
-            className="rounded-full bg-black px-4 py-2 font-bold text-white disabled:opacity-40"
+            className={
+              trashView
+                ? 'rounded-lg border border-gray-200 px-4 py-2 text-gray-700 disabled:opacity-40'
+                : 'rounded-full bg-black px-4 py-2 font-bold text-white disabled:opacity-40'
+            }
           >
             {primaryLabel}
           </button>
           <button
-            disabled={blocked || !selectedIds.length}
+            disabled={blocked || secondaryDisabled || !selectedIds.length}
             onClick={() => onTrash(selectedIds)}
-            className="rounded-full border border-gray-200 px-4 py-2 text-gray-600 disabled:opacity-40"
+            className={
+              trashView
+                ? 'rounded-lg border border-red-200 px-4 py-2 text-red-600 disabled:opacity-40'
+                : 'rounded-full border border-gray-200 px-4 py-2 text-gray-600 disabled:opacity-40'
+            }
           >
-            삭제
+            {secondaryLabel}
           </button>
         </div>
       </div>
@@ -146,7 +163,7 @@ const ReviewArticleTable = ({
                   '선택',
                   '게시글 ID',
                   '카테고리',
-                  '상태',
+                  trashView ? '삭제 전 상태' : '상태',
                   '게시글 제목',
                   '행사 기간',
                   '출처',
@@ -201,11 +218,15 @@ const ReviewArticleTable = ({
                     </div>
                   </td>
                   <td className="px-4">
-                    <span
-                      className={`whitespace-nowrap rounded-full px-2 py-1 text-[10px] ${STATUS_BADGES[row.status]?.color ?? 'bg-gray-100 text-gray-600'}`}
-                    >
-                      {STATUS_BADGES[row.status]?.label ?? row.status}
-                    </span>
+                    {renderStatus ? (
+                      renderStatus(row.id)
+                    ) : (
+                      <span
+                        className={`whitespace-nowrap rounded-full px-2 py-1 text-[10px] ${STATUS_BADGES[row.status]?.color ?? 'bg-gray-100 text-gray-600'}`}
+                      >
+                        {STATUS_BADGES[row.status]?.label ?? row.status}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 font-medium">
                     <Link
