@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RiArrowRightLine, RiAddLine } from 'react-icons/ri';
 import ManageNavigation from '@/components/manage/common/ManageNavigation';
+import CategoryBadge from '@/components/manage/common/CategoryBadge';
 import {
   getDashboardArticles,
   getDashboardOptions,
@@ -142,10 +143,6 @@ const MANHOMPage = () => {
       return;
     mutation.mutate({ action, ids: chosen.map((row) => row.id) });
   };
-  const handleCard = (next: ArticleFilters) => {
-    setForm({ ...EMPTY, status: next.status ?? '' });
-    handleFilter(next);
-  };
   const handlePage = (next: number) => {
     setPage(next);
     setSelected([]);
@@ -155,19 +152,19 @@ const MANHOMPage = () => {
       label: '미검수 게시글',
       value: stats.data?.pending_review,
       error: stats.isError,
-      filter: { status: 'PENDING_REVIEW' } as ArticleFilters,
+      to: '/manage/unreviewed',
     },
     {
       label: '반영 대기 게시글',
       value: stats.data?.ready_to_publish,
       error: stats.isError,
-      filter: { status: 'READY_TO_PUBLISH' } as ArticleFilters,
+      to: '/manage/staged',
     },
     {
       label: '확인 필요 게시글',
       value: checks.data?.page_info.total_items,
       error: checks.isError,
-      filter: { needs_check: true },
+      to: '/manage/unreviewed',
     },
   ];
   const forbidden = [
@@ -236,10 +233,13 @@ const MANHOMPage = () => {
         </div>
         <div className="mb-6 grid grid-cols-3 gap-4 max-mobile:grid-cols-1">
           {cards.map((card) => (
-            <button
+            <Link
               key={card.label}
-              disabled={mutation.isPending}
-              onClick={() => handleCard(card.filter)}
+              to={card.to}
+              aria-disabled={mutation.isPending}
+              onClick={(event) => {
+                if (mutation.isPending) event.preventDefault();
+              }}
               className="rounded-2xl border border-gray-200 bg-white px-6 py-6 text-left hover:border-gray-400 disabled:opacity-50"
             >
               <span className="text-xs text-gray-500">{card.label}</span>
@@ -252,7 +252,7 @@ const MANHOMPage = () => {
                 </span>
                 <RiArrowRightLine className="h-9 w-9 rounded-full border border-gray-100 p-2 text-gray-400" />
               </span>
-            </button>
+            </Link>
           ))}
         </div>
         {(stats.isError || checks.isError) && (
@@ -559,12 +559,10 @@ const MANHOMPage = () => {
                         <div className="flex flex-wrap gap-1">
                           {row.categories.length
                             ? row.categories.map((category) => (
-                                <span
+                                <CategoryBadge
                                   key={category.id}
-                                  className="whitespace-nowrap rounded-full bg-blue-50 px-2 py-1 text-[10px] text-blue-600"
-                                >
-                                  {category.name}
-                                </span>
+                                  name={category.name}
+                                />
                               ))
                             : '—'}
                         </div>

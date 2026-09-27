@@ -16,10 +16,8 @@ import {
   shouldRetryDashboardQuery,
 } from '@/api/manage/dashboard';
 import type { ReviewStatus } from '@/api/manage/dashboard';
-import {
-  CATEGORY_NAME_COLOR_MAP,
-  DEFAULT_CATEGORY_COLOR,
-} from '@/constants/filterOption';
+import CategoryBadge from '@/components/manage/common/CategoryBadge';
+import ArticleDeleteButton from '@/components/manage/feature/MANDTR/ArticleDeleteButton';
 import {
   getArticleWebUrl,
   sanitizeArticleContent,
@@ -45,8 +43,6 @@ const STATUS_BADGES: Record<ReviewStatus, { label: string; color: string }> = {
   },
   TRASHED: { label: '휴지통', color: 'border-red-200 bg-red-50 text-red-600' },
 };
-const categoryColors: Record<string, { bg: string; text: string }> =
-  CATEGORY_NAME_COLOR_MAP;
 const formatDate = (value?: string) =>
   value ? value.slice(0, 10).replaceAll('-', '.') : '미정';
 const formatUpdatedAt = (value: string) => {
@@ -215,19 +211,12 @@ const MANDTRPage = () => {
                   <InfoRow label="카테고리">
                     <div className="flex flex-wrap gap-2">
                       {article.categories.length ? (
-                        article.categories.map((category) => {
-                          const colors =
-                            categoryColors[category.name] ??
-                            DEFAULT_CATEGORY_COLOR;
-                          return (
-                            <span
-                              key={category.id}
-                              className={`rounded-full px-3 py-1 text-xs ${colors.bg} ${colors.text}`}
-                            >
-                              {category.name}
-                            </span>
-                          );
-                        })
+                        article.categories.map((category) => (
+                          <CategoryBadge
+                            key={category.id}
+                            name={category.name}
+                          />
+                        ))
                       ) : (
                         <span className="text-gray-400">미분류</span>
                       )}
@@ -362,7 +351,14 @@ const MANDTRPage = () => {
       </main>
       {validId && article && !detail.isError && (
         <footer className="border-t border-gray-100 bg-white">
-          <div className="mx-auto flex max-w-[988px] justify-end px-6 py-4 max-mobile:px-4">
+          <div className="mx-auto flex max-w-[988px] flex-wrap items-start justify-end gap-3 px-6 py-4 max-mobile:px-4">
+            {article.status !== 'TRASHED' && (
+              <ArticleDeleteButton
+                key={article.id}
+                articleId={article.id}
+                disabled={detail.isFetching}
+              />
+            )}
             <Link
               to={`/manage/edit/${article.id}`}
               className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm text-white"

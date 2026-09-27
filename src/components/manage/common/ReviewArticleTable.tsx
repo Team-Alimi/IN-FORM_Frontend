@@ -2,10 +2,7 @@ import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import type { DashboardList, ReviewStatus } from '@/api/manage/dashboard';
-import {
-  CATEGORY_NAME_COLOR_MAP,
-  DEFAULT_CATEGORY_COLOR,
-} from '@/constants/filterOption';
+import CategoryBadge from '@/components/manage/common/CategoryBadge';
 
 interface Props {
   label: string;
@@ -27,8 +24,6 @@ interface Props {
   trashView?: boolean;
   renderStatus?: (id: number) => ReactNode;
 }
-const categoryColors: Record<string, { bg: string; text: string }> =
-  CATEGORY_NAME_COLOR_MAP;
 const STATUS_BADGES: Record<ReviewStatus, { label: string; color: string }> = {
   PENDING_REVIEW: { label: '미검수', color: 'bg-gray-100 text-gray-600' },
   READY_TO_PUBLISH: {
@@ -201,19 +196,12 @@ const ReviewArticleTable = ({
                   <td className="px-4">
                     <div className="flex flex-wrap gap-1">
                       {row.categories.length
-                        ? row.categories.map((category) => {
-                            const color =
-                              categoryColors[category.name] ??
-                              DEFAULT_CATEGORY_COLOR;
-                            return (
-                              <span
-                                key={category.id}
-                                className={`whitespace-nowrap rounded-full px-2 py-1 text-[10px] ${color.bg} ${color.text}`}
-                              >
-                                {category.name}
-                              </span>
-                            );
-                          })
+                        ? row.categories.map((category) => (
+                            <CategoryBadge
+                              key={category.id}
+                              name={category.name}
+                            />
+                          ))
                         : '—'}
                     </div>
                   </td>

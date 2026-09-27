@@ -11,6 +11,7 @@ OUTPUT = Path(__file__).parent / 'screenshots'
 OUTPUT.mkdir(exist_ok=True)
 requests, errors, held = [], [], []
 mode = 'normal'
+delete_mode = 'normal'
 CONTENT = '''<h2>2026학년도 1학기 수강신청 및 유의사항 안내</h2><hr>
 <h3>■ 수강신청 일정</h3>
 <p>· 재학생 수강신청: <strong>2026.08.10(월) 09:00 ~ 2026.08.12(수) 17:00</strong></p>
@@ -37,6 +38,14 @@ def route_api(route):
     path = urlparse(req.url).path
     query = parse_qs(urlparse(req.url).query)
     requests.append((req.method, path, query))
+    if req.method == 'POST':
+        assert path.endswith('/articles/bulk/trash') and req.post_data_json == {'ids': [182]}
+        if delete_mode == 'hold': held.append(route); return
+        if delete_mode == 'error':
+            route.fulfill(status=500, json=dict(success=False, error=dict(message='삭제 요청 실패'))); return
+        if delete_mode == 'failed':
+            route.fulfill(json=dict(success=True, data=dict(succeeded=[], failed=[dict(id=182, code='CONCURRENT_MODIFICATION', message='다른 관리자가 수정했습니다.')]))); return
+        route.fulfill(json=dict(success=True, data=dict(succeeded=[182], failed=[]))); return
     assert req.method == 'GET', (req.method, path)
     if path.endswith('/182'):
         assert not query
@@ -80,7 +89,7 @@ with sync_playwright() as p:
     expect(source).to_have_attribute('rel', 'noopener noreferrer')
     expect(info.get_by_role('link', name='컴퓨터공학과')).to_have_count(0)
     expect(page.get_by_role('link', name='수정하기', exact=True)).to_have_attribute('href', '/manage/edit/182')
-    expect(page.get_by_role('button', name='삭제하기')).to_have_count(0)
+    expect(page.get_by_role('button', name='삭제하기')).to_be_enabled()
     page.evaluate('document.fonts.ready')
     page.add_style_tag(content='.tsqd-parent-container { display:none !important; }')
     page.screenshot(path=str(OUTPUT/'desktop.png'), full_page=True)
@@ -173,6 +182,35 @@ with sync_playwright() as p:
     expect(info.get_by_role('link', name='같은 제공처의 다른 원본 원본 보기 (새 창)')).to_be_visible()
     page.set_viewport_size(dict(width=430, height=932))
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    # Trash requires confirmation; failed HTTP 200 results must not navigate away.
+    article = copy.deepcopy(original)
+    page.goto(BASE+'/manage/detail/182')
+    page.get_by_role('button', name='삭제하기').click()
+    dialog = page.get_by_role('dialog')
+    expect(dialog).to_contain_text('휴지통에서 복구')
+    before = len(requests)
+    dialog.get_by_role('button', name='취소').click()
+    assert len(requests) == before
+    for delete_mode, message in [('failed', '다른 관리자가 수정했습니다.'), ('error', '삭제 요청 실패')]:
+        page.get_by_role('button', name='삭제하기').click()
+        dialog.get_by_role('button', name='확인', exact=True).click()
+        expect(page.get_by_role('alert')).to_contain_text(message)
+        expect(page).to_have_url(BASE+'/manage/detail/182')
+    delete_mode = 'hold'
+    page.get_by_role('button', name='삭제하기').click()
+    dialog.get_by_role('button', name='확인', exact=True).click()
+    expect(dialog.get_by_role('button', name='처리 중…')).to_be_disabled()
+    expect(dialog.get_by_role('button', name='취소')).to_be_disabled()
+    page.keyboard.press('Escape')
+    expect(dialog).to_be_visible()
+    assert len(held) == 1
+    held.pop().fulfill(json=dict(success=True, data=dict(succeeded=[182], failed=[])))
+    expect(page).to_have_url(BASE+'/manage/garbage')
+    article['status'] = 'TRASHED'
+    page.goto(BASE+'/manage/detail/182')
+    expect(row('상태')).to_have_text('휴지통')
+    expect(page.get_by_role('button', name='삭제하기')).to_have_count(0)
+    article = copy.deepcopy(original)
     # Invalid route IDs never issue detail requests.
     for invalid in ['abc', '0', '-1', '1.2', '9007199254740992']:
         requests.clear(); page.goto(BASE+'/manage/detail/'+invalid)

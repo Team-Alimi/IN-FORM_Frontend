@@ -70,8 +70,11 @@ with sync_playwright() as p:
     assert any(path.endswith('/bulk/publish') and body == {'ids':[184]} for path, _, body in requests)
     page.get_by_role('button', name='다음 페이지', exact=True).click()
     expect(page.get_by_role('link', name='2026학년도 안내 게시글 9', exact=True)).to_be_visible()
-    page.get_by_role('button', name='확인 필요 게시글').click()
-    expect(page.get_by_role('heading', name='확인 필요 게시글')).to_be_visible()
+    for label, target in [('미검수 게시글', '/manage/unreviewed'), ('반영 대기 게시글', '/manage/staged'), ('확인 필요 게시글', '/manage/unreviewed')]:
+        page.locator('main').get_by_role('link', name=label).click()
+        expect(page).to_have_url('http://127.0.0.1:5173'+target)
+        page.get_by_role('navigation', name='관리자 메뉴').get_by_role('link', name='홈', exact=True).click()
+        expect(page).to_have_url('http://127.0.0.1:5173/manage')
     page.get_by_role('button', name='초기화', exact=True).click()
     page.get_by_label('게시글 제목', exact=True).fill('없는 제목')
     page.get_by_role('button', name='조회', exact=True).click()
