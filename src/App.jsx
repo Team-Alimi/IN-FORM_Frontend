@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { initDeviceListener } from '@/stores/deviceStore';
@@ -28,6 +28,7 @@ import MANGBGPage from '@/pages/manage/MANGBG/MANGBGPage';
 import MANSTGPage from '@/pages/manage/MANSTG/MANSTGPage';
 import MANURVPage from '@/pages/manage/MANURV/MANURVPage';
 import MANUSRPage from '@/pages/manage/MANUSR/MANUSRPage';
+import MANVNDPage from '@/pages/manage/MANVND/MANVNDPage';
 import DeviceTestPage from './pages/TEST/DeviceTestPage';
 
 const queryClient = new QueryClient(); //리액트 쿼리
@@ -103,7 +104,14 @@ function App() {
           }
         />
         {/* 관리자 라우트 — /manage/* 경로 아래 전부 묶음 */}
-        <Route path="/manage">
+        <Route
+          path="/manage"
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<MANHOMPage />} />
           <Route path="detail/:id" element={<MANDTRPage />} />
           <Route path="edit" element={<MANDTEPage />} />
@@ -112,6 +120,7 @@ function App() {
           <Route path="garbage" element={<MANGBGPage />} />
           <Route path="unreviewed" element={<MANURVPage />} />
           <Route path="users" element={<MANUSRPage />} />
+          <Route path="vendors" element={<MANVNDPage />} />
         </Route>
         {/**공통 에러처리 */}
         <Route path="/error" element={<ErrorPage />} />
