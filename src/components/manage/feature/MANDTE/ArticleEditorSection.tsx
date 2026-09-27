@@ -489,10 +489,11 @@ const ArticleEditorSection = ({
             </label>
           </div>
           {/**
-           * <1-1> 게시글 상태 선택
-           *  - 하나의 상태만 선택 가능
+           * - 게시글 상태 선택
+           * - 하나의 상태만 선택 가능
            */}
           <div className="flex flex-row gap-2">
+            <div>상태 : </div>
             {(Object.keys(ADMIN_STATUS_LABEL_MAP) as AdminStatus[]).map(
               (status) => {
                 const isSelected = form.admin_status === status;
