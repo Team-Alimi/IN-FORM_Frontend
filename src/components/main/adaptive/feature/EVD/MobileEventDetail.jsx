@@ -43,7 +43,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
   };
   const status = getStatus(apiStatus);
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto">
+    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh]">
       <div className="border-b border-gray-200 pb-4 mb-4">
         <DetailInfoTitle
           status={status}
