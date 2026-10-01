@@ -54,6 +54,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 ## 반응형 UI
 
+- 공용 `BottomSheet`는 상단 손잡이를 아래로 80px 이상 드래그하면 기본적으로 닫힌다. 본문 스크롤은 닫기 동작과 분리한다.
 - `MobileTabBar`는 고정 탭바와 동일 높이의 문서 내 공간을 함께 렌더링한다. 탭바 높이는 `global.css`의 `--mobile-tab-bar-height`를 공유하며, 페이지마다 탭바용 하단 패딩을 중복 추가하지 않는다.
 
 - `adaptive/`는 두 레이아웃이 함께 쓰는 컴포넌트이며 `isMobile`로 레이아웃을 선택한다. `desktop/`, `mobile/`은 각 전용 UI를 둔다.
