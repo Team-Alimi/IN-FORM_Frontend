@@ -37,6 +37,7 @@ src/
 
 ## 스타일과 소스 규약
 
+- 모바일 `MobileTabBar`는 `mock-up/main/TabBar/` 기준의 280×68px 흰색 캡슐이다. 홈·공지·동아리·북마크·마이페이지 5개 탭을 표시하고 선택된 탭은 회색 배경과 검정 채움 아이콘으로 구분한다. 하단 12px와 safe area를 확보하며 캡슐 바깥의 투명 영역은 페이지 터치를 막지 않는다. PC `TabBar`는 별도 UI를 유지한다.
 모바일 고정 탭바는 `--mobile-tab-bar-height`(기본 80px + 하단 safe area)로 높이를 통일한다. `MobileTabBar`가 같은 높이의 `shrink-0` 공간을 문서 흐름에 확보하므로 HOM/EVL/CBL/BKM/MYP는 콘텐츠용 간격만 둔다. BKM 편집 액션처럼 탭바 바로 위의 고정 요소도 같은 변수를 `bottom`으로 사용하고, 해당 액션 자체의 높이만 별도로 본문에 확보한다.
 
 - Tailwind utility class만 사용하고 CSS module은 추가하지 않는다. 정적 class는 일반 문자열로, 조건부 class가 있을 때만 template literal을 사용한다. 임의 Tailwind 값에는 `bg-[#F4F8FE]`처럼 대괄호 문법을 사용한다.
