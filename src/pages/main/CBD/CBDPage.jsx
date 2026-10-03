@@ -79,7 +79,6 @@ const CBDPage = () => {
             title={club.title}
             status={club.deadline_status}
             vendors={club.vendors}
-            categories={club.categories}
             startDate={club.starts_on}
             dueDate={club.ends_on}
             created_at={club.published_at}
@@ -124,7 +123,6 @@ const CBDPage = () => {
           title={club.title}
           status={club.deadline_status}
           vendors={club.vendors}
-          categories={club.categories}
           startDate={club.starts_on}
           dueDate={club.ends_on}
           created_at={club.published_at}

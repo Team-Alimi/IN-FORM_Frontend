@@ -5,6 +5,7 @@ import { getStatus } from "@/utils/statusUtil";
 import Badge from "@/components/main/adaptive/common/Badge";
 import ClubImageGallery from "@/components/main/adaptive/feature/CBD/ClubImageGallery";
 import { prepareClubContent } from "@/utils/clubContent";
+import { getArticleClubTypes } from '@/utils/clubTypes';
 
 // ─── 유틸 함수 ────────────────────────────────────────────────────────────────
 
@@ -29,13 +30,12 @@ const linkifyText = (text) => {
 
 // ─── 이미지 뷰어 훅 ───────────────────────────────────────────────────────────
 
-const MobileLayout = ({ title, status, vendors, categories, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, images, html }) => {
+const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, images, html }) => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const statusInfo = getStatus(status);
 
-  const hashtags = Array.isArray(vendors) ? vendors.map((v) => v.name) : [];
-  const categoryName = categories?.[0]?.name;
+  const hashtags = getArticleClubTypes(vendors);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -96,14 +96,11 @@ const MobileLayout = ({ title, status, vendors, categories, startDate, dueDate, 
             <Badge text={statusInfo.text} color={statusInfo.color} />
           </div>
         )}
-        {(hashtags.length > 0 || categoryName) && (
+        {hashtags.length > 0 && (
           <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {hashtags.map((tag, i) => (
-              <span key={i} className="text-sm text-primary">#{tag}</span>
+            {hashtags.map((tag) => (
+              <span key={tag.id} className="text-sm text-primary">#{tag.name}</span>
             ))}
-            {categoryName && (
-              <span className="text-sm text-primary">#{categoryName}</span>
-            )}
           </div>
         )}
 
@@ -192,6 +189,7 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
   const statusInfo = getStatus(status);
 
   const mainVendor = Array.isArray(vendors) && vendors.length > 0 ? vendors[0] : null;
+  const hashtags = getArticleClubTypes(vendors);
 
   return (
     <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -211,6 +209,9 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
       <div className="p-6 md:p-8 border-b border-gray-100">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-4">{title}</h1>
         {statusInfo && <div className="mb-4"><Badge text={statusInfo.text} color={statusInfo.color} /></div>}
+        {hashtags.length > 0 && <div className="mb-4 flex flex-wrap gap-3">
+          {hashtags.map((tag) => <span key={tag.id} className="text-sm text-primary">#{tag.name}</span>)}
+        </div>}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
           {mainVendor && (
             <div className="flex items-center gap-1.5">

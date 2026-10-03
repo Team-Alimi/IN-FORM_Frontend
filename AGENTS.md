@@ -54,6 +54,8 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 ## 반응형 UI
 
+- CBL 썸네일은 공지 목록의 `thumbnail_url`을 사용한다. CBL·CBD 해시태그는 `vendors[].club_types`의 이름을 사용하고 유형 ID로 중복을 제거한다. 이미지·유형 조회를 위해 게시물 상세 API를 추가 호출하지 않는다.
+
 - 공용 `BottomSheet`는 상단 손잡이를 아래로 80px 이상 드래그하면 기본적으로 닫힌다. 본문 스크롤은 닫기 동작과 분리한다.
 - `MobileTabBar`는 고정 탭바와 동일 높이의 문서 내 공간을 함께 렌더링한다. 탭바 높이는 `global.css`의 `--mobile-tab-bar-height`를 공유하며, 페이지마다 탭바용 하단 패딩을 중복 추가하지 않는다.
 - 모바일 탭바는 하단 중앙의 캡슐형 5개 탭 UI를 사용한다. PC 상단 `TabBar`와 독립적으로 스타일을 관리한다.
@@ -74,10 +76,11 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
 - `/manage` 부모 라우트에 `ProtectedRoute`와 `Outlet`을 적용해 모든 관리자 페이지의 비로그인 접근을 API 요청 전에 처리한다.
 - MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
+- 동아리 세부 유형은 MANVND에서 동아리 자체에 지정한다. MANDTE 글 작성·수정에서는 출처 동아리만 선택하며 세부 유형 선택이나 유형별 출처 필터를 추가하지 않는다.
 - MANDTR 상세는 `src/api/manage/articleDetail.ts`로 조회한다. 읽기 전용 HTML 본문은 `src/utils/manage/articleContent.ts`로 정제하고, 출처·첨부 링크는 HTTP(S) 주소만 연다.
 - MANGBG는 `src/api/manage/trash.ts`의 휴지통 전용 API를 사용한다. 전체 페이지 조회 후 화면에서 검색하며, 삭제 전 상태(`previous_status`)가 없는 게시물은 복구를 차단한다.
 - MANUSR 회원관리는 `src/api/manage/users.ts`를 사용한다. 회원 상세는 우측 패널에서 조회하며, 본인 권한 변경과 탈퇴 회원 승격을 차단하고 탈퇴 관리자의 강등은 허용한다.
-- MANVND 제공처·동아리 관리는 `src/api/manage/vendors.ts`를 사용한다. 식별자·유형은 등록 후 고정하며, 비활성화는 수집 중단이 아닌 숨김이다. 등록·숨김 응답의 `warning`을 반드시 표시한다.
+- MANVND 제공처·동아리 관리는 `src/api/manage/vendors.ts`를 사용한다. 식별자와 SCHOOL/CLUB 구분은 등록 후 고정한다. 동아리 세부 유형은 `/api/v1/club-types`에서 조회해 복수 선택하며, 등록 시 하나 이상 필수다. 수정 시 `club_type_ids`는 선택이 달라진 경우에만 전송하고 SCHOOL에는 보내지 않는다. 비활성화는 목록·필터 숨김이다. 등록·숨김 응답의 `warning`을 표시하되, 수동 운영하는 CLUB에서는 크롤러 시드 안내를 숨기고 SCHOOL에서는 유지한다.
 
 ## Git workflow
 
