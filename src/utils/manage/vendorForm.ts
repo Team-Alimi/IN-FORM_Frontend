@@ -13,8 +13,14 @@ export interface VendorFormValues {
   club_type_ids: number[];
 }
 export const getVendorWarning = (vendor: AdminVendor | null) => {
-  if (vendor?.type === 'CLUB' && vendor.warning?.includes('크롤러 시드'))
-    return undefined;
+  if (vendor?.type === 'CLUB' && vendor.warning?.includes('크롤러 시드')) {
+    const warning = vendor.warning
+      .split(/(?<=[.!?])\s+/)
+      .filter((sentence) => !sentence.includes('크롤러 시드'))
+      .join(' ')
+      .trim();
+    return warning || undefined;
+  }
   return vendor?.warning;
 };
 export const hasClubTypesChanged = (
