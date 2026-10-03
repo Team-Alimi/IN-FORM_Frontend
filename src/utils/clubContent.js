@@ -15,7 +15,7 @@ export const prepareClubContent = (content = '', attachments = []) => {
     images.push({ file_url: parsed.href, original_name: name });
   };
   for (const file of attachments ?? []) {
-    if (file.content_type?.startsWith('image/') || (!file.content_type && imageExtension.test(file.file_url ?? ''))) {
+    if (file.content_type?.startsWith('image/') || imageExtension.test(file.file_url ?? '')) {
       addImage(file.file_url, file.original_name);
     }
   }
