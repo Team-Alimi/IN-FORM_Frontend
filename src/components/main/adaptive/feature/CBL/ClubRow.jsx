@@ -1,4 +1,5 @@
 import { useDeviceStore } from "@/stores/deviceStore";
+import ClubThumbnail from './ClubThumbnail';
 
 const ClubRow = ({ data, onClick }) => {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -13,9 +14,11 @@ const ClubRow = ({ data, onClick }) => {
         className="flex items-center gap-3 bg-white rounded-[18px] px-3 py-3 mb-2.5 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] cursor-pointer active:bg-gray-50 transition-colors"
         onClick={handleClick}
       >
-        {/* 좌측 썸네일 (목록 API는 attachment_url 미제공 → 글자 아바타) */}
+        {/* 목록 API가 반환하는 첫 첨부 이미지 */}
         <div className="w-[60px] h-[60px] rounded-xl overflow-hidden shrink-0 bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-          <span className="text-blue-400 font-bold text-2xl">{clubName.charAt(0)}</span>
+          <ClubThumbnail src={data.thumbnail_url} alt={title}>
+            <span className="text-blue-400 font-bold text-2xl">{clubName.charAt(0)}</span>
+          </ClubThumbnail>
         </div>
 
         {/* 우측 텍스트 */}
@@ -49,7 +52,9 @@ const ClubRow = ({ data, onClick }) => {
       onClick={handleClick}
     >
       <div className="w-full aspect-4/5 bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-        <span className="text-blue-300 font-bold text-5xl">{clubName.charAt(0)}</span>
+        <ClubThumbnail src={data.thumbnail_url} alt={title}>
+          <span className="text-blue-300 font-bold text-5xl">{clubName.charAt(0)}</span>
+        </ClubThumbnail>
       </div>
       <div className="flex flex-col p-4 gap-1">
         <div className="text-lg font-bold text-gray-700">{title}</div>
