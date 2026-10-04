@@ -23,6 +23,9 @@ def route_api(route):
     req = route.request
     path = urlparse(req.url).path
     query = parse_qs(urlparse(req.url).query)
+    if path == '/api/v1/club-types':
+        route.fulfill(json=dict(success=True, data=[dict(id=1, name='학술/IT')]))
+        return
     body = req.post_data_json if req.method in ['POST', 'PATCH'] else None
     requests.append((req.method, path, query, body))
     assert path.startswith('/api/v1/admin/vendors'), path
@@ -39,7 +42,7 @@ def route_api(route):
         if mode == 'save-error': fail(route, 500, 'INTERNAL_SERVER_ERROR', '저장 요청 실패'); return
         if mode == 'save-forbidden': fail(route, 403, 'FORBIDDEN', '권한이 없습니다.'); return
         if req.method == 'POST':
-            assert set(body) <= {'name', 'initial', 'type', 'homepage_url'}
+            assert set(body) <= {'name', 'initial', 'type', 'homepage_url', 'club_type_ids'}
             assert body['name'] == body['name'].strip() and body['initial'] == body['initial'].strip()
             assert not any(c.isspace() for c in body['initial'])
             if any(r['initial'] == body['initial'] for r in rows):
@@ -148,14 +151,15 @@ with sync_playwright() as p:
     expect(dialog.get_by_label('제공처 이름', exact=True)).to_have_value('  새 동아리  ')
     dialog.get_by_label('식별자 (initial)', exact=True).fill('  새동아리_UPPER  ')
     dialog.get_by_role('radio', name='CLUB (동아리)', exact=True).check()
+    dialog.get_by_role('checkbox', name='학술/IT').check()
     dialog.get_by_role('button', name='등록하기').click()
     expect(dialog.get_by_role('status')).to_contain_text('제공처를 등록했습니다.')
-    expect(dialog.get_by_role('status')).to_contain_text('"새동아리_UPPER" 를 추가')
+    expect(dialog.get_by_role('status')).not_to_contain_text('크롤러 시드')
     expect(dialog.get_by_role('button', name='확인', exact=True)).to_be_enabled()
-    assert any(body == dict(name='새 동아리', initial='새동아리_UPPER', type='CLUB') for _, _, _, body in requests)
+    assert any(body == dict(name='새 동아리', initial='새동아리_UPPER', type='CLUB', club_type_ids=[1]) for _, _, _, body in requests)
     assert {'adminVendors', 'adminDashboard', 'adminEditor', 'vendors', 'clubs', 'eventDetail'} <= set(page.evaluate('window.testInvalidations'))
     dialog.get_by_role('button', name='확인', exact=True).click()
-    expect(page.get_by_role('status')).to_contain_text('크롤러 시드')
+    expect(page.get_by_role('status')).not_to_contain_text('크롤러 시드')
     expect(table.get_by_role('heading')).to_contain_text('11개')
     # Edit shows immutable fields; homepage deletion is an explicit empty string.
     table.get_by_role('button', name='컴퓨터공학과 (#1) 수정').click()

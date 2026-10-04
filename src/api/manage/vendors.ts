@@ -1,6 +1,13 @@
 import api from '@/api/axios';
 
 export type VendorType = 'SCHOOL' | 'CLUB';
+export interface ClubType {
+  id: number;
+  name: string;
+}
+export const getClubTypes = async (): Promise<ClubType[]> =>
+  (await api.get('/api/v1/club-types')).data.data;
+
 export interface AdminVendor {
   id: number;
   name: string;
@@ -10,6 +17,7 @@ export interface AdminVendor {
   is_active: boolean;
   created_at: string;
   warning?: string;
+  club_types?: ClubType[];
 }
 export interface VendorFilters {
   type: VendorType | '';
@@ -20,8 +28,10 @@ export interface CreateVendor {
   initial: string;
   type: VendorType;
   homepage_url?: string;
+  club_type_ids?: number[];
 }
 export interface UpdateVendor {
+  club_type_ids?: number[];
   name?: string;
   homepage_url?: string;
   is_active?: boolean;

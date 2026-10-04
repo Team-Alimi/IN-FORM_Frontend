@@ -2,12 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RiCloseLine, RiLockLine } from 'react-icons/ri';
-import { createAdminVendor, updateAdminVendor } from '@/api/manage/vendors';
+import {
+  createAdminVendor,
+  updateAdminVendor,
+  getClubTypes,
+} from '@/api/manage/vendors';
 import type { AdminVendor } from '@/api/manage/vendors';
 import {
   buildVendorPatch,
+  hasClubTypesChanged,
+  getVendorWarning,
   validateVendorForm,
 } from '@/utils/manage/vendorForm';
 import type { VendorFormValues } from '@/utils/manage/vendorForm';
@@ -33,10 +39,22 @@ const VendorEditorModal = ({
     type: original?.type ?? 'SCHOOL',
     homepage_url: original?.homepage_url ?? '',
     is_active: original?.is_active ?? true,
+    club_type_ids: original?.club_types?.map((item) => item.id) ?? [],
   });
+  const clubTypes = useQuery({
+    queryKey: ['clubTypes'],
+    queryFn: getClubTypes,
+    enabled: form.type === 'CLUB',
+  });
+  const typesChanged = !original || hasClubTypesChanged(form, original);
+  const existingOnlyTypes = (original?.club_types ?? []).filter(
+    (item) => !(clubTypes.data ?? []).some((option) => option.id === item.id)
+  );
+  const unavailableTypes = clubTypes.isSuccess ? existingOnlyTypes : [];
   const [error, setError] = useState('');
   const [missing, setMissing] = useState(false);
   const [saved, setSaved] = useState<AdminVendor | null>(null);
+  const warning = getVendorWarning(saved);
   useEffect(() => {
     const dialog = ref.current;
     const previousFocus = document.activeElement;
@@ -58,6 +76,9 @@ const VendorEditorModal = ({
             name: values.name.trim(),
             initial: values.initial.trim(),
             type: values.type,
+            ...(values.type === 'CLUB'
+              ? { club_type_ids: values.club_type_ids }
+              : {}),
             ...(values.homepage_url.trim()
               ? { homepage_url: values.homepage_url.trim() }
               : {}),
@@ -115,6 +136,22 @@ const VendorEditorModal = ({
       setError(validation);
       return;
     }
+    if (form.type === 'CLUB' && typesChanged) {
+      if (!clubTypes.isSuccess || clubTypes.isError) {
+        setError('동아리 유형 목록을 불러온 뒤 다시 저장해 주세요.');
+        return;
+      }
+      if (
+        form.club_type_ids.some(
+          (id) => !clubTypes.data.some((item) => item.id === id)
+        )
+      ) {
+        setError(
+          '유형을 변경하려면 비활성 유형을 해제하고 선택 가능한 유형으로 바꿔 주세요.'
+        );
+        return;
+      }
+    }
     setError('');
     submitting.current = true;
     mutation.mutate(form);
@@ -154,9 +191,9 @@ const VendorEditorModal = ({
             <p className="mt-2 break-words text-xs text-gray-500">
               #{saved.id} · {saved.name} · 식별자: {saved.initial}
             </p>
-            {saved.warning && (
+            {warning && (
               <p className="mt-4 break-words rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                {saved.warning}
+                {warning}
               </p>
             )}
           </div>
@@ -266,6 +303,66 @@ const VendorEditorModal = ({
                 </fieldset>
               </>
             )}
+            {form.type === 'CLUB' && (
+              <fieldset className="text-xs">
+                <legend className="mb-2 font-medium">
+                  동아리 유형 (복수 선택){' '}
+                  <span className="text-red-500">*</span>
+                </legend>
+                {clubTypes.isPending && (
+                  <p role="status">동아리 유형 불러오는 중…</p>
+                )}
+                {clubTypes.isError && (
+                  <p role="alert" className="text-red-600">
+                    동아리 유형을 불러오지 못했습니다.{' '}
+                    <button
+                      type="button"
+                      className="underline"
+                      onClick={() => void clubTypes.refetch()}
+                    >
+                      다시 시도
+                    </button>
+                  </p>
+                )}
+                {clubTypes.isSuccess && clubTypes.data.length === 0 && (
+                  <p>선택 가능한 동아리 유형이 없습니다.</p>
+                )}
+                <div className="flex flex-wrap gap-3">
+                  {[...(clubTypes.data ?? []), ...existingOnlyTypes].map(
+                    (item) => (
+                      <label key={item.id} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          disabled={!clubTypes.isSuccess}
+                          checked={form.club_type_ids.includes(item.id)}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              club_type_ids: event.target.checked
+                                ? [...current.club_type_ids, item.id]
+                                : current.club_type_ids.filter(
+                                    (id) => id !== item.id
+                                  ),
+                            }))
+                          }
+                          className="accent-black"
+                        />
+                        {item.name}
+                        {unavailableTypes.some(
+                          (option) => option.id === item.id
+                        ) && ' (비활성)'}
+                      </label>
+                    )
+                  )}
+                </div>
+                {unavailableTypes.length > 0 && (
+                  <p className="mt-2 text-gray-500">
+                    기존 비활성 유형은 그대로 유지할 수 있습니다. 유형을 변경할
+                    때는 비활성 유형을 해제해 주세요.
+                  </p>
+                )}
+              </fieldset>
+            )}
             <label className="block text-xs font-medium">
               홈페이지 URL{' '}
               {!original && (
@@ -306,7 +403,9 @@ const VendorEditorModal = ({
                   ))}
                 </div>
                 <p className="mt-2 text-gray-400">
-                  숨김은 목록·필터 노출만 가립니다. 수집은 중단되지 않습니다.
+                  {form.type === 'CLUB'
+                    ? '숨김은 목록·필터 노출만 가립니다.'
+                    : '숨김은 목록·필터 노출만 가립니다. 수집은 중단되지 않습니다.'}
                 </p>
               </fieldset>
             )}

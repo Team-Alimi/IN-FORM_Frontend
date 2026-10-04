@@ -36,15 +36,19 @@ const CalendarCell = ({
   }
 
   // 원형 배경 색상
-  // - 오늘: 진한 primary 원 (항상 유지)
-  // - 다른 날짜 선택: 연한 primary 원 추가 (오늘 원은 그대로)
+  // 오늘은 회색, 다른 선택 날짜는 primary로 구분합니다.
   let circleBg = "";
-  if (isToday) circleBg = "bg-primary text-white hover:bg-primary-dark";
-  else if (isSelected && inCurrentMonth) circleBg = "bg-primary-light text-white hover:bg-primary-light-hover";
+  if (isToday) circleBg = isMini ? "bg-primary text-white hover:bg-primary-dark" : "bg-gray-200 text-gray-900 hover:bg-gray-300";
+  else if (isSelected && inCurrentMonth) circleBg = isMini ? "bg-primary-light text-white hover:bg-primary-light-hover" : "bg-primary text-white hover:bg-primary-dark";
   else circleBg = `${textColor} hover:bg-gray-100`;
 
   return (
-    <div
+    <button
+      type="button"
+      disabled={!inCurrentMonth}
+      aria-label={`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`}
+      aria-current={isToday ? 'date' : undefined}
+      aria-pressed={!!isSelected}
       className={`flex justify-center items-center py-0.5 ${inCurrentMonth ? "cursor-pointer" : "cursor-default"}`}
       onClick={handleClick}
     >
@@ -57,7 +61,7 @@ const CalendarCell = ({
           {date.getDate()}
         </span>
       </div>
-    </div>
+    </button>
   );
 };
 

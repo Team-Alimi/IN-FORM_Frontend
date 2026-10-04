@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ClubThumbnail from './ClubThumbnail';
+import { getArticleClubTypes } from '@/utils/clubTypes';
 
 const RecommendedClubCarousel = ({ clubs }) => {
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ const RecommendedClubCarousel = ({ clubs }) => {
 
         {clubs.map((club, i) => {
           const clubName = club.vendors?.[0]?.name ?? "";
-          const tags = club.categories?.map((c) => c.name) ?? [];
+          const tags = getArticleClubTypes(club.vendors);
           const isActive = i === activeIndex;
 
           return (
@@ -71,19 +73,13 @@ const RecommendedClubCarousel = ({ clubs }) => {
             >
               {/* 배경 이미지 또는 그라디언트 */}
               <div className="absolute inset-0">
-                {club.attachment_url ? (
-                  <img
-                    src={club.attachment_url}
-                    alt={clubName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
+                <ClubThumbnail src={club.thumbnail_url} alt={club.title}>
                   <div className="w-full h-full bg-linear-to-br from-blue-400 via-indigo-500 to-purple-600 flex items-center justify-center">
                     <span className="text-white font-bold text-7xl opacity-20 select-none">
                       {clubName.charAt(0)}
                     </span>
                   </div>
-                )}
+                </ClubThumbnail>
               </div>
 
               {/* 하단 dark gradient overlay */}
@@ -94,10 +90,10 @@ const RecommendedClubCarousel = ({ clubs }) => {
                 <div className="absolute top-3 right-3 flex gap-1">
                   {tags.slice(0, 2).map((tag) => (
                     <span
-                      key={tag}
+                      key={tag.id}
                       className="bg-black/50 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1 rounded-full"
                     >
-                      #{tag}
+                      #{tag.name}
                     </span>
                   ))}
                 </div>

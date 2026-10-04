@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
+import { getHomeWeek } from '@/utils/homeCalendar';
+import CalendarExpandHandle from './CalendarExpandHandle';
 import {
   parseDate,
   formatDateKey,
@@ -18,8 +20,14 @@ import MobileEventDetail from "@/components/main/adaptive/feature/EVD/MobileEven
 import { useCalendarPrefetch } from "@/hooks/useCalendarPrefetch";
 import useAuthStore from "@/stores/useAuthStore";
 
+const combineAdjacentMonths = (queries) => ({
+  articles: queries.flatMap((query) => query.data?.articles ?? []),
+  failed: queries.filter((query) => query.isError).map((query) => query.refetch),
+});
+
 const CalendarSection = ({ onTodayEventCount }) => {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]); // 선택된 카테고리 ID 배열
+  const [viewMode, setViewMode] = useState('month');
   const [isMyDeptOnly, setIsMyDeptOnly] = useState(false);
   const [selectedDeadlineStatuses, setSelectedDeadlineStatuses] = useState([]); // 클라이언트 필터
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -68,8 +76,15 @@ const CalendarSection = ({ onTodayEventCount }) => {
       }),
     staleTime: 60 * 1000 * 10,
     gcTime: 60 * 1000 * 20,
-    placeholderData: keepPreviousData,
   });
+  const extraMonths = viewMode === 'week'
+    ? [...new Set(getHomeWeek(currentDate).map(({ date }) => formatMonthKey(date)))].filter((month) => month !== calendarMonth)
+    : [];
+  const adjacent = useQueries({ combine: combineAdjacentMonths, queries: extraMonths.map((month) => ({
+    queryKey: ['monthlyAll', month, selectedCategoryIds, isMyDeptOnly],
+    queryFn: () => fetchMonthlyAll({ calendarMonth: month, category_id: selectedCategoryIds.length ? selectedCategoryIds : undefined, is_my_only: isMyDeptOnly || undefined }),
+    staleTime: 60 * 1000 * 10,
+  })) });
 
   // 상세 데이터 페칭 (바텀시트용)
   const {
@@ -87,10 +102,10 @@ const CalendarSection = ({ onTodayEventCount }) => {
 
   // deadline_status 클라이언트 사이드 필터링
   const filteredArticles = useMemo(() => {
-    const articles = data?.articles ?? [];
+    const articles = [...new Map([...(data?.articles ?? []), ...adjacent.articles].map((article) => [article.id, article])).values()];
     if (selectedDeadlineStatuses.length === 0) return articles;
     return articles.filter((a) => selectedDeadlineStatuses.includes(a.deadline_status));
-  }, [data, selectedDeadlineStatuses]);
+  }, [data, adjacent.articles, selectedDeadlineStatuses]);
 
   // 2. eventsByDate : 일별로 이벤트 매핑
   const eventsByDate = useMemo(() => {
@@ -134,30 +149,26 @@ const CalendarSection = ({ onTodayEventCount }) => {
   }, [eventsByDate, onTodayEventCount]);
 
   /******핸들러 핸들러 핸들러*******/
-  const scrollToEventList = () => {
-    const el = document.getElementById("event-list-section");
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      window.scrollTo({ top: window.scrollY + rect.top - 16, behavior: "smooth" });
-    }
+  const handleExpandMonth = () => {
+    const today = new Date();
+    setViewMode('month');
+    setCurrentDate(formatDateKey(today));
+    setCalendarMonth(formatMonthKey(today));
   };
 
   //1. 날짜 클릭 핸들러 - CalendarCell에서 전달받은 날짜 처리
   const handleDateClick = (date) => {
     const dateKey = formatDateKey(date); // Date 객체 → "2025-11-16"
     setCurrentDate(dateKey);
-    scrollToEventList();
-  };
-  //2. Overflow 버튼 클릭 핸들러 (+n 클릭 시)
-  const handleOverflowClick = (dateKey) => {
-    setCurrentDate(dateKey);
-    scrollToEventList();
+    setCalendarMonth(formatMonthKey(date));
+    if (dateKey !== formatDateKey(new Date())) setViewMode('week');
   };
 
   // 월 변경 핸들러
   const handleMonthChange = (monthKey) => {
     // monthKey: "2025-10" 형식
     setCalendarMonth(monthKey);
+    setViewMode('month');
 
     // 현재 선택된 날짜도 해당 월의 1일로 변경
     const [yearStr, monthStr] = monthKey.split("-");
@@ -230,18 +241,18 @@ const CalendarSection = ({ onTodayEventCount }) => {
     <div
       className={
         isMobile
-          ? "flex flex-col gap-2 min-h-[500px] justify-between"
-          : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 min-h-[500px] justify-between overflow-hidden"
+          ? "flex flex-col gap-2"
+          : "flex flex-col gap-2 bg-white rounded-[28px] border border-[#E8F0FB] shadow-[0_8px_30px_rgb(0,72,152,0.05)] p-4 pt-5 overflow-hidden"
       }
     >
       <div className="p-2">
         <MainCalendar
           currentMonth={calendarMonth}
+          viewMode={viewMode}
           selectedDate={currentDate}
           eventsByDate={eventsByDate}
           onSelectDate={handleDateClick}
           onMonthChange={handleMonthChange}
-          onOverflowClick={handleOverflowClick}
           onFilterOpen={() => {
             if (requireLogin()) setIsFilterSheetOpen(true);
           }}
@@ -258,7 +269,8 @@ const CalendarSection = ({ onTodayEventCount }) => {
           }
         />
       </div>
-      <div className="border-t border-gray-200 max-mobile:block hidden" />
+      <CalendarExpandHandle enabled={viewMode === 'week'} onExpand={handleExpandMonth} />
+      {adjacent.failed.length > 0 && <p role="alert" className="text-xs text-red-600">인접 월의 일정을 불러오지 못했습니다. <button onClick={() => adjacent.failed.forEach((refetchMonth) => void refetchMonth())}>다시 시도</button></p>}
       <div className="mb-2 p-1 min-w-0">
         <DaySelectEventList
           events={eventsByDate[currentDate]}

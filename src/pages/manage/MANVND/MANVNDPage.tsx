@@ -8,6 +8,7 @@ import VendorTable from '@/components/manage/feature/MANVND/VendorTable';
 import VendorEditorModal from '@/components/manage/feature/MANVND/VendorEditorModal';
 import { getAdminVendors } from '@/api/manage/vendors';
 import type { AdminVendor, VendorFilters } from '@/api/manage/vendors';
+import { getVendorWarning } from '@/utils/manage/vendorForm';
 import {
   isDashboardForbidden,
   shouldRetryDashboardQuery,
@@ -92,9 +93,9 @@ const MANVNDPage = () => {
                 <p>
                   #{lastSaved.id} {lastSaved.name} 저장 완료
                 </p>
-                {lastSaved.warning && (
+                {getVendorWarning(lastSaved) && (
                   <p className="mt-2 break-words text-amber-700">
-                    {lastSaved.warning}
+                    {getVendorWarning(lastSaved)}
                   </p>
                 )}
               </section>

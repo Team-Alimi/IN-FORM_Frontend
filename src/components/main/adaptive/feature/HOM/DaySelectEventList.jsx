@@ -45,7 +45,7 @@ const DaySelectEventList = ({ events, currentDate, onArticleClick }) => {
       {...swipeHandlers}
       className={
         isMobile
-          ? "w-full min-w-0 bg-gray-50 rounded-[18px] px-4 py-3 mb-3 cursor-pointer shadow-[0_2px_12px_rgba(0,72,152,0.04)"
+          ? "w-full min-w-0 bg-white border-t border-gray-100 px-2 py-3 mb-3"
           : "bg-white rounded-2xl p-6 max-mobile:p-4 sm:p-8 md:p-10 w-full min-w-0"
       }
     >
