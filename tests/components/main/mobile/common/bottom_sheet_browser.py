@@ -35,7 +35,7 @@ with sync_playwright() as p:
     drag(30)
     page.wait_for_timeout(250)
     assert page.evaluate('window.closes') == 0
-    assert handle.locator('..').evaluate("el => getComputedStyle(el).translate") == '0px'
+    assert page.locator('[data-bottom-sheet]').evaluate("el => getComputedStyle(el).translate") == '0px'
     # Body scroll does not dismiss the sheet.
     content = page.get_by_text('Fixture content', exact=True).locator('..')
     content.evaluate('el => el.scrollTop = 200')
@@ -47,7 +47,7 @@ with sync_playwright() as p:
     page.evaluate('window.openSheet()')
     expect(handle).to_be_visible()
     page.wait_for_timeout(400)
-    assert handle.locator('..').evaluate("el => getComputedStyle(el).translate") == '0px'
+    assert page.locator('[data-bottom-sheet]').evaluate("el => getComputedStyle(el).translate") == '0px'
     # Tapping outside remains supported.
     page.mouse.click(10, 10)
     expect(handle).to_have_count(0)
@@ -65,11 +65,37 @@ with sync_playwright() as p:
     touch('touchCancel')
     page.wait_for_timeout(250)
     assert page.evaluate('window.closes') == 2
-    assert handle.locator('..').evaluate("el => getComputedStyle(el).translate") == '0px'
+    assert page.locator('[data-bottom-sheet]').evaluate("el => getComputedStyle(el).translate") == '0px'
     touch('touchStart')
     touch('touchMove', 110)
     touch('touchEnd')
     expect(handle).to_have_count(0)
     assert page.evaluate('window.closes') == 3
+    # Simulate the visible viewport shrinking while Safari toolbars are expanded.
+    page.evaluate('''() => {
+      Object.defineProperty(visualViewport, 'height', {configurable:true, get:() => 550});
+      Object.defineProperty(visualViewport, 'offsetTop', {configurable:true, get:() => 24});
+      window.openSheet();
+    }''')
+    expect(handle).to_be_visible()
+    page.wait_for_timeout(400)
+    sheet = page.locator('[data-bottom-sheet]')
+    box = sheet.bounding_box()
+    assert box['y'] >= 24 + 48
+    assert box['y'] + box['height'] <= 574.5
+    assert box['height'] <= 550 * .85 + 1
+    assert page.evaluate('document.body.style.position') == 'fixed'
+    original_handle_y = handle.bounding_box()['y']
+    page.locator('[data-bottom-sheet-content]').evaluate('el => el.scrollTop = 600')
+    assert abs(handle.bounding_box()['y'] - original_handle_y) < 1
+    page.evaluate('''() => {
+      Object.defineProperty(visualViewport, 'height', {configurable:true, get:() => 450});
+      visualViewport.dispatchEvent(new Event('resize'));
+    }''')
+    assert sheet.bounding_box()['height'] <= 450 * .85 + 1
+    page.get_by_role('button', name='바텀시트 닫기').click()
+    expect(handle).to_have_count(0)
+    assert page.evaluate('window.closes') == 4
+    assert page.evaluate('document.body.style.position') != 'fixed'
     browser.close()
-print('PASS: short drag reset, mouse/touch drag close, touch cancel, content scroll, reopen reset, backdrop close')
+print('PASS: drag, touch cancel, content scroll, backdrop/button close, viewport resize/offset and body unlock')

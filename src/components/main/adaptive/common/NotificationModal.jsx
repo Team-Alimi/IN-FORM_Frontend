@@ -310,7 +310,7 @@ const NotificationModal = ({ isOpen, onClose }) => {
   // 모바일: 바텀시트
   if (isMobile) {
     return (
-      <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[70vh]">
+      <BottomSheet isOpen={isOpen} onClose={onClose} maxHeight="70%">
         <div className="pb-4">{ModalContent}</div>
       </BottomSheet>
     );

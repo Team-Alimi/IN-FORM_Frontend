@@ -4,8 +4,9 @@ import { getStatus } from "@/utils/statusUtil";
 import DetailInfoTitle from "@/components/main/adaptive/feature/EVD/DetailInfoTitle";
 import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButton";
 import BottomSheet from "@/components/main/mobile/common/BottomSheet";
+import ArticleBody from "@/components/main/adaptive/feature/EVD/ArticleBody";
 
-const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, title, vendors, startDate, dueDate, created_at, content, category_name, is_bookmarked, bookmark_count, isFetching }) => {
+const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, title, vendors, startDate, dueDate, created_at, content, attachments, category_name, is_bookmarked, bookmark_count, isFetching }) => {
   const [bookmarkCount, setBookmarkCount] = useState(bookmark_count || 0);
   const [isBookmarkedState, setIsBookmarkedState] = useState(false);
   const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
   };
   const status = getStatus(apiStatus);
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} className="max-h-[85vh]">
+    <BottomSheet isOpen={isOpen} onClose={onClose}>
       <div className="border-b border-gray-200 pb-4 mb-4">
         <DetailInfoTitle
           status={status}
@@ -57,7 +58,7 @@ const MobileEventDetail = ({ isOpen, onClose, articleId, status: apiStatus, titl
         />
       </div>
       <div className="min-h-[100px]">
-        <div className="prose text-gray-800 whitespace-pre-wrap leading-relaxed">{content}</div>
+        <ArticleBody content={content} attachments={attachments} />
       </div>
       <div className="mt-6 flex justify-end">
         <BookmarkButton
