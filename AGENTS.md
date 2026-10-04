@@ -57,10 +57,12 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - HOM은 월간 보기와 오늘 일정으로 시작하며, 다른 날짜 선택 시 월요일 시작 주간 보기로 전환한다. 오늘은 회색, 선택한 다른 날짜는 primary 원으로 표시한다. 목록 상단 손잡이를 아래로 60px 이상 드래그하거나 클릭·키보드로 실행하면 오늘의 월간 보기로 복귀한다. 목록 본문 스크롤과 드래그는 분리한다.
 - HOM의 PC·모바일 캘린더는 날짜 아래 카테고리 점 표시를 공유한다. 진행 중인 행사들의 첫 번째 카테고리를 중복 제거해 최대 3개 표시한다. 월간·주간 전환은 높이를 부드럽게 변경하며, 동작 줄이기 설정을 존중한다.
 - HOM에서 `source_type: CLUB`인 글은 일반 카테고리 대신 ‘동아리’ 공통 배지와 전용 색상의 점을 표시한다. 동아리 세부 유형별 색상은 구분하지 않는다.
+- HOM 상세 바텀시트는 `ArticleBody`로 정제한 HTML·본문 이미지·첨부파일을 표시한다. 본문과 첨부의 동일 이미지 URL은 중복 표시하지 않으며 일반 텍스트 줄바꿈은 보존한다.
 
 - CBL 썸네일은 공지 목록의 `thumbnail_url`을 사용한다. CBL·CBD 해시태그는 `vendors[].club_types`의 이름을 사용하고 유형 ID로 중복을 제거한다. 이미지·유형 조회를 위해 게시물 상세 API를 추가 호출하지 않는다.
 
 - 공용 `BottomSheet`는 상단 손잡이를 아래로 80px 이상 드래그하면 기본적으로 닫힌다. 본문 스크롤은 닫기 동작과 분리한다.
+- 공용 `BottomSheet`는 실제 visual viewport 안에서 기본 85% 높이로 제한하고 상단 최소 48px 여백을 남긴다. 높이 변경은 `maxHeight` prop의 백분율을 사용하며 `vh` 높이를 호출부에서 추가하지 않는다. 손잡이·닫기 버튼은 스크롤 영역 밖에 두고 본문만 스크롤한다.
 - `MobileTabBar`는 고정 탭바와 동일 높이의 문서 내 공간을 함께 렌더링한다. 탭바 높이는 `global.css`의 `--mobile-tab-bar-height`를 공유하며, 페이지마다 탭바용 하단 패딩을 중복 추가하지 않는다.
 - 모바일 탭바는 하단 중앙의 캡슐형 5개 탭 UI를 사용한다. PC 상단 `TabBar`와 독립적으로 스타일을 관리한다.
 
@@ -72,6 +74,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 
 - Vercel 배포는 `vercel.json`의 SPA rewrite를 유지한다. 하위 경로 직접 접속·새로고침도 `index.html`을 거쳐 React Router가 처리한다.
 - 비로그인 HOM은 기본 캘린더 열람만 허용하고, 필터 조작 및 공지 상세 열기는 `/login`으로 안내한다.
+- 공통 알림함은 `page_info.has_next`에 따라 다음 페이지를 조회하며 조회 실패와 빈 목록을 구분한다. 읽음 성공 후 목록·안 읽은 개수를 갱신하고, 연결 글은 상세 응답의 `source_type`에 따라 EVD 또는 CBD로 이동한다. 처리 중 닫은 알림창의 응답으로 뒤늦게 이동하지 않는다.
 
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.
