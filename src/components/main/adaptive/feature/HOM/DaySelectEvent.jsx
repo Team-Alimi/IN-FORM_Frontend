@@ -9,7 +9,7 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
   };
 
   // 영어 코드("CONTEST")가 올 수 있으므로 한글명으로 변환 후 색상 결정
-  const rawName = event.category_name ?? "기타";
+  const rawName = event.source_type === "CLUB" ? "동아리" : event.category_name || "기타";
   const categoryName = CATEGORY_CODE_TO_NAME_MAP[rawName] ?? rawName;
   const colorInfo = CATEGORY_NAME_COLOR_MAP[categoryName] ?? DEFAULT_CATEGORY_COLOR;
 
@@ -52,7 +52,7 @@ const DaySelectEvent = ({ event, isMini = false, onArticleClick, currentDate }) 
 
       {/* 오른쪽: 카테고리 배지 + 행사 제목 */}
       <div className="flex flex-col gap-1 flex-1 min-w-0 text-left">
-        <Badge category={event.category_name} className="self-start" />
+        <Badge category={categoryName} className="self-start" />
         <span className="text-[13px] font-medium text-gray-800 wrap-break-word">
           {event.title}
         </span>
