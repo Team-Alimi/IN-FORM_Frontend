@@ -1,4 +1,4 @@
-import api from "@/api/axios";
+import api from '@/api/axios';
 
 /**
  * 알림 목록 조회 (최신순, 페이지네이션)
@@ -7,10 +7,12 @@ import api from "@/api/axios";
  */
 export const fetchNotifications = async (page = 1) => {
   try {
-    const res = await api.get("/api/v1/notifications", { params: { page, size: 20 } });
+    const res = await api.get('/api/v1/notifications', {
+      params: { page, size: 20 },
+    });
     return res.data.data; // { content: [...], page_info: {...} }
   } catch (error) {
-    console.error("알림 목록 조회 실패:", error);
+    console.error('알림 목록 조회 실패:', error);
     throw error;
   }
 };
@@ -21,10 +23,10 @@ export const fetchNotifications = async (page = 1) => {
  */
 export const fetchUnreadCount = async () => {
   try {
-    const res = await api.get("/api/v1/notifications/unread-count");
+    const res = await api.get('/api/v1/notifications/unread-count');
     return res.data.data;
   } catch (error) {
-    console.error("읽지 않은 알림 개수 조회 실패:", error);
+    console.error('읽지 않은 알림 개수 조회 실패:', error);
     throw error;
   }
 };
@@ -39,7 +41,7 @@ export const readNotification = async (notificationId) => {
     const res = await api.patch(`/api/v1/notifications/${notificationId}/read`);
     return res.data;
   } catch (error) {
-    console.error("알림 개별 읽음 처리 실패:", error);
+    console.error('알림 개별 읽음 처리 실패:', error);
     throw error;
   }
 };
@@ -50,10 +52,10 @@ export const readNotification = async (notificationId) => {
  */
 export const readAllNotifications = async () => {
   try {
-    const res = await api.patch("/api/v1/notifications/read-all");
-    return res.data;
+    const res = await api.patch('/api/v1/notifications/read-all');
+    return res.data.data;
   } catch (error) {
-    console.error("알림 전체 읽음 처리 실패:", error);
+    console.error('알림 전체 읽음 처리 실패:', error);
     throw error;
   }
 };
