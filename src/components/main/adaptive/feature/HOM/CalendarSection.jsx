@@ -294,7 +294,8 @@ const CalendarSection = ({ onTodayEventCount }) => {
           dueDate={detailData?.ends_on}
           created_at={detailData?.published_at}
           content={detailData?.content}
-          category_name={detailData?.categories?.[0]?.name}
+          attachments={detailData?.attachments}
+          category_name={detailData?.source_type === 'CLUB' ? '동아리' : detailData?.categories?.[0]?.name}
           is_bookmarked={detailData?.is_bookmarked}
           bookmark_count={detailData?.bookmark_count}
         />
