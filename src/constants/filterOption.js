@@ -2,6 +2,8 @@
 // GET /api/v1/categories 의 name 값과 1:1 대응 (고정값, 변경 시 관리자 설정 변경)
 // 색상은 global.css의 --color-category-* 토큰을 Tailwind 클래스로 사용
 export const CATEGORY_NAME_COLOR_MAP = {
+  // 동아리는 API 카테고리가 아닌 화면 표시용 공통 분류다.
+  "동아리":      { bg: "bg-category-club-bg", text: "text-category-club-text", border: "border-category-club-border", dot: "bg-category-club-dot" },
   "학사":        { bg: "bg-category-academic-bg",      text: "text-category-academic-text",      border: "border-category-academic-border",      dot: "bg-category-academic-dot" },
   "대외활동":    { bg: "bg-category-activity-bg",      text: "text-category-activity-text",      border: "border-category-activity-border",      dot: "bg-category-activity-dot" },
   "취업·인턴십": { bg: "bg-category-career-bg",        text: "text-category-career-text",        border: "border-category-career-border",        dot: "bg-category-career-dot" },

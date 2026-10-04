@@ -81,6 +81,10 @@
   --color-category-etc-text: #64748B;
   --color-category-etc-border: #E2E8F0;
   --color-category-etc-dot: #64748B;
+  --color-category-club-bg: #EEF2FF;
+  --color-category-club-text: #4338CA;
+  --color-category-club-border: #C7D2FE;
+  --color-category-club-dot: #6366F1;
 
   /*상태 배경 색상[진행중|마감|예정|마감임박]*/
   --color-OnGoing: #dcfce7;
