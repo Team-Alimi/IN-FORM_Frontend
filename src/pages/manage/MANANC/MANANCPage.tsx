@@ -142,7 +142,7 @@ const AnnouncementEditor = ({
             />
           </label>
           <p className="text-xs text-gray-500">
-            텍스트와 줄바꿈만 지원합니다. 커피 이벤트는 마이페이지의 불편사항 접수 메뉴로 참여하도록 안내합니다.
+            텍스트와 줄바꿈만 지원합니다. 이벤트 참여 경로는 본문에 작성하세요.
           </p>
           <label className="flex items-center gap-2 text-sm">
             <input
