@@ -3,12 +3,17 @@
 > **먼저 [00-common.md](00-common.md) 를 읽으세요.** 응답 봉투·인증·페이징·에러 코드·공통 응답 객체가
 > 거기 있고, 아래 개별 명세는 전부 그 규격을 전제로 씁니다.
 
-전체 63개.
+전체 71개.
 
 ## 관리자
 
 | 기능 | Method | 엔드포인트 | 권한 | 명세 |
 |---|---|---|---|---|
+| 서비스 공지 목록 조회 (관리자) | GET | `/api/v1/admin/announcements` | Required (Admin) | [admin/announcement/서비스 공지 목록 조회 (관리자).md](admin/announcement/%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C%20%28%EA%B4%80%EB%A6%AC%EC%9E%90%29.md) |
+| 서비스 공지 등록 | POST | `/api/v1/admin/announcements` | Required (Admin) | [admin/announcement/서비스 공지 등록.md](admin/announcement/%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EB%93%B1%EB%A1%9D.md) |
+| 서비스 공지 수정 | PATCH | `/api/v1/admin/announcements/{announcementId}` | Required (Admin) | [admin/announcement/서비스 공지 수정.md](admin/announcement/%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EC%88%98%EC%A0%95.md) |
+| 서비스 공지 발행 | POST | `/api/v1/admin/announcements/{announcementId}/publish` | Required (Admin) | [admin/announcement/서비스 공지 발행.md](admin/announcement/%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EB%B0%9C%ED%96%89.md) |
+| 서비스 공지 보관 | POST | `/api/v1/admin/announcements/{announcementId}/archive` | Required (Admin) | [admin/announcement/서비스 공지 보관.md](admin/announcement/%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EB%B3%B4%EA%B4%80.md) |
 | 관리자 공지 목록 조회 | GET | `/api/v1/admin/articles` | Required (Admin) | [admin/article/관리자 공지 목록 조회.md](admin/article/%EA%B4%80%EB%A6%AC%EC%9E%90%20%EA%B3%B5%EC%A7%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
 | 공지 작성 | POST | `/api/v1/admin/articles` | Required (Admin) | [admin/article/공지 작성.md](admin/article/%EA%B3%B5%EC%A7%80%20%EC%9E%91%EC%84%B1.md) |
 | 공지 영구 삭제 | POST | `/api/v1/admin/articles/bulk/delete` | Required (Admin) | [admin/article/공지 영구 삭제.md](admin/article/%EA%B3%B5%EC%A7%80%20%EC%98%81%EA%B5%AC%20%EC%82%AD%EC%A0%9C.md) |
@@ -40,6 +45,17 @@
 | 제공처 목록 조회 (관리자) | GET | `/api/v1/admin/vendors` | Required (Admin) | [admin/vendor/제공처 목록 조회 (관리자).md](admin/vendor/%EC%A0%9C%EA%B3%B5%EC%B2%98%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C%20%28%EA%B4%80%EB%A6%AC%EC%9E%90%29.md) |
 | 제공처 등록 | POST | `/api/v1/admin/vendors` | Required (Admin) | [admin/vendor/제공처 등록.md](admin/vendor/%EC%A0%9C%EA%B3%B5%EC%B2%98%20%EB%93%B1%EB%A1%9D.md) |
 | 제공처 수정 · 비활성화 | PATCH | `/api/v1/admin/vendors/{vendorId}` | Required (Admin) | [admin/vendor/제공처 수정 · 비활성화.md](admin/vendor/%EC%A0%9C%EA%B3%B5%EC%B2%98%20%EC%88%98%EC%A0%95%20%C2%B7%20%EB%B9%84%ED%99%9C%EC%84%B1%ED%99%94.md) |
+
+## 서비스 공지
+
+> 운영팀이 앱 사용자에게 하는 안내입니다. 수집 공지(`/articles`)와는 다른 데이터입니다.
+> 팝업의 "다시 보지 않기" 는 클라이언트가 처리합니다.
+
+| 기능 | Method | 엔드포인트 | 권한 | 명세 |
+|---|---|---|---|---|
+| 서비스 공지 목록 조회 | GET | `/api/v1/announcements` | Not Required | [announcement/1. 서비스 공지 목록 조회.md](announcement/1.%20%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
+| 공지 팝업 조회 | GET | `/api/v1/announcements/popup` | Not Required | [announcement/공지 팝업 조회.md](announcement/%EA%B3%B5%EC%A7%80%20%ED%8C%9D%EC%97%85%20%EC%A1%B0%ED%9A%8C.md) |
+| 서비스 공지 상세 조회 | GET | `/api/v1/announcements/{announcementId}` | Not Required | [announcement/2. 서비스 공지 상세 조회.md](announcement/2.%20%EC%84%9C%EB%B9%84%EC%8A%A4%20%EA%B3%B5%EC%A7%80%20%EC%83%81%EC%84%B8%20%EC%A1%B0%ED%9A%8C.md) |
 
 ## 공지 조회
 

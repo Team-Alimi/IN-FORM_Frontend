@@ -142,7 +142,7 @@
 | 90 | `CERTIFICATION` | 자격증 |
 | 100 | `RESEARCH` | 학술·연구 |
 | 110 | `ACTIVITY` | 대외활동 |
-| 999 | `ETC` | 기타 — 기본 응답에는 없고, `include_unselectable=true`일 때 포함 |
+| 999 | `ETC` | 기타 — **목록에 안 나옴** |
 
 꺼짐: `RECRUIT` · `GLOBAL`
 
