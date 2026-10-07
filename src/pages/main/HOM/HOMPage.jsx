@@ -7,6 +7,7 @@ import { useDeviceStore } from "@/stores/deviceStore";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import MobileTabBar from "@/components/main/mobile/common/MobileTabBar";
 import { useState, useCallback } from "react";
+import AnnouncementPopup from '@/components/main/adaptive/feature/HOM/AnnouncementPopup';
 const HOMPage = () => {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [todayEventCount, setTodayEventCount] = useState(null);
@@ -63,6 +64,7 @@ const HOMPage = () => {
       </div>
 
       {isMobile ? <MobileTabBar activeIndex={0} /> : <Footer />}
+      <AnnouncementPopup />
     </div>
   );
 };

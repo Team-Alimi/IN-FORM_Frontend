@@ -59,6 +59,7 @@ const ManageNavigation = ({
           ['/manage/staged', '반영 대기'],
           ['/manage/users', '회원 관리'],
           ['/manage/vendors', '제공처/동아리 관리'],
+          ['/manage/announcements', '서비스 공지 관리'],
         ].map(([to, label]) => (
           <NavLink
             key={to}

@@ -40,7 +40,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 | LGN / ONB | 로그인 / 온보딩 |
 | PRI / TOS | 개인정보 처리방침 / 서비스 이용약관 |
 | NOT | 오류 / 404 |
-| MAN* | 관리자 기능 (`MANHOM`, `MANDTE`, `MANDTR`, `MANSTG`, `MANGBG`, `MANURV`, `MANUSR`, `MANVND`) |
+| MAN* | 관리자 기능 (`MANHOM`, `MANDTE`, `MANDTR`, `MANSTG`, `MANGBG`, `MANURV`, `MANUSR`, `MANVND`, `MANANC`) |
 
 페이지는 `[CODE]Page.jsx` 또는 `[CODE]Page.tsx`로 이름 짓는다. 데스크톱과 모바일이 함께 사용하는 사용자 기능 컴포넌트는 `components/main/adaptive/feature/[CODE]/`에 둔다.
 
@@ -58,6 +58,9 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - HOM의 PC·모바일 캘린더는 날짜 아래 카테고리 점 표시를 공유한다. 진행 중인 행사들의 첫 번째 카테고리를 중복 제거해 최대 3개 표시한다. 월간·주간 전환은 높이를 부드럽게 변경하며, 동작 줄이기 설정을 존중한다.
 - HOM에서 `source_type: CLUB`인 글은 일반 카테고리 대신 ‘동아리’ 공통 배지와 전용 색상의 점을 표시한다. 동아리 세부 유형별 색상은 구분하지 않는다.
 - HOM 상세 바텀시트는 `ArticleBody`로 정제한 HTML·본문 이미지·첨부파일을 표시한다. 본문과 첨부의 동일 이미지 URL은 중복 표시하지 않으며 일반 텍스트 줄바꿈은 보존한다.
+- HOM 진입 시 announcement 팝업을 비로그인 포함 표시한다. 본문은 평문으로 렌더링하며 여러 공지는 응답 순서대로 보여준다. 닫은 공지는 현재 앱 실행 중 다시 띄우지 않고, 7일 숨김은 공지 ID별로 브라우저에 저장한다.
+- HOM 서비스 공지는 모바일에서는 공용 `BottomSheet`, PC에서는 중앙 dialog로 표시한다. 제목·본문은 등록된 공지를 사용하고 이벤트 이미지는 별도 확정된 에셋이 있을 때만 추가한다.
+- 커피 이벤트는 `COFFEE_EVENT_ANNOUNCEMENT_ID`로 식별하고 제공된 아메리카노 이미지를 표시한다. 팝업에 외부 참여 링크·버튼이나 별도 안내 박스를 만들지 않으며 참여 경로는 등록된 본문에 적는다. 기존 본문의 참여 URL 문단은 화면에서 숨긴다.
 
 - CBL 썸네일은 공지 목록의 `thumbnail_url`을 사용한다. CBL·CBD 해시태그는 `vendors[].club_types`의 이름을 사용하고 유형 ID로 중복을 제거한다. 이미지·유형 조회를 위해 게시물 상세 API를 추가 호출하지 않는다.
 
@@ -75,11 +78,12 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - Vercel 배포는 `vercel.json`의 SPA rewrite를 유지한다. 하위 경로 직접 접속·새로고침도 `index.html`을 거쳐 React Router가 처리한다.
 - 비로그인 HOM은 기본 캘린더 열람만 허용하고, 필터 조작 및 공지 상세 열기는 `/login`으로 안내한다.
 - 공통 알림함은 `page_info.has_next`에 따라 다음 페이지를 조회하며 조회 실패와 빈 목록을 구분한다. 읽음 성공 후 목록·안 읽은 개수를 갱신하고, 연결 글은 상세 응답의 `source_type`에 따라 EVD 또는 CBD로 이동한다. 처리 중 닫은 알림창의 응답으로 뒤늦게 이동하지 않는다.
+- 서비스 공지 팝업은 공개 API이므로 만료된 로그인 토큰에 영향을 받지 않도록 인증 인터셉터 없는 공개 클라이언트로 조회한다. 실패해도 홈 이용을 막지 않는다.
 
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.
 - 보호된 사용자 라우트: `/clubs`, `/clubs/detail/:id`, `/events`, `/events/detail/:id`, `/bookmarks`, `/mypage`.
-- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`, `/manage/users`, `/manage/vendors`.
+- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`, `/manage/users`, `/manage/vendors`, `/manage/announcements`.
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
 - `/manage` 부모 라우트에 `ProtectedRoute`와 `Outlet`을 적용해 모든 관리자 페이지의 비로그인 접근을 API 요청 전에 처리한다.
 - MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
@@ -88,6 +92,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - MANGBG는 `src/api/manage/trash.ts`의 휴지통 전용 API를 사용한다. 전체 페이지 조회 후 화면에서 검색하며, 삭제 전 상태(`previous_status`)가 없는 게시물은 복구를 차단한다.
 - MANUSR 회원관리는 `src/api/manage/users.ts`를 사용한다. 회원 상세는 우측 패널에서 조회하며, 본인 권한 변경과 탈퇴 회원 승격을 차단하고 탈퇴 관리자의 강등은 허용한다.
 - MANVND 제공처·동아리 관리는 `src/api/manage/vendors.ts`를 사용한다. 식별자와 SCHOOL/CLUB 구분은 등록 후 고정한다. 동아리 세부 유형은 `/api/v1/club-types`에서 조회해 복수 선택하며, 등록 시 하나 이상 필수다. 수정 시 `club_type_ids`는 선택이 달라진 경우에만 전송하고 SCHOOL에는 보내지 않는다. 비활성화는 목록·필터 숨김이다. 등록·숨김 응답의 `warning`을 표시하되, 수동 운영하는 CLUB에서는 크롤러 시드 안내를 숨기고 SCHOOL에서는 유지한다.
+- MANANC 서비스 공지 관리는 `src/api/manage/announcements.ts`를 사용한다. 새 공지는 임시저장 후 별도 발행하며 삭제 대신 보관한다. 수정에서 상태를 보내지 않고 기간 변경 시 `clear_period`로 비운 뒤 새 날짜를 적용한다. 쓰기 응답의 모든 `warnings`를 표시한다.
 
 ## Git workflow
 
