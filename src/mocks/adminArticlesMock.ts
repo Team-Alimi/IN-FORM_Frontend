@@ -513,6 +513,6 @@ export const getMockAdminArticles = async (
       total_articles,
       has_next: current_page < total_pages,
     },
-    articles,
+    school_articles: articles,
   };
 };
