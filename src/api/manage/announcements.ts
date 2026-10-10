@@ -6,6 +6,7 @@ export interface Announcement {
   type: AnnouncementType;
   title: string;
   content: string;
+  image_url?: string;
   status: AnnouncementStatus;
   is_popup: boolean;
   starts_on?: string;
@@ -17,6 +18,8 @@ export interface AnnouncementInput {
   type: AnnouncementType;
   title: string;
   content: string;
+  image_url?: string;
+  clear_image?: boolean;
   is_popup: boolean;
   starts_on?: string;
   ends_on?: string;
@@ -53,4 +56,15 @@ export const transitionAnnouncement = async (
     `/api/v1/admin/announcements/${id}/${action}`
   );
   return response.data.data;
+};
+
+export const uploadAnnouncementImage = async (file: File): Promise<string> => {
+  const body = new FormData();
+  body.append('files', file);
+  const response = await api.post('/api/v1/admin/files', body);
+  return response.data.data[0].file_url;
+};
+
+export const discardAnnouncementImages = async (fileUrls: string[]): Promise<void> => {
+  await api.delete('/api/v1/admin/files', { data: { file_urls: fileUrls } });
 };
