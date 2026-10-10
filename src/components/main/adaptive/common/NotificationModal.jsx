@@ -181,13 +181,15 @@ const NotificationModal = ({ isOpen, onClose }) => {
               모두 읽음
             </button>
           )}
-          <button
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label="닫기"
-          >
-            <IoClose className="text-[20px] text-gray-500" />
-          </button>
+          {!isMobile && (
+            <button
+              onClick={onClose}
+              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="닫기"
+            >
+              <IoClose className="text-[20px] text-gray-500" />
+            </button>
+          )}
         </div>
       </div>
 

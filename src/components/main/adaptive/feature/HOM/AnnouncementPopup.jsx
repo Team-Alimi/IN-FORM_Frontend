@@ -7,8 +7,8 @@ import { useDeviceStore } from '@/stores/deviceStore';
 import {
   ANNOUNCEMENT_TYPES,
   COFFEE_EVENT_ANNOUNCEMENT_ID,
+  COFFEE_EVENT_FORM_URL,
 } from '@/constants/announcements';
-import coffeeImage from '@/assets/events/compose-americano.png';
 import {
   hideAnnouncementForWeek,
   isAnnouncementHidden,
@@ -20,10 +20,10 @@ const dismissed = new Set();
 const AnnouncementDialog = ({ announcement, remaining, onDismiss }) => {
   const ref = useRef(null);
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const coffeeEvent =
+  const isCoffeeEvent =
     announcement.type === 'EVENT' && announcement.id === COFFEE_EVENT_ANNOUNCEMENT_ID;
-  // 기존에 등록된 참여 링크 문단만 표시에서 제외한다. 서버 본문은 변경하지 않는다.
-  const body = coffeeEvent
+  // 기존 커피 공지의 참여 URL 문단은 버튼으로 대체한다.
+  const body = isCoffeeEvent
     ? (announcement.content ?? '').replace(/(?:참여하러\s*가기|참여하기)\s*:\s*https?:\/\/\S+/g, '').replace(/^\s*https?:\/\/\S+\s*$/gm, '').trim()
     : announcement.content;
   useEffect(() => {
@@ -52,12 +52,10 @@ const AnnouncementDialog = ({ announcement, remaining, onDismiss }) => {
           <IoClose size={24} />
         </button>
       )}
-      {coffeeEvent && (
+      {announcement.image_url && (
         <img
-          src={coffeeImage}
-          alt="컴포즈커피 아이스 아메리카노"
-          width={600}
-          height={456}
+          src={announcement.image_url}
+          alt={`${announcement.title} 대표 이미지`}
           className={isMobile
             ? 'mb-4 -mx-6 h-52 w-[calc(100%+3rem)] max-w-none object-cover'
             : 'mb-4 h-52 w-full object-cover'}
@@ -75,6 +73,14 @@ const AnnouncementDialog = ({ announcement, remaining, onDismiss }) => {
         <p className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-600">
           {body}
         </p>
+        {isCoffeeEvent && (
+          <a
+            href={COFFEE_EVENT_FORM_URL}
+            className="mt-4 flex w-full items-center justify-center rounded-xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            피드백 참여하기
+          </a>
+        )}
         <div className="mt-3 flex items-center justify-between gap-3 text-xs text-gray-500">
           <button
             type="button"

@@ -7,6 +7,8 @@ import {
   getAdminAnnouncements,
   saveAnnouncement,
   transitionAnnouncement,
+  uploadAnnouncementImage,
+  discardAnnouncementImages,
 } from '@/api/manage/announcements';
 import type {
   Announcement,
@@ -48,12 +50,79 @@ const AnnouncementEditor = ({
     ends_on: original?.ends_on ?? '',
   });
   const [validation, setValidation] = useState('');
+  const [imageUrl, setImageUrl] = useState(original?.image_url ?? '');
+  const [imageError, setImageError] = useState('');
+  const uploadedUrls = useRef(new Set<string>());
   const lock = useRef(false);
   const mutation = useMutation({
     mutationFn: (payload: AnnouncementInput) =>
       saveAnnouncement(original?.id, payload),
-    onSuccess: onSaved,
   });
+  const upload = useMutation({ mutationFn: uploadAnnouncementImage });
+  const cleanup = useMutation({ mutationFn: discardAnnouncementImages });
+  const busy = mutation.isPending || upload.isPending || cleanup.isPending;
+  const handleUpload = async (file: File | undefined) => {
+    if (!file || lock.current) return;
+    setImageError('');
+    if (!/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+      setImageError('jpg, jpeg, png, gif, webp 이미지만 업로드할 수 있습니다.');
+      return;
+    }
+    if (file.size <= 0 || file.size > 10 * 1024 * 1024) {
+      setImageError('빈 파일은 업로드할 수 없으며 최대 10MB까지 가능합니다.');
+      return;
+    }
+    if (file.name.length > 255) {
+      setImageError('파일 이름은 255자 이내여야 합니다.');
+      return;
+    }
+    lock.current = true;
+    try {
+      const nextUrl = await upload.mutateAsync(file);
+      const previousUrl = imageUrl;
+      uploadedUrls.current.add(nextUrl);
+      setImageUrl(nextUrl);
+      if (uploadedUrls.current.has(previousUrl) && previousUrl !== nextUrl) {
+        await cleanup.mutateAsync([previousUrl]);
+        uploadedUrls.current.delete(previousUrl);
+      }
+    } catch (error) {
+      setImageError(errorMessage(error));
+    } finally {
+      lock.current = false;
+    }
+  };
+  const handleRemoveImage = async () => {
+    if (lock.current || !imageUrl) return;
+    lock.current = true;
+    setImageError('');
+    try {
+      if (uploadedUrls.current.has(imageUrl)) {
+        await cleanup.mutateAsync([imageUrl]);
+        uploadedUrls.current.delete(imageUrl);
+      }
+      setImageUrl('');
+    } catch (error) {
+      setImageError(errorMessage(error));
+    } finally {
+      lock.current = false;
+    }
+  };
+  const handleCancel = async () => {
+    if (lock.current) return;
+    lock.current = true;
+    setImageError('');
+    try {
+      const unsaved = [...uploadedUrls.current];
+      if (unsaved.length) await cleanup.mutateAsync(unsaved);
+      uploadedUrls.current.clear();
+      onClose();
+    } catch (error) {
+      setImageError(errorMessage(error));
+    } finally {
+      lock.current = false;
+    }
+  };
   const handleSave = async (event: FormEvent) => {
     event.preventDefault();
     if (lock.current) return;
@@ -72,11 +141,20 @@ const AnnouncementEditor = ({
       (form.starts_on !== (original.starts_on ?? '') ||
         form.ends_on !== (original.ends_on ?? ''));
     try {
-      await mutation.mutateAsync({
+      const unused = [...uploadedUrls.current].filter((url) => url !== imageUrl);
+      if (unused.length) {
+        await cleanup.mutateAsync(unused);
+        unused.forEach((url) => uploadedUrls.current.delete(url));
+      }
+      const saved = await mutation.mutateAsync({
         type: form.type,
         title: form.title.trim(),
         content: form.content.trim(),
         is_popup: form.is_popup,
+        ...(imageUrl && imageUrl !== (original?.image_url ?? '')
+          ? { image_url: imageUrl }
+          : {}),
+        ...(original?.image_url && !imageUrl ? { clear_image: true } : {}),
         ...(!original ? { status: 'DRAFT' as const } : {}),
         ...(changedPeriod ? { clear_period: true } : {}),
         ...(!original || changedPeriod
@@ -86,8 +164,10 @@ const AnnouncementEditor = ({
             }
           : {}),
       });
-    } catch {
-      /* Render mutation error below. */
+      uploadedUrls.current.delete(imageUrl);
+      onSaved(saved);
+    } catch (error) {
+      setValidation(errorMessage(error));
     } finally {
       lock.current = false;
     }
@@ -102,7 +182,7 @@ const AnnouncementEditor = ({
       </p>
       <form onSubmit={handleSave} className="mt-5 space-y-4">
         <fieldset
-          disabled={mutation.isPending}
+          disabled={busy}
           className="space-y-4 disabled:opacity-60"
         >
           <label className="block text-sm">
@@ -144,6 +224,42 @@ const AnnouncementEditor = ({
           <p className="text-xs text-gray-500">
             텍스트와 줄바꿈만 지원합니다. 이벤트 참여 경로는 본문에 작성하세요.
           </p>
+          <div className="space-y-3 text-sm">
+            <label className="block">
+              대표 이미지 (선택)
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
+                className={INPUT}
+                onChange={(event) => {
+                  const file = event.currentTarget.files?.[0];
+                  event.currentTarget.value = '';
+                  void handleUpload(file);
+                }}
+              />
+            </label>
+            <p className="text-xs text-gray-500">
+              이미지 한 장을 첨부할 수 있습니다. jpg, png, gif, webp · 최대 10MB
+            </p>
+            {imageUrl && (
+              <div className="flex flex-wrap items-start gap-3">
+                <img
+                  src={imageUrl}
+                  alt="서비스 공지 대표 이미지 미리보기"
+                  className="h-32 w-44 rounded-lg border border-gray-200 object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleRemoveImage()}
+                  className="rounded-lg border px-3 py-2"
+                >
+                  이미지 제거
+                </button>
+              </div>
+            )}
+            {upload.isPending && <p role="status">이미지를 업로드하는 중입니다...</p>}
+            {imageError && <p role="alert" className="text-red-600">{imageError}</p>}
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -185,7 +301,7 @@ const AnnouncementEditor = ({
               type="submit"
               className="rounded-lg bg-black px-5 py-3 text-sm text-white"
             >
-              {mutation.isPending
+              {busy
                 ? '저장 중...'
                 : original
                   ? '수정 저장'
@@ -193,7 +309,8 @@ const AnnouncementEditor = ({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => void handleCancel()}
+              disabled={busy}
               className="rounded-lg border px-5 py-3 text-sm"
             >
               취소

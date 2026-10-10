@@ -57,6 +57,12 @@ with sync_playwright() as p:
         page.add_init_script("localStorage.setItem('auth-storage', JSON.stringify({state:{isLogIn:true,accessToken:'fixture',userInfo:{user_id:2,name:'Tester'}},version:0}))")
         page.goto(BASE)
         page.get_by_role('button').filter(has=page.get_by_role('img', name='알림', exact=True)).click()
+        if width <= 430:
+            expect(page.get_by_role('button', name='바텀시트 닫기')).to_have_count(1)
+            expect(page.get_by_role('button', name='닫기', exact=True)).to_have_count(0)
+        else:
+            expect(page.get_by_role('button', name='바텀시트 닫기')).to_have_count(0)
+            expect(page.get_by_role('button', name='닫기', exact=True)).to_have_count(1)
         expect(page.get_by_text('알림을 불러오지 못했습니다.', exact=True)).to_be_visible(timeout=15000)
         expect(page.get_by_text('알림이 없습니다', exact=True)).to_have_count(0)
         state['list_fail'] = False
@@ -108,7 +114,7 @@ with sync_playwright() as p:
         page.get_by_role('button').filter(has=page.get_by_role('img', name='알림', exact=True)).click()
         page.get_by_text('Notice 1', exact=True).click()
         expect(page.get_by_text('처리 중입니다...')).to_be_visible()
-        page.get_by_role('button', name='닫기', exact=True).click()
+        page.get_by_role('button', name='바텀시트 닫기' if width <= 430 else '닫기', exact=True).click()
         assert len(state['pending']) == 1
         state['pending'].pop().fulfill(json=dict(success=True))
         page.wait_for_timeout(500)
