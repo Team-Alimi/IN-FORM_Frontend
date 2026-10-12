@@ -124,6 +124,7 @@ const MobileLayout = ({
   created_at,
   content,
   summary,
+  summaryPending,
   category_name,
   bookmark_count,
   attachments,
@@ -180,7 +181,7 @@ const MobileLayout = ({
       <div className="border-t border-gray-100" />
 
       {/* AI 요약 */}
-      {summary && (
+      {(summary || summaryPending) && (
         <div className="px-5 pt-5">
           <div className="px-4 py-3.5 bg-blue-50 rounded-2xl">
             <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
@@ -189,7 +190,9 @@ const MobileLayout = ({
               </svg>
               AI 요약
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+            <p className="text-sm text-gray-700 leading-relaxed" role={summaryPending ? 'status' : undefined}>
+              {summaryPending ? 'AI 요약 생성 중…' : summary}
+            </p>
           </div>
         </div>
       )}
@@ -269,6 +272,7 @@ const DesktopLayout = ({
   created_at,
   content,
   summary,
+  summaryPending,
   category_name,
   is_bookmarked,
   onBookmarkToggle,
@@ -347,7 +351,7 @@ const DesktopLayout = ({
       {/* 본문 */}
       <div className="p-6 md:p-8 min-h-[200px]">
         {/* AI 요약 */}
-        {summary && (
+        {(summary || summaryPending) && (
           <div className="mb-6 px-4 py-4 bg-blue-50 rounded-2xl">
             <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -355,7 +359,9 @@ const DesktopLayout = ({
               </svg>
               AI 요약
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+            <p className="text-sm text-gray-700 leading-relaxed" role={summaryPending ? 'status' : undefined}>
+              {summaryPending ? 'AI 요약 생성 중…' : summary}
+            </p>
           </div>
         )}
         {imageAttachments.length > 0 && (
