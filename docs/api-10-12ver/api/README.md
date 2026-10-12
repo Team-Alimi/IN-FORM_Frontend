@@ -3,7 +3,7 @@
 > **먼저 [00-common.md](00-common.md) 를 읽으세요.** 응답 봉투·인증·페이징·에러 코드·공통 응답 객체가
 > 거기 있고, 아래 개별 명세는 전부 그 규격을 전제로 씁니다.
 
-전체 71개.
+전체 73개.
 
 ## 관리자
 
@@ -39,6 +39,7 @@
 | 관리자 댓글 일괄 삭제 | POST | `/api/v1/admin/comments/bulk/delete` | Required (Admin) | [admin/comment/관리자 댓글 일괄 삭제.md](admin/comment/%EA%B4%80%EB%A6%AC%EC%9E%90%20%EB%8C%93%EA%B8%80%20%EC%9D%BC%EA%B4%84%20%EC%82%AD%EC%A0%9C.md) |
 | 관리자 파일 업로드 취소 | DELETE | `/api/v1/admin/files` | Required (Admin) | [admin/file/관리자 파일 업로드 취소.md](admin/file/%EA%B4%80%EB%A6%AC%EC%9E%90%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%A1%9C%EB%93%9C%20%EC%B7%A8%EC%86%8C.md) |
 | 관리자 파일 업로드 | POST | `/api/v1/admin/files` | Required (Admin) | [admin/file/관리자 파일 업로드.md](admin/file/%EA%B4%80%EB%A6%AC%EC%9E%90%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%A1%9C%EB%93%9C.md) |
+| 마감 알림 수동 실행 | POST | `/api/v1/admin/notifications/deadline-run` | Required (Admin) | [admin/notification/마감 알림 수동 실행.md](admin/notification/%EB%A7%88%EA%B0%90%20%EC%95%8C%EB%A6%BC%20%EC%88%98%EB%8F%99%20%EC%8B%A4%ED%96%89.md) |
 | 회원 목록 조회 | GET | `/api/v1/admin/users` | Required (Admin) | [admin/user/회원 목록 조회.md](admin/user/%ED%9A%8C%EC%9B%90%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
 | 회원 단건 조회 | GET | `/api/v1/admin/users/{userId}` | Required (Admin) | [admin/user/회원 단건 조회.md](admin/user/%ED%9A%8C%EC%9B%90%20%EB%8B%A8%EA%B1%B4%20%EC%A1%B0%ED%9A%8C.md) |
 | 회원 권한 변경 | PATCH | `/api/v1/admin/users/{userId}/role` | Required (Admin) | [admin/user/회원 권한 변경.md](admin/user/%ED%9A%8C%EC%9B%90%20%EA%B6%8C%ED%95%9C%20%EB%B3%80%EA%B2%BD.md) |
@@ -64,6 +65,7 @@
 | 공지 목록 조회 | GET | `/api/v1/articles` | Required (User) | [article/1. 공지 목록 조회.md](article/1.%20%EA%B3%B5%EC%A7%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
 | 인기 공지 조회 | GET | `/api/v1/articles/popular` | Not Required | [article/인기 공지 조회.md](article/%EC%9D%B8%EA%B8%B0%20%EA%B3%B5%EC%A7%80%20%EC%A1%B0%ED%9A%8C.md) |
 | 공지 상세 조회 | GET | `/api/v1/articles/{articleId}` | Required (User) | [article/2. 공지 상세 조회.md](article/2.%20%EA%B3%B5%EC%A7%80%20%EC%83%81%EC%84%B8%20%EC%A1%B0%ED%9A%8C.md) |
+| 공지 AI 요약 조회 | GET | `/api/v1/articles/{articleId}/summary` | Required (User) | [article/공지 AI 요약 조회.md](article/%EA%B3%B5%EC%A7%80%20AI%20%EC%9A%94%EC%95%BD%20%EC%A1%B0%ED%9A%8C.md) |
 
 ## 인증
 
