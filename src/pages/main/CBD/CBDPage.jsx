@@ -7,6 +7,7 @@ import BookmarkButton from "@/components/main/adaptive/feature/EVD/BookmarkButto
 import { fetchClubDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 import useDetailScrollReset from "@/hooks/useDetailScrollReset";
+import useArticleSummary from "@/hooks/useArticleSummary";
 
 const CBDPage = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const CBDPage = () => {
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { summary, summaryPending } = useArticleSummary(id, club?.summary_status, club?.summary);
 
   useEffect(() => {
     const loadDetail = async () => {
@@ -82,7 +84,8 @@ const CBDPage = () => {
             startDate={club.starts_on}
             dueDate={club.ends_on}
             created_at={club.published_at}
-            summary={club.summary}
+            summary={summary}
+            summaryPending={summaryPending}
             bookmark_count={club.bookmark_count}
             view_count={club.view_count}
             content={club.content}
@@ -126,7 +129,8 @@ const CBDPage = () => {
           startDate={club.starts_on}
           dueDate={club.ends_on}
           created_at={club.published_at}
-          summary={club.summary}
+          summary={summary}
+          summaryPending={summaryPending}
           bookmark_count={club.bookmark_count}
           view_count={club.view_count}
           content={club.content}
