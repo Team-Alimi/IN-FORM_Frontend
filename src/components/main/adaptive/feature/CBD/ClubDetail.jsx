@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import urlIcon from "@/assets/icons/url.svg";
 import { getStatus } from "@/utils/statusUtil";
@@ -6,6 +6,7 @@ import Badge from "@/components/main/adaptive/common/Badge";
 import ClubImageGallery from "@/components/main/adaptive/feature/CBD/ClubImageGallery";
 import { prepareClubContent } from "@/utils/clubContent";
 import { getArticleClubTypes } from '@/utils/clubTypes';
+import ShareButton from '@/components/main/adaptive/feature/EVD/ShareButton';
 
 // ─── 유틸 함수 ────────────────────────────────────────────────────────────────
 
@@ -32,29 +33,9 @@ const linkifyText = (text) => {
 
 const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, images, html }) => {
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
   const statusInfo = getStatus(status);
 
   const hashtags = getArticleClubTypes(vendors);
-
-  const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: title || "동아리", url });
-      } catch (err) {
-        if (err.name !== "AbortError") console.error("공유 실패:", err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error("클립보드 복사 실패:", err);
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -70,21 +51,7 @@ const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, 
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <button
-            onClick={handleShare}
-            aria-label={copied ? "링크 복사됨" : "공유하기"}
-            className="w-9 h-9 rounded-full bg-black/30 flex items-center justify-center"
-          >
-            {copied ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M12 3v13.5m0-13.5-3 3m3-3 3 3" />
-              </svg>
-            )}
-          </button>
+          <ShareButton title={title} className="w-9 h-9 rounded-full bg-black/30 text-white" iconClassName="w-5 h-5" />
         </div>
       </ClubImageGallery>
 
