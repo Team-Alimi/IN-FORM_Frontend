@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-const ShareButton = ({ title, className = "w-8 h-8 text-gray-600", iconClassName = "w-5 h-5 md:w-6 md:h-6" }) => {
+const ShareButton = ({ className = "w-8 h-8 text-gray-600", iconClassName = "w-5 h-5 md:w-6 md:h-6" }) => {
   const [feedback, setFeedback] = useState("");
   const feedbackTimer = useRef(null);
 
@@ -32,18 +32,8 @@ const ShareButton = ({ title, className = "w-8 h-8 text-gray-600", iconClassName
     }
   };
 
-  const handleShare = async () => {
+  const handleCopy = async () => {
     const url = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: title || "공지사항", url });
-        showFeedback("링크가 복사되었습니다.");
-        return;
-      } catch (err) {
-        if (err.name === "AbortError") return;
-      }
-    }
 
     try {
       await copyLink(url);
@@ -57,9 +47,9 @@ const ShareButton = ({ title, className = "w-8 h-8 text-gray-600", iconClassName
     <>
       <button
         type="button"
-        onClick={handleShare}
-        aria-label="공유하기"
-        title="공유하기"
+        onClick={handleCopy}
+        aria-label="링크 복사"
+        title="링크 복사"
         className={`${className} flex items-center justify-center transition-all cursor-pointer`}
       >
         {feedback === "링크가 복사되었습니다." ? (

@@ -51,7 +51,7 @@ const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, 
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <ShareButton title={title} className="w-9 h-9 rounded-full bg-black/30 text-white" iconClassName="w-5 h-5" />
+          <ShareButton className="w-9 h-9 rounded-full bg-black/30 text-white" iconClassName="w-5 h-5" />
         </div>
       </ClubImageGallery>
 
@@ -176,7 +176,7 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
       <div className="p-6 md:p-8 border-b border-gray-100">
         <div className="mb-4 flex items-start justify-between gap-3">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">{title}</h1>
-          <ShareButton title={title} className="w-9 h-9 shrink-0 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100" />
+          <ShareButton className="w-9 h-9 shrink-0 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100" />
         </div>
         {statusInfo && <div className="mb-4"><Badge text={statusInfo.text} color={statusInfo.color} /></div>}
         {hashtags.length > 0 && <div className="mb-4 flex flex-wrap gap-3">

@@ -95,7 +95,7 @@ const EVDPage = () => {
             </svg>
           </button>
           <div className="flex items-center gap-2">
-            <ShareButton title={event.title} />
+            <ShareButton />
             <AddToCalendar event={eventData} />
           </div>
         </header>
