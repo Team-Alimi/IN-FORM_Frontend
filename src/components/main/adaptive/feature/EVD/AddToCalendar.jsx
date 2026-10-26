@@ -66,7 +66,7 @@ const AddToCalendar = ({ event }) => {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-8 h-8 text-gray-600 flex items-center justify-center transition-all"
+        className="w-8 h-8 text-gray-600 flex items-center justify-center transition-all cursor-pointer"
         title="캘린더에 추가"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
