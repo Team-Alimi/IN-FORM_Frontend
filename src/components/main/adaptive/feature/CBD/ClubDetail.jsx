@@ -174,7 +174,10 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
 
       {/* 헤더 */}
       <div className="p-6 md:p-8 border-b border-gray-100">
-        <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-4">{title}</h1>
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">{title}</h1>
+          <ShareButton title={title} className="w-9 h-9 shrink-0 rounded-full bg-gray-50 text-gray-600 hover:bg-gray-100" />
+        </div>
         {statusInfo && <div className="mb-4"><Badge text={statusInfo.text} color={statusInfo.color} /></div>}
         {hashtags.length > 0 && <div className="mb-4 flex flex-wrap gap-3">
           {hashtags.map((tag) => <span key={tag.id} className="text-sm text-primary">#{tag.name}</span>)}
