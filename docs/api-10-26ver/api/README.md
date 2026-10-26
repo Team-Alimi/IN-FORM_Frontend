@@ -3,7 +3,7 @@
 > **먼저 [00-common.md](00-common.md) 를 읽으세요.** 응답 봉투·인증·페이징·에러 코드·공통 응답 객체가
 > 거기 있고, 아래 개별 명세는 전부 그 규격을 전제로 씁니다.
 
-전체 73개.
+전체 75개.
 
 ## 관리자
 
@@ -40,6 +40,7 @@
 | 관리자 파일 업로드 취소 | DELETE | `/api/v1/admin/files` | Required (Admin) | [admin/file/관리자 파일 업로드 취소.md](admin/file/%EA%B4%80%EB%A6%AC%EC%9E%90%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%A1%9C%EB%93%9C%20%EC%B7%A8%EC%86%8C.md) |
 | 관리자 파일 업로드 | POST | `/api/v1/admin/files` | Required (Admin) | [admin/file/관리자 파일 업로드.md](admin/file/%EA%B4%80%EB%A6%AC%EC%9E%90%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%A1%9C%EB%93%9C.md) |
 | 마감 알림 수동 실행 | POST | `/api/v1/admin/notifications/deadline-run` | Required (Admin) | [admin/notification/마감 알림 수동 실행.md](admin/notification/%EB%A7%88%EA%B0%90%20%EC%95%8C%EB%A6%BC%20%EC%88%98%EB%8F%99%20%EC%8B%A4%ED%96%89.md) |
+| 알림 메일 발송 수동 실행 | POST | `/api/v1/admin/notifications/email-run` | Required (Admin) | [admin/notification/알림 메일 발송 수동 실행.md](admin/notification/%EC%95%8C%EB%A6%BC%20%EB%A9%94%EC%9D%BC%20%EB%B0%9C%EC%86%A1%20%EC%88%98%EB%8F%99%20%EC%8B%A4%ED%96%89.md) |
 | 회원 목록 조회 | GET | `/api/v1/admin/users` | Required (Admin) | [admin/user/회원 목록 조회.md](admin/user/%ED%9A%8C%EC%9B%90%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C.md) |
 | 회원 단건 조회 | GET | `/api/v1/admin/users/{userId}` | Required (Admin) | [admin/user/회원 단건 조회.md](admin/user/%ED%9A%8C%EC%9B%90%20%EB%8B%A8%EA%B1%B4%20%EC%A1%B0%ED%9A%8C.md) |
 | 회원 권한 변경 | PATCH | `/api/v1/admin/users/{userId}/role` | Required (Admin) | [admin/user/회원 권한 변경.md](admin/user/%ED%9A%8C%EC%9B%90%20%EA%B6%8C%ED%95%9C%20%EB%B3%80%EA%B2%BD.md) |
@@ -116,6 +117,8 @@
 | 알림 전체 읽음 처리 | PATCH | `/api/v1/notifications/read-all` | Required (User) | [notification/알림 전체 읽음 처리.md](notification/%EC%95%8C%EB%A6%BC%20%EC%A0%84%EC%B2%B4%20%EC%9D%BD%EC%9D%8C%20%EC%B2%98%EB%A6%AC.md) |
 | 안 읽은 알림 개수 조회 | GET | `/api/v1/notifications/unread-count` | Required (User) | [notification/안 읽은 알림 개수 조회.md](notification/%EC%95%88%20%EC%9D%BD%EC%9D%80%20%EC%95%8C%EB%A6%BC%20%EA%B0%9C%EC%88%98%20%EC%A1%B0%ED%9A%8C.md) |
 | 알림 개별 읽음 처리 | PATCH | `/api/v1/notifications/{notificationId}/read` | Required (User) | [notification/알림 개별 읽음 처리.md](notification/%EC%95%8C%EB%A6%BC%20%EA%B0%9C%EB%B3%84%20%EC%9D%BD%EC%9D%8C%20%EC%B2%98%EB%A6%AC.md) |
+| 메일 알림 수신거부 (확인 페이지) | GET | `/api/v1/notifications/email/unsubscribe` | Not Required | [notification/메일 알림 수신거부.md](notification/%EB%A9%94%EC%9D%BC%20%EC%95%8C%EB%A6%BC%20%EC%88%98%EC%8B%A0%EA%B1%B0%EB%B6%80.md) |
+| 메일 알림 수신거부 | POST | `/api/v1/notifications/email/unsubscribe` | Not Required | [notification/메일 알림 수신거부.md](notification/%EB%A9%94%EC%9D%BC%20%EC%95%8C%EB%A6%BC%20%EC%88%98%EC%8B%A0%EA%B1%B0%EB%B6%80.md) |
 
 ## 사용자·온보딩
 

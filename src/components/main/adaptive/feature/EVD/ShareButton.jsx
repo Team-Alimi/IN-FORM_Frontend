@@ -1,63 +1,74 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-const ShareButton = ({ title }) => {
-  const [copied, setCopied] = useState(false);
+const ShareButton = ({ className = "w-8 h-8 text-gray-600", iconClassName = "w-5 h-5 md:w-6 md:h-6" }) => {
+  const [feedback, setFeedback] = useState("");
+  const feedbackTimer = useRef(null);
 
-  const handleShare = async () => {
+  useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+
+  const showFeedback = (message) => {
+    window.clearTimeout(feedbackTimer.current);
+    setFeedback(message);
+    feedbackTimer.current = window.setTimeout(() => setFeedback(""), 2500);
+  };
+
+  const copyLink = async (url) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      return;
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = url;
+    textarea.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+    document.body.appendChild(textarea);
+    try {
+      textarea.focus();
+      textarea.select();
+      if (!document.execCommand("copy")) throw new Error("Copy failed");
+    } finally {
+      textarea.remove();
+    }
+  };
+
+  const handleCopy = async () => {
     const url = window.location.href;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: title || "공지사항", url });
-      } catch (err) {
-        // 사용자가 직접 취소한 경우 무시
-        if (err.name !== "AbortError") {
-          console.error("공유 실패:", err);
-        }
-      }
-    } else {
-      // Web Share API 미지원 환경 (일부 데스크톱 브라우저)
-      try {
-        if (navigator.clipboard?.writeText) {
-          // 최신 브라우저: Clipboard API 사용
-          await navigator.clipboard.writeText(url);
-        } else {
-          // 구형 브라우저 / 비HTTPS 환경 대체 방법 (execCommand)
-          const textarea = document.createElement("textarea");
-          textarea.value = url;
-          textarea.style.cssText = "position:fixed;opacity:0;pointer-events:none";
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
-        }
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error("클립보드 복사 실패:", err);
-      }
+    try {
+      await copyLink(url);
+      showFeedback("링크가 복사되었습니다.");
+    } catch {
+      showFeedback("링크를 복사하지 못했습니다.");
     }
   };
 
   return (
-    <button
-      onClick={handleShare}
-      title={copied ? "링크 복사됨" : "공유하기"}
-      className="w-8 h-8 text-gray-600 flex items-center justify-center transition-all"
-    >
-      {copied ? (
-        // 복사 완료: 체크마크 아이콘
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-      ) : (
-        // 기본: 공유 아이콘 (화살표가 박스 위로 나가는 iOS 스타일)
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M12 3v13.5m0-13.5-3 3m3-3 3 3" />
-        </svg>
+    <>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label="링크 복사"
+        title="링크 복사"
+        className={`${className} flex items-center justify-center transition-all cursor-pointer`}
+      >
+        {feedback === "링크가 복사되었습니다." ? (
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className={iconClassName}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className={iconClassName}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M12 3v13.5m0-13.5-3 3m3-3 3 3" />
+          </svg>
+        )}
+      </button>
+      {feedback && createPortal(
+        <div role="status" className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[110] rounded-full bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg whitespace-nowrap pointer-events-none">
+          {feedback}
+        </div>,
+        document.body
       )}
-    </button>
+    </>
   );
 };
 

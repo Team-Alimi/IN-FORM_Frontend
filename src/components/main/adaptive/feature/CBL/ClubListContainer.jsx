@@ -9,6 +9,8 @@ import { useState, useEffect } from "react";
 import SectionTitle from "@/components/main/mobile/common/SectionTitle";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useDeviceStore } from "@/stores/deviceStore";
+import { RiGroupLine } from "react-icons/ri";
+import { IoSearchOutline } from "react-icons/io5";
 const CLUB_PAGE_COUNT = 4;
 const DEBOUNCE_DELAY = 400;
 
@@ -35,7 +37,7 @@ const ClubListContainer = () => {
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, isPlaceholderData, error, refetch } = useQuery({
     queryKey: ["clubs", debouncedSearch, currentPage], // ← 이 key가 기준
     queryFn: async () => {
       const res = await fetchClubs({
@@ -54,6 +56,8 @@ const ClubListContainer = () => {
 
   const clubList = data?.clubList ?? [];
   const totalPages = data?.pageInfo?.total_pages ?? 1;
+  const isSearchPending = searchText.trim() !== debouncedSearch || isPlaceholderData;
+  const showEmptyState = clubList.length === 0 && !isSearchPending;
 
   const handleClubClick = (id) => {
     navigate(`/clubs/detail/${id}`);
@@ -105,7 +109,7 @@ const ClubListContainer = () => {
       </div>
 
       {/* 추천 동아리 섹션 (모바일 전용) */}
-      {isMobile && (
+      {isMobile && clubList.length > 0 && (
         <div className="mb-1">
           <div className="mb-3">
             <p className="text-[15px] font-bold text-gray-900">추천 동아리</p>
@@ -119,15 +123,37 @@ const ClubListContainer = () => {
         <p className="text-[15px] font-bold text-gray-900 mb-3">전체 동아리</p>
       )}
 
-      <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
-        {clubList.map((item) => (
-          <ClubRow
-            key={item.id}
-            data={item}
-            onClick={handleClubClick}
-          />
-        ))}
+      <div
+        role="status"
+        className={showEmptyState ? "flex min-h-[320px] flex-col items-center justify-center px-4 py-12 text-center max-mobile:min-h-[360px]" : "sr-only"}
+      >
+        {showEmptyState && (
+          <>
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 text-primary/60 ring-1 ring-primary/10">
+              {debouncedSearch ? <IoSearchOutline size={27} aria-hidden="true" /> : <RiGroupLine size={28} aria-hidden="true" />}
+            </div>
+            <p className="text-[16px] font-semibold tracking-tight text-gray-700">
+              {debouncedSearch ? "검색 결과가 없습니다." : "동아리 소식을 준비하고 있어요."}
+            </p>
+            {debouncedSearch && (
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                다른 이름으로 다시 검색해 주세요.
+              </p>
+            )}
+          </>
+        )}
       </div>
+      {clubList.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 max-mobile:grid-cols-1 max-mobile:gap-0">
+          {clubList.map((item) => (
+            <ClubRow
+              key={item.id}
+              data={item}
+              onClick={handleClubClick}
+            />
+          ))}
+        </div>
+      )}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-10">
           <button
