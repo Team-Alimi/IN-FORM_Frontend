@@ -47,7 +47,7 @@ const ClubCarousel = () => {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [images.length, currentIndex]);
 
   // 이전/다음 버튼 핸들러
   const handlePrev = () => {

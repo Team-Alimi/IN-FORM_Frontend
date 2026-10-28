@@ -9,6 +9,7 @@ import AddToCalendar from "@/components/main/adaptive/feature/EVD/AddToCalendar"
 import { fetchEventDetail } from "@/api/main/articles";
 import { useDeviceStore } from "@/stores/deviceStore";
 import useDetailScrollReset from "@/hooks/useDetailScrollReset";
+import useArticleSummary from "@/hooks/useArticleSummary";
 
 const EVDPage = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ const EVDPage = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { summary, summaryPending } = useArticleSummary(id, event?.summary_status, event?.summary);
 
   useEffect(() => {
     const fetchEventDetailAsync = async () => {
@@ -112,7 +114,8 @@ const EVDPage = () => {
             dueDate={event.ends_on}
             created_at={event.published_at}
             content={event.content}
-            summary={event.summary}
+            summary={summary}
+            summaryPending={summaryPending}
             category_name={event.categories?.[0]?.name}
             is_bookmarked={event.is_bookmarked}
             bookmark_count={event.bookmark_count}
@@ -143,7 +146,8 @@ const EVDPage = () => {
           dueDate={event.ends_on}
           created_at={event.published_at}
           content={event.content}
-          summary={event.summary}
+          summary={summary}
+          summaryPending={summaryPending}
           category_name={event.categories?.[0]?.name}
           is_bookmarked={event.is_bookmarked}
           onBookmarkToggle={handleBookmarkToggle}

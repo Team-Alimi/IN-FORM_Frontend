@@ -1,9 +1,7 @@
-import React from "react";
-
 const Imminent = ({ title, date, onClick }) => {
   return (
-    <div 
-      className="w-full cursor-pointer hover:bg-gray-50 transition-colors px-1" 
+    <div
+      className="w-full cursor-pointer hover:bg-gray-50 transition-colors px-1"
       onClick={onClick}
     >
       <div className="flex items-center justify-between py-3">

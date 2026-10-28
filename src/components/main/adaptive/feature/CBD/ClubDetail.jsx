@@ -31,7 +31,7 @@ const linkifyText = (text) => {
 
 // ─── 이미지 뷰어 훅 ───────────────────────────────────────────────────────────
 
-const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, images, html }) => {
+const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, summaryPending, bookmark_count, view_count, content, images, html }) => {
   const navigate = useNavigate();
   const statusInfo = getStatus(status);
 
@@ -117,7 +117,7 @@ const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, 
       <div className="border-t border-gray-100" />
 
       {/* AI 요약 */}
-      {summary && (
+      {(summary || summaryPending) && (
         <div className="px-5 pt-5">
           <div className="px-4 py-3.5 bg-blue-50 rounded-2xl">
             <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
@@ -126,7 +126,9 @@ const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, 
               </svg>
               AI 요약
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+            <p className="text-sm text-gray-700 leading-relaxed" role={summaryPending ? 'status' : undefined}>
+              {summaryPending ? 'AI 요약 생성 중…' : summary}
+            </p>
           </div>
         </div>
       )}
@@ -151,7 +153,7 @@ const MobileLayout = ({ title, status, vendors, startDate, dueDate, created_at, 
 
 // ─── 데스크톱 레이아웃 ────────────────────────────────────────────────────────
 
-const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, bookmark_count, view_count, content, linkUrl, images, html }) => {
+const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at, summary, summaryPending, bookmark_count, view_count, content, linkUrl, images, html }) => {
   const navigate = useNavigate();
   const statusInfo = getStatus(status);
 
@@ -235,7 +237,7 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
       {images.length > 0 && <div className="mx-auto mt-6 w-full max-w-[520px]"><ClubImageGallery images={images} /></div>}
 
       <div className="p-6 md:p-8 min-h-[200px]">
-        {summary && (
+        {(summary || summaryPending) && (
           <div className="mb-6 px-4 py-4 bg-blue-50 rounded-2xl">
             <p className="flex items-center gap-1.5 text-[11px] font-bold text-blue-500 mb-2">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -243,7 +245,9 @@ const DesktopLayout = ({ title, status, vendors, startDate, dueDate, created_at,
               </svg>
               AI 요약
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
+            <p className="text-sm text-gray-700 leading-relaxed" role={summaryPending ? 'status' : undefined}>
+              {summaryPending ? 'AI 요약 생성 중…' : summary}
+            </p>
           </div>
         )}
 

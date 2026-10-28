@@ -13,8 +13,7 @@ const MiniCalendarEventList = ({
   }
   return (
     <div className="w-full cursor-pointer  px-1">
-      <div className={`text-center text-gray-800 ${calEventListStyle} `}>
-      </div>
+      <div className={`text-center text-gray-800 ${calEventListStyle} `}></div>
       <div className="relative">
         <div className="bg-white  p-2 w-full overflow-y-auto h-60 scrollbar-hide">
           {!events || events.length === 0 ? (
