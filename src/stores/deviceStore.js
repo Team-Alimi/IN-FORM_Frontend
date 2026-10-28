@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const MOBILE_BREAKPOINT = 430;
 
-export const useDeviceStore = create((set) => ({
+export const useDeviceStore = create(() => ({
   isMobile: window.innerWidth <= MOBILE_BREAKPOINT,
 }));
 

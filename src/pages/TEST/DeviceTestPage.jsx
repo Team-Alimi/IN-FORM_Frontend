@@ -1,20 +1,6 @@
-import { useDeviceStore } from '@/stores/deviceStore';
-import ClubListContainer from '@/components/main/adaptive/feature/CBL/ClubListContainer';
-import ErrorPage from '@/pages/NOT/ErrorPage';
-import AlertModal from '@/components/manage/common/AlertModal';
-import ActionBtn from '@/components/manage/common/ActionBtn';
-import useAlertModal from '@/hooks/useAlertModal';
-import CategoryFilter from '@/components/manage/feature/MANDTE/CategoryFilter';
 import ArticleEditorSection from '@/components/manage/feature/MANDTE/ArticleEditorSection';
-import VendorAddModal from '@/components/manage/feature/MANDTE/VendorAddModal';
 
 const DeviceTestPage = () => {
-  const isMobile = useDeviceStore((state) => state.isMobile);
-  const { OpenModal, ModalComponent } = useAlertModal();
-
-  const modalTest = () => {
-    console.log('모달을 테스트 하는 나는 멋진 고양이');
-  };
   return (
     /**
      *    <div className="flex flex-col gap-4">
