@@ -2,13 +2,9 @@ import DaySelectEvent from "@/components/main/adaptive/feature/HOM/DaySelectEven
 
 const MiniCalendarEventList = ({
   events,
-  currentDate,
   isMini,
   onArticleClick,
 }) => {
-  const year = currentDate.slice(0, 4);
-  const month = currentDate.slice(5, 7);
-  const day = currentDate.slice(8, 10);
   let calEventListStyle = "";
   if (isMini) {
     calEventListStyle = "font-medium m-1 text-xs pt-2 pb-0 ";
@@ -18,7 +14,6 @@ const MiniCalendarEventList = ({
   return (
     <div className="w-full cursor-pointer  px-1">
       <div className={`text-center text-gray-800 ${calEventListStyle} `}>
-        {/* {`${year}년 ${month}월 ${day}일`} */}
       </div>
       <div className="relative">
         <div className="bg-white  p-2 w-full overflow-y-auto h-60 scrollbar-hide">

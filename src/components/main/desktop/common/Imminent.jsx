@@ -1,6 +1,6 @@
 import React from "react";
 
-const Imminent = ({ id, title, date, onClick }) => {
+const Imminent = ({ title, date, onClick }) => {
   return (
     <div 
       className="w-full cursor-pointer hover:bg-gray-50 transition-colors px-1" 

@@ -57,7 +57,8 @@ const TableList = ({ status, title, actions = [], previousStatusFilter }: TableL
   const handleCheck = (id: number, checked: boolean) => {
     setCheckedIds((prev) => {
       const next = new Set(prev);
-      checked ? next.add(id) : next.delete(id);
+      if (checked) next.add(id);
+      else next.delete(id);
       return next;
     });
   };
