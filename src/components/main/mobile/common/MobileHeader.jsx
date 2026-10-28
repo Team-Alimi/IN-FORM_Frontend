@@ -33,8 +33,6 @@ const MobileHeader = ({ title, greeting = false, subtitle }) => {
     setIsNotificationOpen(true);
   };
 
-  const leftText = greeting ? `안녕하세요, ${userName}님!` : title;
-
   return (
     <>
       {/* 헤더 높이만큼 여백 확보 */}

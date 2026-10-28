@@ -30,7 +30,7 @@ const useAlertModal = () => {
           <AlertModal
             title={config.title}
             onConfirm={() => {
-              config.onConfirm;
+              config.onConfirm();
               CloseModal();
             }}
             onCancel={CloseModal}

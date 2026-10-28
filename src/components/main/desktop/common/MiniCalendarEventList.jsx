@@ -2,13 +2,9 @@ import DaySelectEvent from "@/components/main/adaptive/feature/HOM/DaySelectEven
 
 const MiniCalendarEventList = ({
   events,
-  currentDate,
   isMini,
   onArticleClick,
 }) => {
-  const year = currentDate.slice(0, 4);
-  const month = currentDate.slice(5, 7);
-  const day = currentDate.slice(8, 10);
   let calEventListStyle = "";
   if (isMini) {
     calEventListStyle = "font-medium m-1 text-xs pt-2 pb-0 ";
