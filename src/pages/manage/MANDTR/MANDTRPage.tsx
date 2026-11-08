@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import {
@@ -84,6 +84,7 @@ const MANDTRPage = () => {
     Number.isSafeInteger(articleId) &&
     articleId > 0;
   const navigate = useNavigate();
+  const location = useLocation();
   const detail = useQuery({
     queryKey: ['adminArticleDetail', articleId],
     queryFn: () => getArticleDetail(articleId),
@@ -377,6 +378,7 @@ const MANDTRPage = () => {
             </Link>
             <Link
               to={`/manage/edit/${article.id}`}
+              state={location.state}
               className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm text-white"
             >
               <RiPencilLine aria-hidden="true" />

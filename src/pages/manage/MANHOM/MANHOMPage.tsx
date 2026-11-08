@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RiArrowRightLine, RiAddLine } from 'react-icons/ri';
 import ManageNavigation from '@/components/manage/common/ManageNavigation';
@@ -49,6 +49,7 @@ const formatDate = (value?: string) =>
   value ? value.slice(0, 10).replaceAll('-', '.') : '—';
 
 const MANHOMPage = () => {
+  const location = useLocation();
   const [view, setView] = useManageListHistoryState<{
     page: number;
     filters: ArticleFilters;
@@ -635,6 +636,14 @@ const MANHOMPage = () => {
                       <td className="min-w-64 px-4 font-medium">
                         <Link
                           to={`/manage/detail/${row.id}`}
+                          state={{
+                            returnTo: {
+                              pathname: location.pathname,
+                              search: location.search,
+                              hash: location.hash,
+                              state: location.state,
+                            },
+                          }}
                           className="hover:underline"
                         >
                           {row.title}

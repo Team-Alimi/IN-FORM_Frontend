@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
 import type { DashboardList, ReviewStatus } from '@/api/manage/dashboard';
@@ -66,6 +66,7 @@ const ReviewArticleTable = ({
   trashView = false,
   renderStatus,
 }: Props) => {
+  const location = useLocation();
   const rows = data?.content ?? [];
   const selectedIds = rows
     .filter((row) => selected.includes(row.id))
@@ -229,6 +230,14 @@ const ReviewArticleTable = ({
                   <td className="px-4 font-medium">
                     <Link
                       to={`/manage/detail/${row.id}`}
+                      state={{
+                        returnTo: {
+                          pathname: location.pathname,
+                          search: location.search,
+                          hash: location.hash,
+                          state: location.state,
+                        },
+                      }}
                       className="break-words hover:underline"
                     >
                       {row.title}

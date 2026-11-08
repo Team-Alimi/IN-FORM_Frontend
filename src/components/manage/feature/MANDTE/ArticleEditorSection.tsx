@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   RiAddLine,
@@ -61,6 +61,34 @@ const FieldRow = ({
 
 const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = (
+    location.state as {
+      returnTo?: {
+        pathname: string;
+        search?: string;
+        hash?: string;
+        state?: unknown;
+      };
+    } | null
+  )?.returnTo;
+  const returnToList = () => {
+    if (
+      initial &&
+      returnTo?.pathname &&
+      /^\/manage(?:\/staged|\/unreviewed|\/garbage)?$/.test(returnTo.pathname)
+    ) {
+      navigate(
+        `${returnTo.pathname}${returnTo.search ?? ''}${returnTo.hash ?? ''}`,
+        {
+          replace: true,
+          state: returnTo.state,
+        }
+      );
+    } else {
+      navigate('/manage', { replace: true });
+    }
+  };
   const queryClient = useQueryClient();
   const editorRef = useRef<TipTapEditorHandle>(null);
   const operationRef = useRef(false);
@@ -150,7 +178,7 @@ const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
     if (dirty) setDialog('cancel');
     else proceed();
   };
-  const handleCancel = () => handleNavigate(() => navigate('/manage'));
+  const handleCancel = () => handleNavigate(returnToList);
   const handleDiscard = async () => {
     if (operationRef.current) return;
     operationRef.current = true;
@@ -327,7 +355,7 @@ const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
       await Promise.allSettled(
         keys.map((key) => queryClient.invalidateQueries({ queryKey: [key] }))
       );
-      navigate('/manage', { replace: true });
+      returnToList();
     } catch (cause) {
       setError(
         editorErrorMessage(
@@ -346,8 +374,7 @@ const ArticleEditorSection = ({ initial }: { initial?: EditableArticle }) => {
     (item) => item.is_active || initialCategoryIds.includes(item.id)
   );
   const missingCategories = (initial?.categories ?? []).filter(
-    (item) =>
-      !availableCategories.some((option) => option.id === item.id)
+    (item) => !availableCategories.some((option) => option.id === item.id)
   );
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-gray-700">

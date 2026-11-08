@@ -70,5 +70,14 @@ with sync_playwright() as playwright:
         expect(page.get_by_role('navigation', name=nav_name).get_by_role('button', name='2', exact=True)).to_have_attribute('aria-current', 'page')
         expect(page.get_by_role('link', name=f'테스트 공지 {item_number}', exact=True).first).to_be_visible()
 
+        page.get_by_role('link', name=f'테스트 공지 {item_number}', exact=True).first.click()
+        page.get_by_role('link', name='수정하기', exact=True).click()
+        page.get_by_label('게시글 제목', exact=True).fill(f'수정한 테스트 공지 {item_number}')
+        page.get_by_role('button', name='게시글 수정하기', exact=True).click()
+        page.get_by_role('dialog').get_by_role('button', name='확인', exact=True).click()
+        expect(page).to_have_url(BASE + path)
+        expect(page.get_by_role('navigation', name=nav_name).get_by_role('button', name='2', exact=True)).to_have_attribute('aria-current', 'page')
+        expect(page.get_by_role('link', name=f'테스트 공지 {item_number}', exact=True).first).to_be_visible()
+
     assert not errors, errors
     browser.close()
