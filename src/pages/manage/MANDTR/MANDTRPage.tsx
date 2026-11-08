@@ -359,13 +359,21 @@ const MANDTRPage = () => {
                 disabled={detail.isFetching}
               />
             )}
+            {article.similar_article_id && (
+              <Link
+                to={`/manage/detail/${article.id}/similar`}
+                className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+              >
+                유사 공지 비교
+                {article.similarity_score !== undefined &&
+                  ` (${article.similarity_score}점)`}
+              </Link>
+            )}
             <Link
-              to={`/manage/detail/${article.id}/similar`}
-              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+              to={`/manage/detail/${article.id}/similar?manual=1`}
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
             >
-              유사 공지 비교
-              {article.similarity_score !== undefined &&
-                ` (${article.similarity_score}점)`}
+              다른 글과 비교·병합
             </Link>
             <Link
               to={`/manage/edit/${article.id}`}

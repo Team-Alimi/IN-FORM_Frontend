@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ManageNavigation from '@/components/manage/common/ManageNavigation';
@@ -10,6 +10,7 @@ import {
 } from '@/api/manage/duplicateArticles';
 import type { MergeResult } from '@/api/manage/duplicateArticles';
 import type { AdminArticleDetail } from '@/api/manage/articleDetail';
+import { getArticleDetail } from '@/api/manage/articleDetail';
 import {
   isDashboardForbidden,
   shouldRetryDashboardQuery,
@@ -177,12 +178,23 @@ const CompareCard = ({
 
 const MANDUPPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const articleId = Number(id);
   const validId =
     !!id &&
     /^\d+$/.test(id) &&
     Number.isSafeInteger(articleId) &&
     articleId > 0;
+  const otherParam = searchParams.get('other');
+  const manual = searchParams.has('manual') || otherParam !== null;
+  const otherId = Number(otherParam);
+  const validOtherId =
+    otherParam !== null &&
+    /^\d+$/.test(otherParam) &&
+    Number.isSafeInteger(otherId) &&
+    otherId > 0 &&
+    otherId !== articleId;
+  const [otherInput, setOtherInput] = useState(otherParam ?? '');
   const [targetId, setTargetId] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [confirmation, setConfirmation] = useState('');
@@ -193,11 +205,35 @@ const MANDUPPage = () => {
   const comparison = useQuery({
     queryKey: ['adminArticleSimilar', articleId],
     queryFn: () => getSimilarArticles(articleId),
-    enabled: validId,
+    enabled: validId && !manual,
     retry: shouldRetryDashboardQuery,
   });
-  const article = comparison.data?.article;
-  const similar = comparison.data?.similar;
+  const firstDetail = useQuery({
+    queryKey: ['adminArticleDetail', articleId],
+    queryFn: () => getArticleDetail(articleId),
+    enabled: validId && manual,
+    retry: shouldRetryDashboardQuery,
+  });
+  const secondDetail = useQuery({
+    queryKey: ['adminArticleDetail', otherId],
+    queryFn: () => getArticleDetail(otherId),
+    enabled: validId && manual && validOtherId,
+    retry: shouldRetryDashboardQuery,
+  });
+  const article = manual ? firstDetail.data : comparison.data?.article;
+  const similar = manual ? secondDetail.data : comparison.data?.similar;
+  const loading = manual
+    ? firstDetail.isPending || (validOtherId && secondDetail.isPending)
+    : comparison.isPending;
+  const loadError = manual
+    ? firstDetail.error || (validOtherId ? secondDetail.error : null)
+    : comparison.error;
+  useEffect(() => {
+    setOtherInput(otherParam ?? '');
+    setTargetId(null);
+    setResult(null);
+    setError('');
+  }, [otherParam, articleId]);
   const sourceId = targetId === article?.id ? similar?.id : article?.id;
   const incompatible =
     !!article && !!similar && article.source_type !== similar.source_type;
@@ -266,31 +302,75 @@ const MANDUPPage = () => {
         >
           ← 게시글 상세로
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-black">
-          유사 공지 비교·병합
-        </h1>
+        <h1 className="mt-4 text-2xl font-bold text-black">게시글 비교·병합</h1>
         <p className="mt-2 text-sm text-gray-600">
           내용과 출처를 비교한 뒤 남길 공지를 선택하세요. 흡수되는 공지는 영구
           삭제됩니다.
         </p>
+        <form
+          className="mt-5 flex flex-wrap items-end gap-3 rounded-xl bg-white p-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const next = Number(otherInput);
+            if (
+              !/^\d+$/.test(otherInput) ||
+              !Number.isSafeInteger(next) ||
+              next <= 0 ||
+              next === articleId
+            ) {
+              setError('비교할 다른 게시글의 올바른 ID를 입력해 주세요.');
+              return;
+            }
+            setError('');
+            setSearchParams({ other: String(next) });
+          }}
+        >
+          <label className="text-sm font-semibold">
+            비교할 다른 게시글 ID
+            <input
+              type="text"
+              inputMode="numeric"
+              value={otherInput}
+              onChange={(event) => setOtherInput(event.target.value)}
+              className="mt-2 block w-44 rounded-lg border border-gray-300 px-3 py-2"
+              placeholder="게시글 ID"
+            />
+          </label>
+          <button
+            type="submit"
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            두 글 비교
+          </button>
+        </form>
+        {error && !similar && (
+          <p role="alert" className="mt-3 text-sm text-red-600">
+            {error}
+          </p>
+        )}
         {!validId ? (
           <p role="alert" className="mt-6 rounded-xl bg-white p-5">
             올바르지 않은 게시글 ID입니다.
           </p>
-        ) : comparison.isPending ? (
+        ) : loading ? (
           <p role="status" className="mt-6 rounded-xl bg-white p-5">
             두 공지를 불러오는 중입니다.
           </p>
-        ) : comparison.isError ? (
+        ) : loadError ? (
           <div role="alert" className="mt-6 rounded-xl bg-white p-5">
             <p>
-              {isDashboardForbidden(comparison.error)
+              {isDashboardForbidden(loadError)
                 ? '관리자 권한을 확인해 주세요.'
-                : '유사 공지를 불러오지 못했습니다.'}
+                : '비교할 게시글을 불러오지 못했습니다. ID와 상태를 확인해 주세요.'}
             </p>
             <button
               type="button"
-              onClick={() => void comparison.refetch()}
+              onClick={() => {
+                if (manual) {
+                  void firstDetail.refetch();
+                  if (validOtherId) void secondDetail.refetch();
+                } else void comparison.refetch();
+              }}
               className="mt-3 text-sm underline"
             >
               다시 시도
@@ -331,7 +411,7 @@ const MANDUPPage = () => {
           </section>
         ) : article && similar ? (
           <>
-            {comparison.data?.similarity_score !== undefined && (
+            {!manual && comparison.data?.similarity_score !== undefined && (
               <p className="mt-6 text-sm font-semibold text-blue-700">
                 유사도 {comparison.data.similarity_score}점
               </p>
@@ -384,8 +464,9 @@ const MANDUPPage = () => {
             role="status"
             className="mt-6 rounded-xl border border-gray-200 bg-white p-5 text-sm"
           >
-            비교할 유사 공지가 없습니다. 상대 공지가 이미 삭제되었거나 아직 유사
-            판정이 되지 않았을 수 있습니다.
+            {manual
+              ? '비교할 다른 게시글 ID를 입력해 주세요.'
+              : '비교할 유사 공지가 없습니다. 상대 공지가 이미 삭제되었거나 아직 유사 판정이 되지 않았을 수 있습니다.'}
           </p>
         )}
       </main>

@@ -484,6 +484,20 @@ const MANHOMPage = () => {
               전체 선택{chosen.length > 0 && ` (${chosen.length})`}
             </label>
             <div className="flex gap-2">
+              <Link
+                to={
+                  chosen.length === 2
+                    ? `/manage/detail/${chosen[0]?.id}/similar?other=${chosen[1]?.id}`
+                    : '#'
+                }
+                aria-disabled={busy || chosen.length !== 2}
+                onClick={(event) => {
+                  if (busy || chosen.length !== 2) event.preventDefault();
+                }}
+                className={`rounded-full border border-blue-200 bg-blue-50 px-4 py-2 font-semibold text-blue-700 ${busy || chosen.length !== 2 ? 'cursor-not-allowed opacity-40' : 'hover:bg-blue-100'}`}
+              >
+                두 글 비교·병합
+              </Link>
               <button
                 disabled={busy || !canPublish}
                 title="반영대기 또는 임시저장 게시글만 운영에 반영할 수 있습니다."
