@@ -35,15 +35,15 @@ const getChipClass = (value, isSelected) => {
     : "bg-white text-gray-500 border-gray-200";
 };
 
-const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [selectedStatuses, setSelectedStatuses] = useState(["ALL"]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
-  const [interestOnly, setInterestOnly] = useState(false);
+const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword, appliedFilters }) => {
+  const [startDate, setStartDate] = useState(appliedFilters.startDate);
+  const [endDate, setEndDate] = useState(appliedFilters.endDate);
+  const [selectedStatuses, setSelectedStatuses] = useState(appliedFilters.selectedStatuses);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState(appliedFilters.categoryIds);
+  const [interestOnly, setInterestOnly] = useState(appliedFilters.interestOnly);
   const [interestEmptyMsg, setInterestEmptyMsg] = useState("");
-  const [selectedVendorIds, setSelectedVendorIds] = useState([]);
-  const [interestVendorOnly, setInterestVendorOnly] = useState(false);
+  const [selectedVendorIds, setSelectedVendorIds] = useState(appliedFilters.vendorIds);
+  const [interestVendorOnly, setInterestVendorOnly] = useState(appliedFilters.interestVendorOnly);
   const [vendorEmptyMsg, setVendorEmptyMsg] = useState("");
   const [vendors, setVendors] = useState([]);
   const [previewParams, setPreviewParams] = useState(null);
@@ -55,6 +55,23 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
   // race condition 방지: await 완료 후 체크 상태가 여전히 활성인지 확인
   const interestOnlyActiveRef = useRef(false);
   const interestVendorOnlyActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setStartDate(appliedFilters.startDate);
+    setEndDate(appliedFilters.endDate);
+    setSelectedStatuses(appliedFilters.selectedStatuses);
+    setSelectedCategoryIds(appliedFilters.categoryIds);
+    setSelectedVendorIds(appliedFilters.vendorIds);
+    setInterestOnly(appliedFilters.interestOnly);
+    setInterestVendorOnly(appliedFilters.interestVendorOnly);
+    prevCategoryIdsRef.current = appliedFilters.manualCategoryIds;
+    prevVendorIdsRef.current = appliedFilters.manualVendorIds;
+    interestOnlyActiveRef.current = appliedFilters.interestOnly;
+    interestVendorOnlyActiveRef.current = appliedFilters.interestVendorOnly;
+    setInterestEmptyMsg("");
+    setVendorEmptyMsg("");
+  }, [isOpen, appliedFilters]);
 
   // 카테고리 목록 동적 조회
   const { data: categoriesData } = useQuery({
@@ -210,7 +227,17 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
   };
 
   const handleApply = () => {
-    onApply({ startDate, endDate, selectedStatuses, categoryIds: selectedCategoryIds, vendorIds: selectedVendorIds });
+    onApply({
+      startDate,
+      endDate,
+      selectedStatuses,
+      categoryIds: selectedCategoryIds,
+      vendorIds: selectedVendorIds,
+      interestOnly,
+      interestVendorOnly,
+      manualCategoryIds: prevCategoryIdsRef.current,
+      manualVendorIds: prevVendorIdsRef.current,
+    });
     onClose();
   };
 
@@ -273,6 +300,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
             return (
               <button
                 key={opt.value}
+                type="button"
+                aria-pressed={isSelected}
                 onClick={() => toggleStatus(opt.value)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${getChipClass(opt.value, isSelected)}`}
               >
@@ -309,6 +338,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
             return (
               <button
                 key={cat.id}
+                type="button"
+                aria-pressed={isSelected}
                 onClick={() => toggleCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected
@@ -348,6 +379,8 @@ const FilterBottomSheet = ({ isOpen, onClose, onApply, keyword }) => {
             return (
               <button
                 key={v.id}
+                type="button"
+                aria-pressed={isSelected}
                 onClick={() => toggleVendor(v.id)}
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium border transition-colors ${
                   isSelected

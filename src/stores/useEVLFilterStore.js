@@ -10,6 +10,10 @@ const useEVLFilterStore = create((set) => ({
     selectedStatuses: ["ALL"],
     categoryIds: [],
     vendorIds: [],
+    interestOnly: false,
+    interestVendorOnly: false,
+    manualCategoryIds: [],
+    manualVendorIds: [],
   },
 
   setCurrentPage: (page) => set({ currentPage: page }),

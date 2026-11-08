@@ -293,6 +293,7 @@ const EVLPage = () => {
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={handleFilterApply}
+        appliedFilters={activeFilters}
         totalCount={pageInfo.total_items}
         keyword={searchText}
       />
