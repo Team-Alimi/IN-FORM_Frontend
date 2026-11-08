@@ -148,7 +148,7 @@ const MobileLayout = ({
         {/* 카테고리 + 상태 뱃지 */}
         <div className="flex items-center gap-2 mb-3">
           {category_name && <Badge category={category_name} />}
-          <Badge color={status.color} text={status.text} />
+          {status && <Badge color={status.color} text={status.text} />}
         </div>
 
         {/* 대형 굵은 제목 */}
@@ -321,7 +321,7 @@ const DesktopLayout = ({
       <div className="p-6 md:p-8 border-b border-gray-100">
         <div className="flex items-center gap-2 mb-4">
           {category_name && <Badge category={category_name} />}
-          <Badge color={status.color} text={status.text} />
+          {status && <Badge color={status.color} text={status.text} />}
         </div>
         <div className="flex justify-between items-start gap-4 mb-2">
           <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">{title}</h1>
