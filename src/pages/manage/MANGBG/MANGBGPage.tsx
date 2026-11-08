@@ -17,6 +17,8 @@ import {
   filterTrashArticles,
 } from '@/utils/manage/trashFilters';
 import type { TrashFilters } from '@/utils/manage/trashFilters';
+import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
+import type { TrashArticle } from '@/api/manage/trash';
 
 type Action = 'restore' | 'delete';
 interface PendingAction {
@@ -38,7 +40,7 @@ const STATUS = {
 const MANGBGPage = () => {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(EMPTY_TRASH_FILTERS);
-  const [selected, setSelected] = useState<number[]>([]);
+  const selection = useAdminArticleSelection<TrashArticle>();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
   );
@@ -58,7 +60,10 @@ const MANGBGPage = () => {
     mutationFn: ({ action, ids }: PendingAction) => runTrashAction(action, ids),
     onSuccess: async (data, request) => {
       setResult({ action: request.action, data });
-      setSelected(data.failed.map((item) => item.id));
+      selection.updateSelection(
+        data.failed.map((item) => item.id),
+        selection.selectedRows
+      );
       setError('');
       // 필터는 유지하고 첫 페이지에서 갱신 결과를 확인합니다.
       if (!data.failed.length) setPage(1);
@@ -122,7 +127,7 @@ const MANGBGPage = () => {
       allRows.flatMap((row) => row.categories).map((item) => [item.id, item])
     ).values(),
   ];
-  const selectedRows = rows.filter((row) => selected.includes(row.id));
+  const selectedRows = selection.selectedRows;
   const canRestore =
     selectedRows.length > 0 &&
     selectedRows.every(
@@ -136,15 +141,16 @@ const MANGBGPage = () => {
     selectedRows.every((row) => row.status === 'TRASHED');
   const handlePage = (next: number) => {
     setPage(next);
-    setSelected([]);
   };
   const handleSearch = (next: TrashFilters) => {
     setFilters(next);
     handlePage(1);
+    selection.resetSelection();
   };
   const handleAction = (action: Action, ids: number[]) => {
     if (
       submitting.current ||
+      selection.isSelectingAll ||
       articles.isFetching ||
       articles.isError ||
       !ids.length ||
@@ -245,8 +251,13 @@ const MANGBGPage = () => {
               isError={articles.isError}
               disabled={mutation.isPending || articles.isFetching}
               page={currentPage}
-              selected={selected}
-              onSelectionChange={setSelected}
+              selected={selection.selected}
+              onSelectionChange={(ids) => selection.updateSelection(ids, rows)}
+              onSelectAll={() =>
+                void selection.selectAll(async () => filtered, filtered.length)
+              }
+              isSelectingAll={selection.isSelectingAll}
+              selectionError={selection.selectionError}
               onPageChange={handlePage}
               primaryLabel="선택 복구"
               primaryDisabled={!canRestore}

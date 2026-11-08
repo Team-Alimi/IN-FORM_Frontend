@@ -7,6 +7,7 @@ import ManageNavigation from '@/components/manage/common/ManageNavigation';
 import CategoryBadge from '@/components/manage/common/CategoryBadge';
 import {
   getDashboardArticles,
+  getAllDashboardArticles,
   getDashboardOptions,
   getDashboardStats,
   runDashboardAction,
@@ -15,6 +16,7 @@ import {
 } from '@/api/manage/dashboard';
 import type { ArticleFilters, ReviewStatus } from '@/api/manage/dashboard';
 import useAuthStore from '@/stores/useAuthStore';
+import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
 
 const LABELS: Record<ReviewStatus, string> = {
   PENDING_REVIEW: '미검수',
@@ -48,7 +50,10 @@ const MANHOMPage = () => {
   const [form, setForm] = useState(EMPTY);
   const [filters, setFilters] = useState<ArticleFilters>({});
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<number[]>([]);
+  const selection =
+    useAdminArticleSelection<
+      import('@/api/manage/dashboard').DashboardArticle
+    >();
   const [notice, setNotice] = useState('');
   const userInfo = useAuthStore((state) => state.userInfo);
   const queryClient = useQueryClient();
@@ -86,7 +91,10 @@ const MANHOMPage = () => {
       ids: number[];
     }) => runDashboardAction(action, ids),
     onSuccess: (result) => {
-      setSelected(result.failed.map((item) => item.id));
+      selection.updateSelection(
+        result.failed.map((item) => item.id),
+        selection.selectedRows
+      );
       setNotice(
         `${result.succeeded.length}건 처리 완료${result.failed.length ? `. ${result.failed.map((item) => `#${item.id}: ${item.message}`).join(' / ')}` : ''}`
       );
@@ -103,8 +111,8 @@ const MANHOMPage = () => {
           'eventDetail',
           'hotEvents',
           'bookmarks',
-        ].forEach((key) =>
-          void queryClient.invalidateQueries({ queryKey: [key] })
+        ].forEach(
+          (key) => void queryClient.invalidateQueries({ queryKey: [key] })
         );
     },
     onError: () =>
@@ -113,18 +121,22 @@ const MANHOMPage = () => {
       ),
   });
   const rows = articles.data?.content ?? [];
-  const chosen = rows.filter((row) => selected.includes(row.id));
+  const chosen = selection.selectedRows;
   const canPublish =
     chosen.length > 0 &&
     chosen.every(
       (row) => row.status === 'READY_TO_PUBLISH' || row.status === 'DRAFT'
     );
-  const busy = mutation.isPending || articles.isFetching || articles.isError;
+  const busy =
+    mutation.isPending ||
+    articles.isFetching ||
+    articles.isError ||
+    selection.isSelectingAll;
   const totalPages = articles.data?.page_info.total_pages ?? 0;
   const handleFilter = (next: ArticleFilters) => {
     setFilters(next);
     setPage(1);
-    setSelected([]);
+    selection.resetSelection();
     setNotice('');
   };
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -157,7 +169,6 @@ const MANHOMPage = () => {
   };
   const handlePage = (next: number) => {
     setPage(next);
-    setSelected([]);
   };
   const cards = [
     {
@@ -461,22 +472,29 @@ const MANHOMPage = () => {
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                aria-label="현재 페이지 전체 선택"
-                checked={rows.length > 0 && chosen.length === rows.length}
+                aria-label="검색 결과 전체 선택"
+                checked={
+                  (articles.data?.page_info.total_items ?? 0) > 0 &&
+                  chosen.length === articles.data?.page_info.total_items
+                }
                 ref={(element) => {
                   if (element)
                     element.indeterminate =
-                      chosen.length > 0 && chosen.length < rows.length;
+                      chosen.length > 0 &&
+                      chosen.length !== articles.data?.page_info.total_items;
                 }}
                 disabled={busy || !rows.length}
-                onChange={(event) =>
-                  setSelected(
-                    event.target.checked ? rows.map((row) => row.id) : []
+                onChange={() =>
+                  void selection.selectAll(
+                    () => getAllDashboardArticles(filters),
+                    articles.data?.page_info.total_items ?? 0
                   )
                 }
                 className="accent-black"
               />
-              전체 선택{chosen.length > 0 && ` (${chosen.length})`}
+              {selection.isSelectingAll
+                ? '전체 선택 중…'
+                : `전체 선택${chosen.length > 0 ? ` (${chosen.length})` : ''}`}
             </label>
             <div className="flex gap-2">
               <button
@@ -496,6 +514,11 @@ const MANHOMPage = () => {
               </button>
             </div>
           </div>
+          {selection.selectionError && (
+            <p role="alert" className="px-5 py-2 text-xs text-red-600">
+              {selection.selectionError}
+            </p>
+          )}
           {chosen.length > 0 && !canPublish && (
             <p className="px-5 py-2 text-xs text-amber-700">
               운영 반영은 반영대기·임시저장 게시글만 선택했을 때 가능합니다.
@@ -555,12 +578,15 @@ const MANHOMPage = () => {
                           type="checkbox"
                           aria-label={`게시글 ${row.id} 선택`}
                           disabled={busy}
-                          checked={selected.includes(row.id)}
+                          checked={selection.selected.includes(row.id)}
                           onChange={(event) =>
-                            setSelected(
+                            selection.updateSelection(
                               event.target.checked
-                                ? [...selected, row.id]
-                                : selected.filter((id) => id !== row.id)
+                                ? [...selection.selected, row.id]
+                                : selection.selected.filter(
+                                    (id) => id !== row.id
+                                  ),
+                              rows
                             )
                           }
                           className="accent-black"

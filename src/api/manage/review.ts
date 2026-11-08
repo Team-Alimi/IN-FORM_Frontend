@@ -1,6 +1,7 @@
 import api from '@/api/axios';
 import {
   getDashboardArticles,
+  runBulkInBatches,
   runDashboardAction,
 } from '@/api/manage/dashboard';
 import type { ArticleFilters, BulkResult } from '@/api/manage/dashboard';
@@ -34,9 +35,11 @@ export const runReviewAction = async (
   ids: number[]
 ): Promise<BulkResult> => {
   if (action === 'trash') return runDashboardAction('trash', ids);
-  const response = await api.post('/api/v1/admin/articles/bulk/status', {
-    ids,
-    status: 'READY_TO_PUBLISH',
+  return runBulkInBatches(ids, async (batch) => {
+    const response = await api.post('/api/v1/admin/articles/bulk/status', {
+      ids: batch,
+      status: 'READY_TO_PUBLISH',
+    });
+    return response.data.data;
   });
-  return response.data.data;
 };

@@ -5,6 +5,7 @@ import type {
   DashboardList,
   ReviewStatus,
 } from '@/api/manage/dashboard';
+import { runBulkInBatches } from '@/api/manage/dashboard';
 
 export interface TrashArticle extends DashboardArticle {
   previous_status?: Exclude<ReviewStatus, 'TRASHED'>;
@@ -49,8 +50,10 @@ export const runTrashAction = async (
   action: 'restore' | 'delete',
   ids: number[]
 ): Promise<BulkResult> => {
-  const response = await api.post(`/api/v1/admin/articles/bulk/${action}`, {
-    ids,
+  return runBulkInBatches(ids, async (batch) => {
+    const response = await api.post(`/api/v1/admin/articles/bulk/${action}`, {
+      ids: batch,
+    });
+    return response.data.data;
   });
-  return response.data.data;
 };
