@@ -15,6 +15,7 @@ import {
 import { getStagedArticles } from '@/api/manage/review';
 import type { BulkResult } from '@/api/manage/dashboard';
 import type { ReviewFilters } from '@/api/manage/review';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 
 type StagedAction = 'publish' | 'trash';
 interface PendingAction {
@@ -22,8 +23,11 @@ interface PendingAction {
   ids: number[];
 }
 const MANSTGPage = () => {
-  const [filters, setFilters] = useState<ReviewFilters>({});
-  const [page, setPage] = useState(1);
+  const [view, setView] = useManageListHistoryState<{
+    page: number;
+    filters: ReviewFilters;
+  }>({ page: 1, filters: {} });
+  const { page, filters } = view;
   const [selected, setSelected] = useState<number[]>([]);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
@@ -61,9 +65,10 @@ const MANSTGPage = () => {
             )
           )
         : 1;
-      setPage((current) =>
-        data.failed.length ? Math.min(current, lastPage) : 1
-      );
+      setView((current) => ({
+        ...current,
+        page: data.failed.length ? Math.min(current.page, lastPage) : 1,
+      }));
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }),
         queryClient.invalidateQueries({ queryKey: ['adminArticles'] }),
@@ -96,12 +101,12 @@ const MANSTGPage = () => {
     selectedRows.length > 0 &&
     selectedRows.every((row) => row.status === 'READY_TO_PUBLISH');
   const handlePage = (next: number) => {
-    setPage(next);
+    setView((current) => ({ ...current, page: next }));
     setSelected([]);
   };
   const handleSearch = (next: ReviewFilters) => {
-    setFilters(next);
-    handlePage(1);
+    setView({ page: 1, filters: next });
+    setSelected([]);
   };
   const handleAction = (action: StagedAction, ids: number[]) => {
     if (
@@ -175,6 +180,7 @@ const MANSTGPage = () => {
             title="검색"
             label="반영 대기 게시글 검색"
             disabled={mutation.isPending}
+            initialFilters={filters}
             onSearch={handleSearch}
           />
           {result && (

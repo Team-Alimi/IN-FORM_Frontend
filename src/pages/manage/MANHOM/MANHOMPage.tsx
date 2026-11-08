@@ -15,6 +15,7 @@ import {
 } from '@/api/manage/dashboard';
 import type { ArticleFilters, ReviewStatus } from '@/api/manage/dashboard';
 import useAuthStore from '@/stores/useAuthStore';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 
 const LABELS: Record<ReviewStatus, string> = {
   PENDING_REVIEW: '미검수',
@@ -45,9 +46,13 @@ const formatDate = (value?: string) =>
   value ? value.slice(0, 10).replaceAll('-', '.') : '—';
 
 const MANHOMPage = () => {
-  const [form, setForm] = useState(EMPTY);
-  const [filters, setFilters] = useState<ArticleFilters>({});
-  const [page, setPage] = useState(1);
+  const [view, setView] = useManageListHistoryState<{
+    page: number;
+    filters: ArticleFilters;
+    form: typeof EMPTY;
+  }>({ page: 1, filters: {}, form: EMPTY });
+  const { page, filters } = view;
+  const [form, setForm] = useState(view.form);
   const [selected, setSelected] = useState<number[]>([]);
   const [notice, setNotice] = useState('');
   const userInfo = useAuthStore((state) => state.userInfo);
@@ -90,7 +95,8 @@ const MANHOMPage = () => {
       setNotice(
         `${result.succeeded.length}건 처리 완료${result.failed.length ? `. ${result.failed.map((item) => `#${item.id}: ${item.message}`).join(' / ')}` : ''}`
       );
-      if (result.failed.length === 0) setPage(1);
+      if (result.failed.length === 0)
+        setView((current) => ({ ...current, page: 1 }));
       void queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticles'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticleCounts'] });
@@ -103,8 +109,8 @@ const MANHOMPage = () => {
           'eventDetail',
           'hotEvents',
           'bookmarks',
-        ].forEach((key) =>
-          void queryClient.invalidateQueries({ queryKey: [key] })
+        ].forEach(
+          (key) => void queryClient.invalidateQueries({ queryKey: [key] })
         );
     },
     onError: () =>
@@ -122,8 +128,7 @@ const MANHOMPage = () => {
   const busy = mutation.isPending || articles.isFetching || articles.isError;
   const totalPages = articles.data?.page_info.total_pages ?? 0;
   const handleFilter = (next: ArticleFilters) => {
-    setFilters(next);
-    setPage(1);
+    setView({ page: 1, filters: next, form });
     setSelected([]);
     setNotice('');
   };
@@ -156,7 +161,7 @@ const MANHOMPage = () => {
     mutation.mutate({ action, ids: chosen.map((row) => row.id) });
   };
   const handlePage = (next: number) => {
-    setPage(next);
+    setView((current) => ({ ...current, page: next }));
     setSelected([]);
   };
   const cards = [
