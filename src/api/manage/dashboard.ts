@@ -69,6 +69,32 @@ export const getDashboardArticles = async (
   });
   return response.data.data;
 };
+
+/** 전체 선택은 현재 검색 조건에 맞는 모든 페이지가 성공한 뒤에만 완료합니다. */
+export const getAllDashboardArticles = async (
+  filters: ArticleFilters
+): Promise<DashboardArticle[]> => {
+  const rows = new Map<number, DashboardArticle>();
+  let page = 1;
+  let expectedCount: number | undefined;
+  while (true) {
+    const data = await getDashboardArticles(filters, page, 50);
+    expectedCount ??= data.page_info.total_items;
+    if (
+      data.page_info.current_page !== page ||
+      (data.page_info.has_next && !data.content.length)
+    ) {
+      throw new Error('전체 게시글을 조회하지 못했습니다. 다시 시도해 주세요.');
+    }
+    data.content.forEach((row) => rows.set(row.id, row));
+    if (!data.page_info.has_next) {
+      if (rows.size !== expectedCount)
+        throw new Error('조회 중 목록이 변경되었습니다. 다시 시도해 주세요.');
+      return [...rows.values()];
+    }
+    page += 1;
+  }
+};
 export const getDashboardStats = async (): Promise<{
   pending_review: number;
   ready_to_publish: number;
@@ -88,8 +114,37 @@ export const runDashboardAction = async (
   action: 'publish' | 'trash',
   ids: number[]
 ): Promise<BulkResult> => {
-  const response = await api.post(`/api/v1/admin/articles/bulk/${action}`, {
-    ids,
+  return runBulkInBatches(ids, async (batch) => {
+    const response = await api.post(`/api/v1/admin/articles/bulk/${action}`, {
+      ids: batch,
+    });
+    return response.data.data;
   });
-  return response.data.data;
+};
+
+/** 관리자 일괄 API의 요청당 200건 제한을 지킵니다. */
+export const runBulkInBatches = async (
+  ids: number[],
+  send: (batch: number[]) => Promise<BulkResult>
+): Promise<BulkResult> => {
+  const result: BulkResult = { succeeded: [], failed: [] };
+  for (let offset = 0; offset < ids.length; offset += 200) {
+    try {
+      const batch = await send(ids.slice(offset, offset + 200));
+      result.succeeded.push(...batch.succeeded);
+      result.failed.push(...batch.failed);
+    } catch (error) {
+      if (offset === 0) throw error;
+      result.failed.push(
+        ...ids.slice(offset).map((id) => ({
+          id,
+          code: 'REQUEST_FAILED',
+          message:
+            '처리 결과를 확인하지 못했습니다. 목록을 새로 확인해 주세요.',
+        }))
+      );
+      break;
+    }
+  }
+  return result;
 };

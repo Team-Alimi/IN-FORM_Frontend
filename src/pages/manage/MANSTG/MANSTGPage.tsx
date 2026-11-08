@@ -8,13 +8,15 @@ import ReviewArticleTable from '@/components/manage/common/ReviewArticleTable';
 import ArticleActionModal from '@/components/manage/common/ArticleActionModal';
 import {
   getDashboardStats,
+  getAllDashboardArticles,
   isDashboardForbidden,
   runDashboardAction,
   shouldRetryDashboardQuery,
 } from '@/api/manage/dashboard';
 import { getStagedArticles } from '@/api/manage/review';
-import type { BulkResult } from '@/api/manage/dashboard';
+import type { BulkResult, DashboardArticle } from '@/api/manage/dashboard';
 import type { ReviewFilters } from '@/api/manage/review';
+import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
 
 type StagedAction = 'publish' | 'trash';
 interface PendingAction {
@@ -24,7 +26,7 @@ interface PendingAction {
 const MANSTGPage = () => {
   const [filters, setFilters] = useState<ReviewFilters>({});
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<number[]>([]);
+  const selection = useAdminArticleSelection<DashboardArticle>();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
   );
@@ -50,7 +52,10 @@ const MANSTGPage = () => {
     onSuccess: async (data, request) => {
       setResult({ action: request.action, data });
       setError('');
-      setSelected(data.failed.map((item) => item.id));
+      selection.updateSelection(
+        data.failed.map((item) => item.id),
+        selection.selectedRows
+      );
       const source = articles.data;
       const lastPage = source
         ? Math.max(
@@ -90,23 +95,23 @@ const MANSTGPage = () => {
       );
     },
   });
-  const selectedRows =
-    articles.data?.content.filter((row) => selected.includes(row.id)) ?? [];
+  const selectedRows = selection.selectedRows;
   const canPublish =
     selectedRows.length > 0 &&
     selectedRows.every((row) => row.status === 'READY_TO_PUBLISH');
   const handlePage = (next: number) => {
     setPage(next);
-    setSelected([]);
   };
   const handleSearch = (next: ReviewFilters) => {
     setFilters(next);
     handlePage(1);
+    selection.resetSelection();
   };
   const handleAction = (action: StagedAction, ids: number[]) => {
     if (
       mutation.isPending ||
       articles.isFetching ||
+      selection.isSelectingAll ||
       !ids.length ||
       (action === 'publish' && !canPublish)
     )
@@ -222,8 +227,22 @@ const MANSTGPage = () => {
               isError={articles.isError}
               disabled={mutation.isPending || articles.isFetching}
               page={page}
-              selected={selected}
-              onSelectionChange={setSelected}
+              selected={selection.selected}
+              onSelectionChange={(ids) =>
+                selection.updateSelection(ids, articles.data?.content ?? [])
+              }
+              onSelectAll={() =>
+                void selection.selectAll(
+                  () =>
+                    getAllDashboardArticles({
+                      ...filters,
+                      status: 'READY_TO_PUBLISH',
+                    }),
+                  articles.data?.page_info.total_items ?? 0
+                )
+              }
+              isSelectingAll={selection.isSelectingAll}
+              selectionError={selection.selectionError}
               onPageChange={handlePage}
               primaryLabel="운영 반영"
               primaryDisabled={!canPublish}
