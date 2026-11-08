@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import MobileHeader from "@/components/main/mobile/common/MobileHeader";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +56,7 @@ const EVLPage = () => {
   const params = {
           page: currentPage,
           size: pageSize,
+          sort: "published_at,desc",
           keyword: searchText.trim() !== "" ? searchText.trim() : undefined,
           starts_from: activeFilters.startDate || undefined,
           ends_to: activeFilters.endDate || undefined,
@@ -73,24 +74,10 @@ const EVLPage = () => {
     queryKey: ["events", params],
     queryFn: async () => (await fetchEvents(params)).data?.data,
   });
-  const events = apiData?.content;
+  const events = apiData?.content ?? [];
   const pageInfo = apiData?.page_info ?? { total_pages: 0, total_items: 0 };
 
   const totalPages = pageInfo.total_pages || 1;
-
-  // deadline_status 기준 정렬
-  const sortedEvents = useMemo(() => {
-    if (!events) return [];
-
-    const score = (status) => {
-      if (status === "CLOSING_SOON") return 4;
-      if (status === "OPEN") return 3;
-      if (status === "UPCOMING") return 2;
-      return 1;
-    };
-
-    return [...events].sort((a, b) => score(b.deadline_status) - score(a.deadline_status));
-  }, [events]);
 
   const handleRowClick = (id) => {
     navigate(`/events/detail/${id}`);
@@ -190,8 +177,8 @@ const EVLPage = () => {
                   <p className="p-4 text-center text-gray-500" role="status">
                     {isError ? "공지사항을 불러오지 못했습니다." : "불러오는 중..."}
                   </p>
-                ) : sortedEvents.length > 0 ? (
-                  sortedEvents.map((event) => {
+                ) : events.length > 0 ? (
+                  events.map((event) => {
                     const statusResult = getStatus(event.deadline_status);
                     if (isMobile) {
                       return (
