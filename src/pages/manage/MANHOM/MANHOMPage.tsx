@@ -18,6 +18,7 @@ import type { ArticleFilters, ReviewStatus } from '@/api/manage/dashboard';
 import useAuthStore from '@/stores/useAuthStore';
 import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
 import useManageListHistoryState from '@/hooks/useManageListHistoryState';
+import { getUnreviewedArticles } from '@/api/manage/review';
 
 const LABELS: Record<ReviewStatus, string> = {
   PENDING_REVIEW: '미검수',
@@ -68,8 +69,8 @@ const MANHOMPage = () => {
     retry: shouldRetryDashboardQuery,
   });
   const checks = useQuery({
-    queryKey: ['adminDashboard', 'needsCheck'],
-    queryFn: () => getDashboardArticles({ needs_check: true }, 1, 1),
+    queryKey: ['adminDashboard', 'unreviewed', 'checks', 1],
+    queryFn: () => getUnreviewedArticles({}, 1, true),
     retry: shouldRetryDashboardQuery,
   });
   const articles = useQuery({

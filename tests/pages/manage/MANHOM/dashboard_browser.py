@@ -41,10 +41,11 @@ def route_api(route):
             return
         filtered = rows
         if 'status' in query: filtered = [r for r in filtered if r['status'] == query['status'][0]]
+        if 'needs_check' in query: filtered = [r for r in filtered if 'starts_on' not in r]
         if 'article_id' in query: filtered = [r for r in filtered if str(r['id']) == query['article_id'][0]]
         if 'keyword' in query: filtered = [r for r in filtered if query['keyword'][0] in r['title']]
         page = int(query.get('page', ['1'])[0]); size = int(query.get('size', ['8'])[0])
-        total = 30 if 'needs_check' in query else len(filtered)
+        total = len(filtered)
         data = dict(content=filtered[(page-1)*size:page*size], page_info=dict(current_page=page, size=size, total_pages=(total+size-1)//size, total_items=total, has_next=page*size<total))
     route.fulfill(json=dict(success=True, data=data))
 
@@ -58,6 +59,8 @@ with sync_playwright() as p:
     page.add_init_script("localStorage.setItem('auth-storage', JSON.stringify({state:{isLogIn:true,accessToken:'test',userInfo:{name:'관리자01'}},version:0}))")
     page.goto('http://127.0.0.1:5173/manage')
     expect(page.get_by_role('link', name='2026학년도 안내 게시글 1', exact=True)).to_be_visible()
+    expect(page.locator('main').get_by_role('link', name='확인 필요 게시글')).to_contain_text('1')
+    assert any(q.get('status') == ['PENDING_REVIEW'] and q.get('needs_check') == ['true'] for path, q, _ in requests if path.endswith('/articles'))
     page.screenshot(path=str(OUTPUT/'desktop.png'), full_page=True)
     expect(page.get_by_role('button', name='운영 반영', exact=True)).to_be_disabled()
     page.get_by_label('게시글 183 선택', exact=True).check()
