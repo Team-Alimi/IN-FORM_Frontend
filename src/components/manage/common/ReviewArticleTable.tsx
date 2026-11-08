@@ -13,6 +13,9 @@ interface Props {
   page: number;
   selected: number[];
   onSelectionChange: (ids: number[]) => void;
+  onSelectAll: () => void;
+  isSelectingAll?: boolean;
+  selectionError?: string;
   onPageChange: (page: number) => void;
   primaryLabel: string;
   primaryDisabled?: boolean;
@@ -49,6 +52,9 @@ const ReviewArticleTable = ({
   page,
   selected,
   onSelectionChange,
+  onSelectAll,
+  isSelectingAll = false,
+  selectionError,
   onPageChange,
   primaryLabel,
   primaryDisabled = false,
@@ -65,12 +71,14 @@ const ReviewArticleTable = ({
     .filter((row) => selected.includes(row.id))
     .map((row) => row.id);
   const totalPages = data?.page_info.total_pages ?? 0;
-  const blocked = disabled || isPending || isError;
+  const totalItems = data?.page_info.total_items ?? 0;
+  const allChecked = totalItems > 0 && selected.length === totalItems;
+  const blocked = disabled || isPending || isError || isSelectingAll;
   const handleToggle = (id: number, checked: boolean) =>
     onSelectionChange(
       checked
-        ? [...new Set([...selectedIds, id])]
-        : selectedIds.filter((value) => value !== id)
+        ? [...new Set([...selected, id])]
+        : selected.filter((value) => value !== id)
     );
   return (
     <section
@@ -84,25 +92,22 @@ const ReviewArticleTable = ({
             type="checkbox"
             aria-label={`${label} 전체 선택`}
             className="h-4 w-4 accent-black"
-            checked={rows.length > 0 && selectedIds.length === rows.length}
+            checked={allChecked}
             ref={(element) => {
               if (element)
-                element.indeterminate =
-                  selectedIds.length > 0 && selectedIds.length < rows.length;
+                element.indeterminate = selected.length > 0 && !allChecked;
             }}
             disabled={blocked || rows.length === 0}
-            onChange={(event) =>
-              onSelectionChange(
-                event.target.checked ? rows.map((row) => row.id) : []
-              )
-            }
+            onChange={onSelectAll}
           />
-          전체 선택{selectedIds.length > 0 && ` (${selectedIds.length})`}
+          {isSelectingAll
+            ? '전체 선택 중…'
+            : `전체 선택${selected.length > 0 ? ` (${selected.length})` : ''}`}
         </label>
         <div className="flex gap-2">
           <button
-            disabled={blocked || primaryDisabled || !selectedIds.length}
-            onClick={() => onPrimaryAction(selectedIds)}
+            disabled={blocked || primaryDisabled || !selected.length}
+            onClick={() => onPrimaryAction(selected)}
             className={
               trashView
                 ? 'rounded-lg border border-gray-200 px-4 py-2 text-gray-700 disabled:opacity-40'
@@ -112,8 +117,8 @@ const ReviewArticleTable = ({
             {primaryLabel}
           </button>
           <button
-            disabled={blocked || secondaryDisabled || !selectedIds.length}
-            onClick={() => onTrash(selectedIds)}
+            disabled={blocked || secondaryDisabled || !selected.length}
+            onClick={() => onTrash(selected)}
             className={
               trashView
                 ? 'rounded-lg border border-red-200 px-4 py-2 text-red-600 disabled:opacity-40'
@@ -124,6 +129,11 @@ const ReviewArticleTable = ({
           </button>
         </div>
       </div>
+      {selectionError && (
+        <p role="alert" className="px-5 py-2 text-xs text-red-600">
+          {selectionError}
+        </p>
+      )}
       {isPending ? (
         <p role="status" className="p-12 text-center text-sm text-gray-500">
           게시글을 불러오는 중입니다.

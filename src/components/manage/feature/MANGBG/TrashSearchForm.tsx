@@ -8,13 +8,15 @@ const INPUT =
 const TrashSearchForm = ({
   disabled,
   categories,
+  initialFilters = EMPTY_TRASH_FILTERS,
   onSearch,
 }: {
   disabled: boolean;
   categories: NamedOption[];
+  initialFilters?: TrashFilters;
   onSearch: (filters: TrashFilters) => void;
 }) => {
-  const [form, setForm] = useState(EMPTY_TRASH_FILTERS);
+  const [form, setForm] = useState(initialFilters);
   const [error, setError] = useState('');
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

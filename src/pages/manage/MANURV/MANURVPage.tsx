@@ -7,13 +7,16 @@ import ReviewArticleTable from '@/components/manage/common/ReviewArticleTable';
 import ArticleSearchForm from '@/components/manage/common/ArticleSearchForm';
 import ArticleActionModal from '@/components/manage/common/ArticleActionModal';
 import {
+  getAllDashboardArticles,
   getDashboardStats,
   isDashboardForbidden,
   shouldRetryDashboardQuery,
 } from '@/api/manage/dashboard';
 import { getUnreviewedArticles, runReviewAction } from '@/api/manage/review';
-import type { BulkResult } from '@/api/manage/dashboard';
+import type { BulkResult, DashboardArticle } from '@/api/manage/dashboard';
 import type { ReviewAction, ReviewFilters } from '@/api/manage/review';
+import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 
 type Section = 'checks' | 'all';
 interface PendingAction {
@@ -22,12 +25,13 @@ interface PendingAction {
   ids: number[];
 }
 const MANURVPage = () => {
-  const [filters, setFilters] = useState<ReviewFilters>({});
-  const [pages, setPages] = useState({ checks: 1, all: 1 });
-  const [selected, setSelected] = useState<Record<Section, number[]>>({
-    checks: [],
-    all: [],
-  });
+  const [view, setView] = useManageListHistoryState<{
+    filters: ReviewFilters;
+    pages: Record<Section, number>;
+  }>({ filters: {}, pages: { checks: 1, all: 1 } });
+  const { filters, pages } = view;
+  const checkSelection = useAdminArticleSelection<DashboardArticle>();
+  const allSelection = useAdminArticleSelection<DashboardArticle>();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
   );
@@ -69,23 +73,31 @@ const MANURVPage = () => {
           )
         : 1;
       // 처리한 쪽의 실패 선택만 남기고, 다른 목록에 남은 동일 공지 선택을 해제합니다.
-      setSelected({
-        checks:
-          request.section === 'checks'
-            ? data.failed.map((item) => item.id)
-            : [],
-        all:
-          request.section === 'all' ? data.failed.map((item) => item.id) : [],
-      });
-      setPages((current) => ({
-        checks:
-          request.section === 'checks' && data.failed.length
-            ? Math.min(current.checks, lastPage)
-            : 1,
-        all:
-          request.section === 'all' && data.failed.length
-            ? Math.min(current.all, lastPage)
-            : 1,
+      if (request.section === 'checks') {
+        checkSelection.updateSelection(
+          data.failed.map((item) => item.id),
+          checkSelection.selectedRows
+        );
+        allSelection.resetSelection();
+      } else {
+        allSelection.updateSelection(
+          data.failed.map((item) => item.id),
+          allSelection.selectedRows
+        );
+        checkSelection.resetSelection();
+      }
+      setView((current) => ({
+        ...current,
+        pages: {
+          checks:
+            request.section === 'checks' && data.failed.length
+              ? Math.min(current.pages.checks, lastPage)
+              : 1,
+          all:
+            request.section === 'all' && data.failed.length
+              ? Math.min(current.pages.all, lastPage)
+              : 1,
+        },
       }));
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }),
@@ -105,19 +117,31 @@ const MANURVPage = () => {
     },
   });
   const handlePage = (section: Section, page: number) => {
-    setPages((current) => ({ ...current, [section]: page }));
-    setSelected((current) => ({ ...current, [section]: [] }));
+    setView((current) => ({
+      ...current,
+      pages: { ...current.pages, [section]: page },
+    }));
   };
   const handleSearch = (next: ReviewFilters) => {
-    setFilters(next);
-    handlePage('all', 1);
+    setView((current) => ({
+      ...current,
+      filters: next,
+      pages: { ...current.pages, all: 1 },
+    }));
+    allSelection.resetSelection();
   };
   const handleAction = (
     section: Section,
     action: ReviewAction,
     ids: number[]
   ) => {
-    if (mutation.isPending || !ids.length) return;
+    if (
+      mutation.isPending ||
+      checkSelection.isSelectingAll ||
+      allSelection.isSelectingAll ||
+      !ids.length
+    )
+      return;
     setResult(null);
     setError('');
     setPendingAction({ section, action, ids });
@@ -225,10 +249,22 @@ const MANURVPage = () => {
             isError={checks.isError}
             disabled={mutation.isPending || checks.isFetching}
             page={pages.checks}
-            selected={selected.checks}
+            selected={checkSelection.selected}
             onSelectionChange={(ids) =>
-              setSelected((current) => ({ ...current, checks: ids }))
+              checkSelection.updateSelection(ids, checks.data?.content ?? [])
             }
+            onSelectAll={() =>
+              void checkSelection.selectAll(
+                () =>
+                  getAllDashboardArticles({
+                    status: 'PENDING_REVIEW',
+                    needs_check: true,
+                  }),
+                checks.data?.page_info.total_items ?? 0
+              )
+            }
+            isSelectingAll={checkSelection.isSelectingAll}
+            selectionError={checkSelection.selectionError}
             onPageChange={(page) => handlePage('checks', page)}
             primaryLabel="반영대기"
             onPrimaryAction={(ids) => handleAction('checks', 'ready', ids)}
@@ -243,6 +279,7 @@ const MANURVPage = () => {
           <ArticleSearchForm
             title="미검수 게시글 검색"
             disabled={mutation.isPending}
+            initialFilters={filters}
             onSearch={handleSearch}
           />
           <div className="mt-6">
@@ -253,10 +290,22 @@ const MANURVPage = () => {
               isError={all.isError}
               disabled={mutation.isPending || all.isFetching}
               page={pages.all}
-              selected={selected.all}
+              selected={allSelection.selected}
               onSelectionChange={(ids) =>
-                setSelected((current) => ({ ...current, all: ids }))
+                allSelection.updateSelection(ids, all.data?.content ?? [])
               }
+              onSelectAll={() =>
+                void allSelection.selectAll(
+                  () =>
+                    getAllDashboardArticles({
+                      ...filters,
+                      status: 'PENDING_REVIEW',
+                    }),
+                  all.data?.page_info.total_items ?? 0
+                )
+              }
+              isSelectingAll={allSelection.isSelectingAll}
+              selectionError={allSelection.selectionError}
               onPageChange={(page) => handlePage('all', page)}
               primaryLabel="반영대기"
               onPrimaryAction={(ids) => handleAction('all', 'ready', ids)}

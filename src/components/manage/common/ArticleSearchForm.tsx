@@ -12,6 +12,7 @@ interface Props {
   title: string;
   label?: string;
   disabled: boolean;
+  initialFilters?: ReviewFilters;
   onSearch: (filters: ReviewFilters) => void;
 }
 const EMPTY = {
@@ -28,9 +29,18 @@ const ArticleSearchForm = ({
   title,
   label = title,
   disabled,
+  initialFilters = {},
   onSearch,
 }: Props) => {
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(() => ({
+    ...EMPTY,
+    article_id: initialFilters.article_id?.toString() ?? '',
+    keyword: initialFilters.keyword ?? '',
+    vendor_id: initialFilters.vendor_id?.toString() ?? '',
+    category_id: initialFilters.category_id?.toString() ?? '',
+    starts_from: initialFilters.starts_from ?? '',
+    ends_to: initialFilters.ends_to ?? '',
+  }));
   const [error, setError] = useState('');
   const categories = useQuery({
     queryKey: ['adminDashboard', 'categories'],
