@@ -17,6 +17,7 @@ import {
 import type { ArticleFilters, ReviewStatus } from '@/api/manage/dashboard';
 import useAuthStore from '@/stores/useAuthStore';
 import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 
 const LABELS: Record<ReviewStatus, string> = {
   PENDING_REVIEW: '미검수',
@@ -47,9 +48,13 @@ const formatDate = (value?: string) =>
   value ? value.slice(0, 10).replaceAll('-', '.') : '—';
 
 const MANHOMPage = () => {
-  const [form, setForm] = useState(EMPTY);
-  const [filters, setFilters] = useState<ArticleFilters>({});
-  const [page, setPage] = useState(1);
+  const [view, setView] = useManageListHistoryState<{
+    page: number;
+    filters: ArticleFilters;
+    form: typeof EMPTY;
+  }>({ page: 1, filters: {}, form: EMPTY });
+  const { page, filters } = view;
+  const [form, setForm] = useState(view.form);
   const selection =
     useAdminArticleSelection<
       import('@/api/manage/dashboard').DashboardArticle
@@ -98,7 +103,8 @@ const MANHOMPage = () => {
       setNotice(
         `${result.succeeded.length}건 처리 완료${result.failed.length ? `. ${result.failed.map((item) => `#${item.id}: ${item.message}`).join(' / ')}` : ''}`
       );
-      if (result.failed.length === 0) setPage(1);
+      if (result.failed.length === 0)
+        setView((current) => ({ ...current, page: 1 }));
       void queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticles'] });
       void queryClient.invalidateQueries({ queryKey: ['adminArticleCounts'] });
@@ -134,8 +140,7 @@ const MANHOMPage = () => {
     selection.isSelectingAll;
   const totalPages = articles.data?.page_info.total_pages ?? 0;
   const handleFilter = (next: ArticleFilters) => {
-    setFilters(next);
-    setPage(1);
+    setView({ page: 1, filters: next, form });
     selection.resetSelection();
     setNotice('');
   };
@@ -168,7 +173,7 @@ const MANHOMPage = () => {
     mutation.mutate({ action, ids: chosen.map((row) => row.id) });
   };
   const handlePage = (next: number) => {
-    setPage(next);
+    setView((current) => ({ ...current, page: next }));
   };
   const cards = [
     {
@@ -497,6 +502,20 @@ const MANHOMPage = () => {
                 : `전체 선택${chosen.length > 0 ? ` (${chosen.length})` : ''}`}
             </label>
             <div className="flex gap-2">
+              <Link
+                to={
+                  chosen.length === 2
+                    ? `/manage/detail/${chosen[0]?.id}/similar?other=${chosen[1]?.id}`
+                    : '#'
+                }
+                aria-disabled={busy || chosen.length !== 2}
+                onClick={(event) => {
+                  if (busy || chosen.length !== 2) event.preventDefault();
+                }}
+                className={`rounded-full border border-blue-200 bg-blue-50 px-4 py-2 font-semibold text-blue-700 ${busy || chosen.length !== 2 ? 'cursor-not-allowed opacity-40' : 'hover:bg-blue-100'}`}
+              >
+                두 글 비교·병합
+              </Link>
               <button
                 disabled={busy || !canPublish}
                 title="반영대기 또는 임시저장 게시글만 운영에 반영할 수 있습니다."

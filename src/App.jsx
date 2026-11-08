@@ -24,6 +24,7 @@ import TOSPage from '@/pages/main/TOS/TOSPage';
 import MANHOMPage from '@/pages/manage/MANHOM/MANHOMPage';
 import MANDTEPage from '@/pages/manage/MANDTE/MANDTEPage';
 import MANDTRPage from '@/pages/manage/MANDTR/MANDTRPage';
+import MANDUPPage from '@/pages/manage/MANDUP/MANDUPPage';
 import MANGBGPage from '@/pages/manage/MANGBG/MANGBGPage';
 import MANSTGPage from '@/pages/manage/MANSTG/MANSTGPage';
 import MANURVPage from '@/pages/manage/MANURV/MANURVPage';
@@ -115,6 +116,7 @@ function App() {
         >
           <Route index element={<MANHOMPage />} />
           <Route path="detail/:id" element={<MANDTRPage />} />
+          <Route path="detail/:id/similar" element={<MANDUPPage />} />
           <Route path="edit" element={<MANDTEPage />} />
           <Route path="edit/:id" element={<MANDTEPage />} />
           <Route path="staged" element={<MANSTGPage />} />

@@ -40,7 +40,7 @@ npm run format    # Prettier 적용 (파일을 변경함)
 | LGN / ONB | 로그인 / 온보딩 |
 | PRI / TOS | 개인정보 처리방침 / 서비스 이용약관 |
 | NOT | 오류 / 404 |
-| MAN* | 관리자 기능 (`MANHOM`, `MANDTE`, `MANDTR`, `MANSTG`, `MANGBG`, `MANURV`, `MANUSR`, `MANVND`, `MANANC`) |
+| MAN* | 관리자 기능 (`MANHOM`, `MANDTE`, `MANDTR`, `MANDUP`, `MANSTG`, `MANGBG`, `MANURV`, `MANUSR`, `MANVND`, `MANANC`) |
 
 페이지는 `[CODE]Page.jsx` 또는 `[CODE]Page.tsx`로 이름 짓는다. 데스크톱과 모바일이 함께 사용하는 사용자 기능 컴포넌트는 `components/main/adaptive/feature/[CODE]/`에 둔다.
 
@@ -83,12 +83,14 @@ npm run format    # Prettier 적용 (파일을 변경함)
 - Google OAuth는 인앱 WebView에서 완료할 수 없다. `index.html`의 외부 브라우저 처리(KakaoTalk: `kakaotalk://web/openExternal`, LINE: `openExternalBrowser=1`, 그 외 인앱 브라우저: 안내 오버레이)를 보존한다. 로그인 처리 변경 시 이 경로를 함께 확인한다.
 - 공개 라우트: `/`, `/login`, `/onboarding`, `/privacy-policy`, `/terms-of-service`.
 - 보호된 사용자 라우트: `/clubs`, `/clubs/detail/:id`, `/events`, `/events/detail/:id`, `/bookmarks`, `/mypage`.
-- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`, `/manage/users`, `/manage/vendors`, `/manage/announcements`.
+- 관리자 라우트: `/manage`, `/manage/detail/:id`, `/manage/detail/:id/similar`, `/manage/edit`, `/manage/edit/:id`, `/manage/staged`, `/manage/garbage`, `/manage/unreviewed`, `/manage/users`, `/manage/vendors`, `/manage/announcements`.
 - 관리자 로그인도 공용 `/login`을 사용하고, 로그인 후 돌아갈 관리자 경로는 `state.from.pathname`으로 전달한다.
 - `/manage` 부모 라우트에 `ProtectedRoute`와 `Outlet`을 적용해 모든 관리자 페이지의 비로그인 접근을 API 요청 전에 처리한다.
 - MANDTE 작성·수정은 `src/api/manage/articleEditor.ts`를 사용한다. 본문 이미지는 관리자 파일 업로드 후 첨부에 연결하며, 취소 시 새로 업로드한 미연결 파일만 정리 요청한다.
 - 동아리 세부 유형은 MANVND에서 동아리 자체에 지정한다. MANDTE 글 작성·수정에서는 출처 동아리만 선택하며 세부 유형 선택이나 유형별 출처 필터를 추가하지 않는다.
 - MANDTR 상세는 `src/api/manage/articleDetail.ts`로 조회한다. 읽기 전용 HTML 본문은 `src/utils/manage/articleContent.ts`로 정제하고, 출처·첨부 링크는 HTTP(S) 주소만 연다.
+- 관리자 게시글 목록은 현재 페이지와 적용된 검색 조건을 해당 방문 기록에 저장한다. 상세에서 브라우저 뒤로 가기나 화면의 뒤로 가기로 복귀하면 보던 목록을 복원한다.
+- MANDUP은 서버가 지정한 유사 공지 또는 관리자가 선택한 두 게시글을 비교한다. 관리자가 남길 글을 명시적으로 선택한 뒤 병합하며, 병합 전 영구 삭제를 확인하고 결과의 이동 건수를 표시한다.
 - MANGBG는 `src/api/manage/trash.ts`의 휴지통 전용 API를 사용한다. 전체 페이지 조회 후 화면에서 검색하며, 삭제 전 상태(`previous_status`)가 없는 게시물은 복구를 차단한다.
 - MANUSR 회원관리는 `src/api/manage/users.ts`를 사용한다. 회원 상세는 우측 패널에서 조회하며, 본인 권한 변경과 탈퇴 회원 승격을 차단하고 탈퇴 관리자의 강등은 허용한다.
 - MANVND 제공처·동아리 관리는 `src/api/manage/vendors.ts`를 사용한다. 식별자와 SCHOOL/CLUB 구분은 등록 후 고정한다. 동아리 세부 유형은 `/api/v1/club-types`에서 조회해 복수 선택하며, 등록 시 하나 이상 필수다. 수정 시 `club_type_ids`는 선택이 달라진 경우에만 전송하고 SCHOOL에는 보내지 않는다. 비활성화는 목록·필터 숨김이다. 등록·숨김 응답의 `warning`을 표시하되, 수동 운영하는 CLUB에서는 크롤러 시드 안내를 숨기고 SCHOOL에서는 유지한다.

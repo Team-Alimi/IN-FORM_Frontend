@@ -16,6 +16,7 @@ import { getUnreviewedArticles, runReviewAction } from '@/api/manage/review';
 import type { BulkResult, DashboardArticle } from '@/api/manage/dashboard';
 import type { ReviewAction, ReviewFilters } from '@/api/manage/review';
 import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 
 type Section = 'checks' | 'all';
 interface PendingAction {
@@ -24,8 +25,11 @@ interface PendingAction {
   ids: number[];
 }
 const MANURVPage = () => {
-  const [filters, setFilters] = useState<ReviewFilters>({});
-  const [pages, setPages] = useState({ checks: 1, all: 1 });
+  const [view, setView] = useManageListHistoryState<{
+    filters: ReviewFilters;
+    pages: Record<Section, number>;
+  }>({ filters: {}, pages: { checks: 1, all: 1 } });
+  const { filters, pages } = view;
   const checkSelection = useAdminArticleSelection<DashboardArticle>();
   const allSelection = useAdminArticleSelection<DashboardArticle>();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
@@ -82,15 +86,18 @@ const MANURVPage = () => {
         );
         checkSelection.resetSelection();
       }
-      setPages((current) => ({
-        checks:
-          request.section === 'checks' && data.failed.length
-            ? Math.min(current.checks, lastPage)
-            : 1,
-        all:
-          request.section === 'all' && data.failed.length
-            ? Math.min(current.all, lastPage)
-            : 1,
+      setView((current) => ({
+        ...current,
+        pages: {
+          checks:
+            request.section === 'checks' && data.failed.length
+              ? Math.min(current.pages.checks, lastPage)
+              : 1,
+          all:
+            request.section === 'all' && data.failed.length
+              ? Math.min(current.pages.all, lastPage)
+              : 1,
+        },
       }));
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['adminDashboard'] }),
@@ -110,11 +117,17 @@ const MANURVPage = () => {
     },
   });
   const handlePage = (section: Section, page: number) => {
-    setPages((current) => ({ ...current, [section]: page }));
+    setView((current) => ({
+      ...current,
+      pages: { ...current.pages, [section]: page },
+    }));
   };
   const handleSearch = (next: ReviewFilters) => {
-    setFilters(next);
-    handlePage('all', 1);
+    setView((current) => ({
+      ...current,
+      filters: next,
+      pages: { ...current.pages, all: 1 },
+    }));
     allSelection.resetSelection();
   };
   const handleAction = (
@@ -266,6 +279,7 @@ const MANURVPage = () => {
           <ArticleSearchForm
             title="미검수 게시글 검색"
             disabled={mutation.isPending}
+            initialFilters={filters}
             onSearch={handleSearch}
           />
           <div className="mt-6">

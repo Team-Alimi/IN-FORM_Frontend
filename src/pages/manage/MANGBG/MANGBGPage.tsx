@@ -18,6 +18,7 @@ import {
 } from '@/utils/manage/trashFilters';
 import type { TrashFilters } from '@/utils/manage/trashFilters';
 import useAdminArticleSelection from '@/hooks/useAdminArticleSelection';
+import useManageListHistoryState from '@/hooks/useManageListHistoryState';
 import type { TrashArticle } from '@/api/manage/trash';
 
 type Action = 'restore' | 'delete';
@@ -38,8 +39,11 @@ const STATUS = {
   DRAFT: { label: '임시저장', color: 'bg-blue-50 text-blue-600' },
 };
 const MANGBGPage = () => {
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState(EMPTY_TRASH_FILTERS);
+  const [view, setView] = useManageListHistoryState<{
+    page: number;
+    filters: TrashFilters;
+  }>({ page: 1, filters: EMPTY_TRASH_FILTERS });
+  const { page, filters } = view;
   const selection = useAdminArticleSelection<TrashArticle>();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(
     null
@@ -66,7 +70,7 @@ const MANGBGPage = () => {
       );
       setError('');
       // 필터는 유지하고 첫 페이지에서 갱신 결과를 확인합니다.
-      if (!data.failed.length) setPage(1);
+      if (!data.failed.length) setView((current) => ({ ...current, page: 1 }));
       const keys = [
         'adminDashboard',
         'adminArticles',
@@ -140,11 +144,10 @@ const MANGBGPage = () => {
     selectedRows.length > 0 &&
     selectedRows.every((row) => row.status === 'TRASHED');
   const handlePage = (next: number) => {
-    setPage(next);
+    setView((current) => ({ ...current, page: next }));
   };
   const handleSearch = (next: TrashFilters) => {
-    setFilters(next);
-    handlePage(1);
+    setView({ page: 1, filters: next });
     selection.resetSelection();
   };
   const handleAction = (action: Action, ids: number[]) => {
@@ -205,6 +208,7 @@ const MANGBGPage = () => {
                 mutation.isPending
               }
               categories={categories}
+              initialFilters={filters}
               onSearch={handleSearch}
             />
             {result && (
